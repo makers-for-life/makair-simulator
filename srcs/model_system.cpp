@@ -16,16 +16,20 @@ float model_system(float Ri, float Re, float Rf, float R, float C, float Pbl, fl
 
     float flow = P_factor + V_factor;
 
-    // conputation of the new flow
+    // conputation of the new wolume
     return Vp + flow * dt;
 
 }
 
 void resistance_valves(float t, float T, float alpha, float * pt_Ri, float * pt_Re){
+
+    //Inspiration phase : the inspiration vavle is open, expiration valve is closed
     if(fmod(t, T) <= alpha * T){
         *pt_Re = 5e6;
         *pt_Ri = 0;
     }
+    
+    //expiration phase : the expiration valve is open, inspiration valve is closed
     else{
         *pt_Re = 0;
         *pt_Ri = 5e6;
