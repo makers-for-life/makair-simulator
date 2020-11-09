@@ -1,5 +1,11 @@
+#parser
 *.npy
 data/output*
 *.o
 data/venv*
 data/.idea*
+
+#simulator
+build/simulator
+build/*.o
+
