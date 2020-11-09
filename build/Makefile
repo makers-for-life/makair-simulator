@@ -9,7 +9,7 @@ CXXFLAGS=-Wall -Wextra -pedantic
 LDFLAGS=
 
 # Names of the executables to be generated
-EXEC=hello
+EXEC=simulator
 
 # Path of source files
 SRC_DIR=../srcs/
@@ -25,7 +25,7 @@ OBJ= $(SRC:.cpp=.o)
 
 all: $(EXEC)
 
-hello: $(OBJ)
+simulator: $(OBJ)
 		$(CXX) -o $@ $^ $(LDFLAGS)
 
 main.o: $(HEADER_DIR)hello_world.h
