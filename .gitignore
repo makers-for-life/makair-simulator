@@ -1,0 +1,5 @@
+*.npy
+data/output*
+*.o
+data/venv*
+data/.idea*
