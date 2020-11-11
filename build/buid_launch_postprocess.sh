@@ -6,7 +6,7 @@ make
 
 printf "\nrunning the exectutable...\n"
 
-./hello
+./simulator
 
 #echo "lauching postprocess..."
 #echo
