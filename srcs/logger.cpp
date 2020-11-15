@@ -5,18 +5,20 @@
 Logger::Logger():
     m_file("")
 {
-    std::cout << "class logger created";
+    std::cout << "class logger created\n";
 }
 
-Logger::~Logger()
+Logger::~Logger(){}
+
+void Logger::close()
 {
     m_file.close();
-    std::cout << "file closed";
+    std::cout << "file closed\n";
 }
 
 void Logger::init(){
-    m_file.open("log_simulator.csv");
-    std::cout << "file opend";
+    m_file.open("../data/log_simulator.csv");
+    std::cout << "file opend\n";
 }
 
 void Logger::write_log(float time, ActuatorsData actuators, SensorsData sensors)

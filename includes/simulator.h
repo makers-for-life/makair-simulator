@@ -38,5 +38,6 @@ class Simulator {
     ActuatorsData m_cmds;
     SensorsData m_sensors;
     float m_dt;
+    float m_time;
 
 };

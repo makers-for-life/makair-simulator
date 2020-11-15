@@ -23,6 +23,7 @@ class Logger {
     ~Logger();
 
     void init();
+    void close();
 
     void write_log(float time, ActuatorsData actuators, SensorsData sensors);
 

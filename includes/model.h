@@ -18,7 +18,7 @@ class Model {
 
     void init();
 
-    SensorsData compute(ActuatorsData cmds, int dt);
+    SensorsData compute(ActuatorsData cmds, float dt);
 
   private:
     

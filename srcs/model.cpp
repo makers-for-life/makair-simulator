@@ -40,7 +40,7 @@ void Model::init() {
     m_K_flow = 1e6; // ml / m3
 }
 
-SensorsData Model::compute(ActuatorsData cmds, int dt){
+SensorsData Model::compute(ActuatorsData cmds, float dt){
 
     // Conversion of actuators command into physical parameters of the model
     float Re = res_valves(cmds.expirationValve, m_Kr);

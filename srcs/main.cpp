@@ -16,7 +16,7 @@
 int main(void){
 
 	Simulator simulator;
-	std::cout << "program started";
+	std::cout << "program started\n";
 	simulator.run();
 	
 	return 0;

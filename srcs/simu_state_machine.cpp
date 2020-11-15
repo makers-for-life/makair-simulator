@@ -8,6 +8,8 @@
 // INCLUDES ===================================================================
 
 #include "../includes/simu_state_machine.h"
+#include <tgmath.h>
+
 
 // FUNCTIONS ==================================================================
 
@@ -17,7 +19,29 @@ SimuStateMachine::SimuStateMachine()
 
 void SimuStateMachine::init() {}
 
-ActuatorsData SimuStateMachine::compute(SensorsData cmds, int dt){}
+ActuatorsData SimuStateMachine::compute(SensorsData cmds, float dt, float time){
+
+  static float alpha = .5;
+  static float T = 3;
+  ActuatorsData output;
+  output.blower=100;
+
+  //Inspiration phase : the inspiration vavle is open, expiration valve is closed
+    if(fmod(time, T) <= alpha * T){
+        output.expirationValve = 5e6;
+        output.inspirationValve = 0;
+    }
+    
+    //expiration phase : the expiration valve is open, inspiration valve is closed
+    else{
+        output.expirationValve = 0;
+        output.inspirationValve = 5e6;
+    }
+    if(time >= 5.*T){
+      m_running = false;
+    }
+  return(output);
+}
 
 bool SimuStateMachine::isRunning(){
     return m_running;
