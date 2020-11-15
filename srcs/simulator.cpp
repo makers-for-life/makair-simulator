@@ -29,8 +29,11 @@ void Simulator::init(){
     m_model.init();
     m_state_machine.init();
     m_logger.init();
+    m_cmds.blower=0;
+    m_cmds.expirationValve=0;
+    m_cmds.inspirationValve=0;
     m_time = 0.;
-    m_dt = 0.1;
+    m_dt = 0.01;
 }
 
 void Simulator::loop(){

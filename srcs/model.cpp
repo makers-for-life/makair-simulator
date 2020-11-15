@@ -26,17 +26,17 @@ Model::Model():
 
 void Model::init() {
     //parameters of the patient
-    m_Rf = 1e6; // resistance of leaking in Pa.(m.s-1)-1
-    m_R = 5e3; // resistance of the patient in Pa.(m.s-1)-1
-    m_C = 100e-9; // compilance of the patient in m3.Pa-1
+    m_Rf = 1e8; // resistance of leaking in Pa.(m3.s-1)-1
+    m_R = 5e5; // resistance of the patient in Pa.(m3.s-1)-1
+    m_C = 100e-8; // compilance of the patient in m3.Pa-1
     m_Vp = 0.; // Volume of air in the lungs of the patient above rest volume in m3 
 
     //parameters of the actuators
-    m_Kr = 1e3; // coefficient of resistance in Pa.(m.s-1)-1 / %
-    m_K_blower = 1e3; // coefficient of blower pressure in Pa / %
+    m_Kr = 1e6; // coefficient of resistance in Pa.(m3.s-1)-1 / %
+    m_K_blower = 100; // coefficient of blower pressure in Pa / %
 
     //parameters of the sensors
-    m_K_pres = 1e2; // mmH2O / Pa
+    m_K_pres = 1e-2; // cmH2O / Pa
     m_K_flow = 1e6; // ml / m3
 }
 
@@ -64,7 +64,7 @@ SensorsData Model::compute(ActuatorsData cmds, float dt){
 
     // computation of sensor data
     SensorsData output;
-    output.inspirationPressure = flow * m_R + m_Vp / m_C;
+    output.inspirationPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
     output.inspirationFlow = m_K_flow * (Pbl - output.inspirationPressure) / Ri;
 
     return(output);

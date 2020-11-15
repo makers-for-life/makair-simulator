@@ -17,7 +17,7 @@ void Logger::close()
 }
 
 void Logger::init(){
-    m_file.open("../data/log_simulator.csv");
+    m_file.open("../data/simulation_output/log_simulator.csv");
     std::cout << "file opend\n";
 }
 
