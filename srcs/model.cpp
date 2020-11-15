@@ -8,25 +8,36 @@
 // INCLUDES ===================================================================
 
 #include "../includes/model.h"
+#include <cmath>
 
 // FUNCTIONS ==================================================================
 
-Model::Model() {}
+Model::Model():
+    // initialization with nan to trigger error if not initialized
+    m_Rf(nanf("")),
+    m_R(nanf("")),
+    m_C(nanf("")),
+    m_Vp(nanf("")),
+    m_Kr(nanf("")),
+    m_K_blower(nanf("")),
+    m_K_pres(nanf("")),
+    m_K_flow(nanf(""))
+{}
 
 void Model::init() {
     //parameters of the patient
-    float m_Rf = 1e6; // resistance of leaking in Pa.(m.s-1)-1
-    float m_R = 5e3; // resistance of the patient in Pa.(m.s-1)-1
-    float m_C = 100e-9; // compilance of the patient in m3.Pa-1
-    float m_Vp = 0.; // Volume of air in the lungs of the patient above rest volume in m3 
+    m_Rf = 1e6; // resistance of leaking in Pa.(m.s-1)-1
+    m_R = 5e3; // resistance of the patient in Pa.(m.s-1)-1
+    m_C = 100e-9; // compilance of the patient in m3.Pa-1
+    m_Vp = 0.; // Volume of air in the lungs of the patient above rest volume in m3 
 
     //parameters of the actuators
-    float m_Kr = 1e3; // coefficient of resistance in Pa.(m.s-1)-1 / %
-    float m_K_blower = 1e3; // coefficient of blower pressure in Pa / %
+    m_Kr = 1e3; // coefficient of resistance in Pa.(m.s-1)-1 / %
+    m_K_blower = 1e3; // coefficient of blower pressure in Pa / %
 
     //parameters of the sensors
-    float m_K_pres = 1e2; // mmH2O / Pa
-    float m_K_flow = 1e6; // ml / m3
+    m_K_pres = 1e2; // mmH2O / Pa
+    m_K_flow = 1e6; // ml / m3
 }
 
 SensorsData Model::compute(ActuatorsData cmds, int dt){
@@ -49,7 +60,7 @@ SensorsData Model::compute(ActuatorsData cmds, int dt){
     float flow = P_factor + V_factor; 
 
     // conputation of the new patient's lung's volume
-    m_Vp + flow * dt;
+    m_Vp += flow * dt;
 
     // computation of sensor data
     SensorsData output;
