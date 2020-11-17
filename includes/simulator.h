@@ -8,10 +8,11 @@
 
 // CONSTANTS ==================================================================
 
-#define SIMULATOR true
+// #define SIMULATION true
 
 // INCLUDES ===================================================================
 
+#include <cstdint>
 #include "../includes/helper.h"
 #include "../includes/model.h"
 #include "../includes/simu_state_machine.h"

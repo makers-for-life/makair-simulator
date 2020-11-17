@@ -9,6 +9,7 @@
 // INCLUDES ===================================================================
 
 #include "../includes/helper.h"
+#include "../includes/main_controller.h"
 
 enum SimuState {SETUP, STOPPED, INIT_CYCLE, BREATH, TRIGGED_RAISED, END_CYCLE};
 
