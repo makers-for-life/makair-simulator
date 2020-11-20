@@ -564,7 +564,7 @@ void MainController::onPlateauPressureIncrease() {
     m_plateauPressureNextCommand = m_plateauPressureNextCommand + 10u;
 
     m_plateauPressureNextCommand =
-       min(m_plateauPressureNextCommand, static_cast<uint16_t>(CONST_MAX_PLATEAU_PRESSURE));
+        min(m_plateauPressureNextCommand, static_cast<uint16_t>(CONST_MAX_PLATEAU_PRESSURE));
 
     if (m_plateauPressureNextCommand > m_peakPressureNextCommand) {
         m_peakPressureNextCommand = m_plateauPressureNextCommand;

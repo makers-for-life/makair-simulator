@@ -29,15 +29,6 @@ class Blower {
     /// Default constructor
     Blower();
 
-    /**
-     * Parameterized constructor
-     *
-     * @param p_hardwareTimer Hardware time for the blower
-     * @param p_timerChannel TIM channel for this blower
-     * @param p_blowerPin Data pin for this blower
-     */
-    Blower(HardwareTimer* p_hardwareTimer, uint16_t p_timerChannel, uint16_t p_blowerPin);
-
     /// Initialize the hardware timer used to control the blower
     void setup();
 
@@ -56,7 +47,7 @@ class Blower {
 
  private:
     /// Hardware timer used to control the blower
-    HardwareTimer* actuator;
+   //  HardwareTimer* actuator;
 
     /// Channel of the hardware timer used to control the blower
     uint16_t timerChannel;

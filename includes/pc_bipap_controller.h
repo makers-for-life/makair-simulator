@@ -7,10 +7,7 @@
 
 #pragma once
 
-// External
-#include "Arduino.h"
-
-// Internal
+#include "../includes/config.h"
 #include "../includes/parameters.h"
 #include "../includes/ventilation_controller.h"
 

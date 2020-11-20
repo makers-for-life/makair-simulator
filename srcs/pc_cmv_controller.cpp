@@ -11,6 +11,9 @@
 #include "../includes/pc_cmv_controller.h"
 
 // External
+#if !SIMULATION
+#include "Arduino.h"
+#endif
 #include <algorithm>
 
 // Internal

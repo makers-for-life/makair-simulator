@@ -40,10 +40,12 @@ class PressureValve {
      * @param p_openApertureAngle   Open aperture angle in degrees
      * @param p_closeApertureAngle  Close aperture angle in degrees
      */
-    PressureValve(HardwareTimer* p_hardwareTimer,
-                  uint16_t p_timerChannel,
-                  uint16_t p_valvePin,
-                  uint16_t p_openApertureAngle,
+    // PressureValve(HardwareTimer* p_hardwareTimer,
+    //               uint16_t p_timerChannel,
+    //               uint16_t p_valvePin,
+    //               uint16_t p_openApertureAngle,
+    //               uint16_t p_closeApertureAngle);
+    PressureValve(uint16_t p_openApertureAngle,
                   uint16_t p_closeApertureAngle);
     /**
      * Initialize this valve
@@ -80,8 +82,8 @@ class PressureValve {
         }
 
         if (command != position) {
-            actuator->setCaptureCompare(timerChannel, valveAngle2MicroSeconds(command),
-                                        MICROSEC_COMPARE_FORMAT);
+            // actuator->setCaptureCompare(timerChannel, valveAngle2MicroSeconds(command),
+            //                             MICROSEC_COMPARE_FORMAT);
             position = command;
         }
     }
@@ -112,7 +114,7 @@ class PressureValve {
     uint16_t closeApertureAngle;
 
     /// Hardware time for this valve
-    HardwareTimer* actuator;
+    // HardwareTimer* actuator;
 
     /// TIM channel for this valve
     uint16_t timerChannel;

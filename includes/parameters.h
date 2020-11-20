@@ -8,11 +8,13 @@
 
 // INCLUDES ===================================================================
 
-// External
-#include "Arduino.h"
-
 // Internal
 #include "../includes/config.h"
+
+// External
+#if !SIMULATION
+#include "Arduino.h"
+#endif
 
 // PARAMETERS =================================================================
 

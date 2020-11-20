@@ -21,9 +21,7 @@ Blower blower;
 
 // FUNCTIONS ==================================================================
 
-Blower::Blower() {}
-
-Blower::Blower(HardwareTimer* p_hardwareTimer, uint16_t p_timerChannel, uint16_t p_blowerPin) {
+Blower::Blower() {
     // TODO
 }
 

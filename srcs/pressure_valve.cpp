@@ -27,14 +27,8 @@ PressureValve inspiratoryValve;
 
 PressureValve::PressureValve() {}
 
-PressureValve::PressureValve(HardwareTimer* p_hardwareTimer,
-                             uint16_t p_timerChannel,
-                             uint16_t p_valvePin,
-                             uint16_t p_openApertureAngle,
+PressureValve::PressureValve(uint16_t p_openApertureAngle,
                              uint16_t p_closeApertureAngle) {
-    actuator = p_hardwareTimer;
-    timerChannel = p_timerChannel;
-    valvePin = p_valvePin;
     openApertureAngle = p_openApertureAngle;
     closeApertureAngle = p_closeApertureAngle;
     minApertureAngle = min(p_closeApertureAngle, p_openApertureAngle);
