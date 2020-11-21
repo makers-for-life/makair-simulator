@@ -45,6 +45,14 @@ class Blower {
     /// Get speed value
     uint16_t getSpeed() const;
 
+    /**
+     * Given a flow in mL/min, return an estimated pressure just at the output of the blower. This
+     * pressure has been determined using the pressure-flow characteristic of the blower
+     *
+     * @param p_flow inspiratory flow in mL/min
+     */
+    int32_t getBlowerPressure(int32_t p_flow);
+
  private:
     /// Hardware timer used to control the blower
    //  HardwareTimer* actuator;

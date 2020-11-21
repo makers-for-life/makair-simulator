@@ -61,7 +61,7 @@ class PC_BIPAP_Controller final : public VentilationController {
     int32_t PCexpiratoryPID(int32_t targetPressure, int32_t currentPressure, int32_t dt);
 
     /// Current blower speed
-    int32_t m_blowerSpeed;
+    uint16_t m_blowerSpeed;
 
     /// True if we want to reopen the inspiratory valve to create a circulation flow able to detect
     /// inspiratory flow trigger
@@ -109,12 +109,7 @@ class PC_BIPAP_Controller final : public VentilationController {
     /// Last error index in expiratory PID
     int32_t m_expiratoryPidLastErrorsIndex;
 
-    /// Last flow values
-    int32_t m_inspiratoryFlowLastValues[NUMBER_OF_SAMPLE_FLOW_LAST_VALUES];
-
-    /// Last flow index
-    int32_t m_inspiratoryFlowLastValuesIndex;
-
+    /// Max flow during inspiration
     int32_t m_maxInspiratoryFlow;
 };
 

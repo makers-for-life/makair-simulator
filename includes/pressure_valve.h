@@ -58,11 +58,26 @@ class PressureValve {
     void open();
 
     /**
-     * Request opening of the Air Transistor with a given angle
+     * Request opening of the Pressure Valve with a given angle
      *
      * @param p_command The angle in degree
      */
     void open(uint16_t p_command);
+
+    /**
+     * Request opening of the Pressure Valve with a given angle with linearization
+     *
+     * @param p_command The angle in degree
+     * @return The linearized angle calculated by this function
+     */
+    uint16_t openLinear(uint16_t p_command);
+
+    /**
+     * Request opening of the Pressure Valve with a given section (in mm^2)
+     *
+     * @param p_sectionMultiplyBy100 The section to open tha valve (in mm^2 multiplied by 100)
+     */
+    void openSection(int32_t p_sectionMultiplyBy100);
 
     /// Request closing of the Pressure Valve
     void close();
@@ -99,6 +114,9 @@ class PressureValve {
 
     /// Current aperture
     uint16_t position;
+
+    /// Current aperture linear
+    uint16_t positionLinear;
 
  private:
     /// Minimum valve aperture angle in degrees

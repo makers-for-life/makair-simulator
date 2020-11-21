@@ -27,6 +27,7 @@ PC_CMV_Controller pcCmvController;
 
 // FUNCTIONS ==================================================================
 
+// cppcheck-suppress misra-c2012-5.2 ; false positive
 PC_CMV_Controller::PC_CMV_Controller() {
     m_inspiratoryValveLastAperture = inspiratoryValve.maxAperture();
     m_expiratoryValveLastAperture = expiratoryValve.maxAperture();
@@ -40,7 +41,8 @@ PC_CMV_Controller::PC_CMV_Controller() {
         m_expiratoryPidLastErrors[i] = 0u;
     }
 
-    m_blowerIncrement = DEFAULT_BLOWER_SPEED;
+    m_blowerSpeed = DEFAULT_BLOWER_SPEED;
+    m_blowerIncrement = 0;
     m_inspiratoryPidIntegral = 0;
     m_inspiratoryPidLastError = 0;
     m_expiratoryPidFastMode = true;
@@ -49,9 +51,7 @@ PC_CMV_Controller::PC_CMV_Controller() {
     m_expiratoryPidLastError = 0;
 }
 
-void PC_CMV_Controller::setup() {
-    // No specific setup code
-}
+void PC_CMV_Controller::setup() { m_blowerSpeed = DEFAULT_BLOWER_SPEED; }
 
 void PC_CMV_Controller::initCycle() {
     m_plateauPressureReached = false;
@@ -78,16 +78,17 @@ void PC_CMV_Controller::initCycle() {
 
     // Apply blower ramp-up
     if (m_blowerIncrement >= 0) {
-        blower.runSpeed(blower.getSpeed() + static_cast<uint16_t>(abs(m_blowerIncrement)));
+        blower.runSpeed(m_blowerSpeed + static_cast<uint16_t>(abs(m_blowerIncrement)));
     } else {
         // When blower increment is negative, we need to check that it is less than current speed
         // If not, it would result in an overflow
-        if (static_cast<uint16_t>(abs(m_blowerIncrement)) < blower.getSpeed()) {
-            blower.runSpeed(blower.getSpeed() - static_cast<uint16_t>(abs(m_blowerIncrement)));
+        if (static_cast<uint16_t>(abs(m_blowerIncrement)) < m_blowerSpeed) {
+            blower.runSpeed(m_blowerSpeed - static_cast<uint16_t>(abs(m_blowerIncrement)));
         } else {
             blower.runSpeed(MIN_BLOWER_SPEED);
         }
     }
+    m_blowerSpeed = blower.getSpeed();
     m_blowerIncrement = 0;
 }
 
@@ -100,7 +101,7 @@ void PC_CMV_Controller::inhale() {
     expiratoryValve.close();
 
     // m_plateauStartTime is used for blower regulations, -5 is added to help blower convergence
-    if (mainController.pressure() > mainController.plateauPressureCommand() - 5u
+    if ((mainController.pressure() > (mainController.plateauPressureCommand() - 5))
         && !m_plateauPressureReached) {
         m_plateauStartTime = mainController.tick();
         m_plateauPressureReached = true;
@@ -115,17 +116,6 @@ void PC_CMV_Controller::exhale() {
     expiratoryValve.open(PCexpiratoryPID(mainController.pressureCommand(),
                                          mainController.pressure(), mainController.dt()));
 
-    // In case the pressure trigger mode is enabled, check if inspiratory trigger is raised
-    if (mainController.triggerModeEnabledCommand() && mainController.isPeepDetected()) {
-        // m_peakPressure > CONST_MIN_PEAK_PRESSURE ensures that the patient is plugged on the
-        // machine
-        if (static_cast<int32_t>(mainController.pressure())
-                < (mainController.pressureCommand()
-                   - static_cast<int32_t>(mainController.pressureTriggerOffsetCommand()))
-            && (mainController.peakPressureMeasure() > CONST_MIN_PEAK_PRESSURE)) {
-            mainController.setTrigger(true);
-        }
-    }
 }
 
 void PC_CMV_Controller::endCycle() { calculateBlowerIncrement(); }
@@ -136,7 +126,7 @@ void PC_CMV_Controller::calculateBlowerIncrement() {
 
     // Number of tick for the half ramp (120 ms)
     int32_t halfRampNumberfTick =
-        1000 * 120 / static_cast<int32_t>(MAIN_CONTROLLER_COMPUTE_PERIOD_US);
+        1000 * 120 / static_cast<int32_t>(MAIN_CONTROLLER_COMPUTE_PERIOD_MICROSECONDS);
 
     // Update blower only if patient is plugged on the machine
     if (mainController.peakPressureMeasure() > 20) {
@@ -232,12 +222,11 @@ PC_CMV_Controller::PCinspiratoryPID(int32_t targetPressure, int32_t currentPress
     // In fast mode: everything is openned (open loop)
     if (m_inspiratoryPidFastMode) {
         // Ramp from 125 to 0 angle during 250 ms
-        int32_t increment = 5 * ((int32_t)MAIN_CONTROLLER_COMPUTE_PERIOD_US) / 10000;
-        if (m_inspiratoryValveLastAperture >= static_cast<uint32_t>(abs(increment))) {
+        int32_t increment =
+            (5 * static_cast<int32_t>(MAIN_CONTROLLER_COMPUTE_PERIOD_MICROSECONDS)) / 10000;
+        if (m_inspiratoryValveLastAperture >= abs(increment)) {
             inspiratoryValveAperture =
-                max(minAperture,
-                    min(maxAperture,
-                        (static_cast<int32_t>(m_inspiratoryValveLastAperture) - increment)));
+                max(minAperture, min(maxAperture, m_inspiratoryValveLastAperture - increment));
         } else {
             inspiratoryValveAperture = 0;
         }
@@ -261,8 +250,7 @@ PC_CMV_Controller::PCinspiratoryPID(int32_t targetPressure, int32_t currentPress
     }
 
     // If the valve is completely open or completely closed, don't update the integral part
-    if ((inspiratoryValveAperture != static_cast<uint32_t>(minAperture))
-        && (inspiratoryValveAperture != static_cast<uint32_t>(maxAperture))) {
+    if ((inspiratoryValveAperture != minAperture) && (inspiratoryValveAperture != maxAperture)) {
         m_inspiratoryPidIntegral = temporarym_inspiratoryPidIntegral;
     }
 
@@ -340,12 +328,11 @@ PC_CMV_Controller::PCexpiratoryPID(int32_t targetPressure, int32_t currentPressu
     // Fast mode: open loop with ramp
     if (m_expiratoryPidFastMode) {
         // Ramp from 125 to 0 angle during 250 ms
-        int32_t increment = 5 * ((int32_t)MAIN_CONTROLLER_COMPUTE_PERIOD_US) / 10000;
-        if (m_expiratoryValveLastAperture >= static_cast<uint32_t>(abs(increment))) {
+        int32_t increment =
+            (5 * static_cast<int32_t>(MAIN_CONTROLLER_COMPUTE_PERIOD_MICROSECONDS)) / 10000;
+        if (m_expiratoryValveLastAperture >= abs(increment)) {
             expiratoryValveAperture =
-                max(minAperture,
-                    min(maxAperture,
-                        (static_cast<int32_t>(m_expiratoryValveLastAperture) - increment)));
+                max(minAperture, min(maxAperture, m_expiratoryValveLastAperture - increment));
         } else {
             expiratoryValveAperture = 0;
         }
@@ -368,8 +355,7 @@ PC_CMV_Controller::PCexpiratoryPID(int32_t targetPressure, int32_t currentPressu
     }
 
     // If the valve is completely open or completely closed, don't update integral part
-    if ((expiratoryValveAperture != static_cast<uint32_t>(minAperture))
-        && (expiratoryValveAperture != static_cast<uint32_t>(maxAperture))) {
+    if ((expiratoryValveAperture != minAperture) && (expiratoryValveAperture != maxAperture)) {
         m_expiratoryPidIntegral = temporarym_expiratoryPidIntegral;
     }
 

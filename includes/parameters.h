@@ -26,30 +26,36 @@
  */
 ///@{
 
-// Main controller compute period in microsecond
-#define MAIN_CONTROLLER_COMPUTE_PERIOD_US 10000u
+// Main controller computes period in millisecond: minimum 1 ms, maximum 10 ms
+#define MAIN_CONTROLLER_COMPUTE_PERIOD_MS 10u
+// cppcheck-suppress misra-c2012-5.4
+#define MAIN_CONTROLLER_COMPUTE_PERIOD_MICROSECONDS (1000u * MAIN_CONTROLLER_COMPUTE_PERIOD_MS)
 
 // Minimum and maximum bounds of execution parameters
-#define CONST_MAX_PEAK_PRESSURE 700u     // arbitrary [mmH2O]
-#define CONST_MIN_PEAK_PRESSURE 100u     // arbitrary [mmH2O]
-#define CONST_MAX_PLATEAU_PRESSURE 400u  // PP MAX ARDS = 300 [mmH2O]
-#define CONST_MIN_PLATEAU_PRESSURE 100u  // arbitrary [mmH2O]
-#define CONST_MAX_PEEP_PRESSURE 300u     // PP MAX = 300, or PEEP < PP [mmH2O]
-#define CONST_MIN_PEEP_PRESSURE 50u      // arbitrary but > 0 [mmH2O]
-#define CONST_MIN_TRIGGER_OFFSET 0u      // [mmH2O]
-#define CONST_MAX_TRIGGER_OFFSET 100u    // [mmH2O]
-#define CONST_INITIAL_ZERO_PRESSURE 0    // [mmH2O]
-#define CONST_INITIAL_ZERO_VOLUME 0      // [mL]
+#define CONST_MAX_PEAK_PRESSURE 700     // arbitrary [mmH2O]
+#define CONST_MIN_PEAK_PRESSURE 100     // arbitrary [mmH2O]
+#define CONST_MAX_PLATEAU_PRESSURE 400  // PP MAX ARDS = 300 [mmH2O]
+#define CONST_MIN_PLATEAU_PRESSURE 100  // arbitrary [mmH2O]
+#define CONST_MAX_PEEP_PRESSURE 300     // PP MAX = 300, or PEEP < PP [mmH2O]
+#define CONST_MIN_PEEP_PRESSURE 50       // arbitrary but > 0 [mmH2O]
+#define CONST_MIN_TRIGGER_OFFSET 0u     // [mmH2O]
+#define CONST_MAX_TRIGGER_OFFSET 100u   // [mmH2O]
+#define CONST_INITIAL_ZERO_PRESSURE 0   // [mmH2O]
+#define CONST_INITIAL_ZERO_VOLUME 0     // [mL]
 
 // Expiration term in the "Inspiration/Expiration" ratio given that Inspiration = 10
 #define CONST_MIN_EXPIRATORY_TERM 10u
 #define CONST_MAX_EXPIRATORY_TERM 60u
 
-#define DEFAULT_PEEP_COMMAND 100
-#define DEFAULT_PLATEAU_COMMAND 200
-#define DEFAULT_PEAK_PRESSURE_COMMAND 200
-#define DEFAULT_EXPIRATORY_TERM_COMMAND 20
-#define DEFAULT_TRIGGER_OFFSET 20
+#define DEFAULT_PEEP_COMMAND 100 // in mmH2O
+#define DEFAULT_PLATEAU_COMMAND 200 // in mmH2O
+#define DEFAULT_PEAK_PRESSURE_COMMAND 200 // in mmH2O
+#define DEFAULT_EXPIRATORY_TERM_COMMAND 20 // 20 means I:E = 10:20 = 1:2
+#define DEFAULT_TIDAL_VOLUME_COMMAND 400 // in mL
+#define DEFAULT_PLATEAU_DURATION_COMMAND 300 // in ms
+#define DEFAULT_TRIGGER_OFFSET 20 // in mmH2O
+#define DEFAULT_INSPIRATORY_TRIGGER_FLOW_COMMAND 10 // in percent of current flow
+#define DEFAULT_EXPIRATORY_TRIGGER_FLOW_COMMAND 25 // in percent of max inspirated flow
 
 #define DEFAULT_CYCLE_PER_MINUTE_COMMAND 20
 #define CONST_MAX_CYCLE 35u
@@ -86,7 +92,7 @@ static const int32_t PID_PATIENT_SAFETY_PEEP_OFFSET = 0;
 
 #define PC_NUMBER_OF_SAMPLE_DERIVATIVE_MOVING_MEAN 10u
 
-#define NUMBER_OF_SAMPLE_FLOW_LAST_VALUES 20
+#define NUMBER_OF_SAMPLE_LAST_VALUES 20u
 
 /// Number of periods used for calculating the respiratory rate
 #define NUMBER_OF_BREATH_PERIOD 3u
@@ -104,7 +110,7 @@ static const int32_t PID_PATIENT_SAFETY_PEEP_OFFSET = 0;
 /// Angle when closed
 #define VALVE_CLOSED_STATE 125u
 #define VALVE_PERIOD 1000     // 1 kHz Faulhaber motors are controlled with a 1 kHz PWM
-#define FAULHABER_OPENED 640  // PWM duty cycle 64% -> open
+#define FAULHABER_OPENED 660  // PWM duty cycle 64% -> open
 #define FAULHABER_CLOSED 900  // PWM duty cycle 90% -> closed
 
 #define PIN_INSPIRATORY_VALVE D5  // PB4 / TIM3_CH1
@@ -148,7 +154,7 @@ static const int32_t PID_PATIENT_SAFETY_PEEP_OFFSET = 0;
 #define SCREEN_LINE_LENGTH 20
 
 /// Period between screen updates in microsecond. Should be a multiple of
-/// MAIN_CONTROLLER_COMPUTE_PERIOD_US
+/// MAIN_CONTROLLER_COMPUTE_PERIOD_MICROSECONDS
 #define LCD_UPDATE_PERIOD_US 300000u
 
 /// Period between screen resets in minutes
@@ -240,9 +246,9 @@ static const int32_t PID_PATIENT_SAFETY_PEEP_OFFSET = 0;
  */
 ///@{
 
-#define ALARM_THRESHOLD_MIN_PRESSURE 20u         // RCM-SW-2 + RCM-SW-19
-#define ALARM_THRESHOLD_MAX_PRESSURE 800u        // RCM-SW-18
-#define ALARM_THRESHOLD_DIFFERENCE_PERCENT 20u   // RCM-SW-1 + RCM-SW-14
-#define ALARM_THRESHOLD_DIFFERENCE_PRESSURE 20u  // RCM-SW-3 + RCM-SW-15
+#define ALARM_THRESHOLD_MIN_PRESSURE 20         // RCM-SW-2 + RCM-SW-19
+#define ALARM_THRESHOLD_MAX_PRESSURE 800        // RCM-SW-18
+#define ALARM_THRESHOLD_DIFFERENCE_PERCENT 20   // RCM-SW-1 + RCM-SW-14
+#define ALARM_THRESHOLD_DIFFERENCE_PRESSURE 20  // RCM-SW-3 + RCM-SW-15
 
 ///@}
