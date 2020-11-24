@@ -4,9 +4,7 @@
 
 Logger::Logger():
     m_file("")
-{
-    std::cout << "class logger created\n";
-}
+{}
 
 Logger::~Logger(){}
 
@@ -16,13 +14,15 @@ void Logger::close()
     std::cout << "file closed\n";
 }
 
+//creation of the log file
 void Logger::init(){
     m_file.open("../data/simulation_output/log_simulator.csv");
     std::cout << "file opend\n";
+    m_file << "#time(s);pressure(cmH2O);flow(ml.s-1);openning_insiration_valve(%);openning_expiration_valve(%);blower_speed(%)\n";
 }
 
 void Logger::write_log(float time, ActuatorsData actuators, SensorsData sensors)
 {
-    m_file << time << ";" << sensors.inspirationFlow << ";" << sensors.inspirationPressure << ";"
+    m_file << time << ";" << sensors.inspirationPressure << ";" << sensors.inspirationFlow << ";"
             << actuators.inspirationValve << ";" << actuators.expirationValve << ";" << actuators.blower << "\n";
 }

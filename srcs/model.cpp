@@ -13,15 +13,19 @@
 // FUNCTIONS ==================================================================
 
 Model::Model():
-    // initialization with nan to trigger error if not initialized
+    // initialization of the state variables with nan to trigger error if not initialized
     m_Rf(nanf("")),
     m_R(nanf("")),
     m_C(nanf("")),
     m_Vp(nanf("")),
-    m_Kr(nanf("")),
-    m_K_blower(nanf("")),
-    m_K_pres(nanf("")),
-    m_K_flow(nanf(""))
+
+    //parameters of the actuators
+    m_Kr(1e6), // coefficient of resistance in Pa.(m3.s-1)-1 / %
+    m_K_blower(100), // coefficient of blower pressure in Pa / %
+
+    //parameters of the sensors
+    m_K_pres(1e-1),// mmH2O / Pa
+    m_K_flow(1e6) // ml / m3
 {}
 
 void Model::init() {
@@ -30,14 +34,6 @@ void Model::init() {
     m_R = 5e5; // resistance of the patient in Pa.(m3.s-1)-1
     m_C = 100e-8; // compilance of the patient in m3.Pa-1
     m_Vp = 0.; // Volume of air in the lungs of the patient above rest volume in m3 
-
-    //parameters of the actuators
-    m_Kr = 1e6; // coefficient of resistance in Pa.(m3.s-1)-1 / %
-    m_K_blower = 100; // coefficient of blower pressure in Pa / %
-
-    //parameters of the sensors
-    m_K_pres = 1e-2; // cmH2O / Pa
-    m_K_flow = 1e6; // ml / m3
 }
 
 SensorsData Model::compute(ActuatorsData cmds, float dt){
@@ -53,7 +49,7 @@ SensorsData Model::compute(ActuatorsData cmds, float dt){
     // influence of blower and atm pressure on the flow (derivative of the volume)
     float P_factor = (Ref * Pbl) / (m_R * (Ref + Ri) + Ref * Ri);
 
-    // influence of vomule present in patient's lungs on the flow
+    // influence of volume present in patient's lungs on the flow
     float V_factor = -m_Vp * (Ref + Ri) / (m_C * (m_R * (Ref + Ri) + Ref * Ri));
 
     // patient's flow

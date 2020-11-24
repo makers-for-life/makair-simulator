@@ -21,25 +21,27 @@ void SimuStateMachine::init() {}
 
 ActuatorsData SimuStateMachine::compute(SensorsData cmds, float dt, float time){
 
-  static float alpha = .5;
-  static float T = 10;
-  ActuatorsData output;
-  output.blower=30;
+  static float T = 10; //period of respiration
+  static float alpha = .5; // inspiration ratio (Ti/T)
+  ActuatorsData output; 
+  output.blower=30; // In this case, the blower in functionning at constant regime
 
   //Inspiration phase : the inspiration vavle is open, expiration valve is closed
-    if(fmod(time, T) <= alpha * T){
-        output.expirationValve = 0;
-        output.inspirationValve = 99.9;
-    }
-    
-    //expiration phase : the expiration valve is open, inspiration valve is closed
-    else{
-        output.expirationValve = 99.9;
-        output.inspirationValve = 0;
-    }
-    if(time >= 5.*T){
-      m_running = false;
-    }
+  if(fmod(time, T) <= alpha * T){
+      output.expirationValve = 0;
+      output.inspirationValve = 99.9;
+  }
+  
+  //expiration phase : the expiration valve is open, inspiration valve is closed
+  else{
+      output.expirationValve = 99.9;
+      output.inspirationValve = 0;
+  }
+
+  //after 5 periods, the simulation is stopped
+  if(time >= 5.*T){
+    m_running = false;
+  }
   return(output);
 }
 

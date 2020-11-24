@@ -20,7 +20,7 @@ class Logger {
   public:
 
     Logger();
-    ~Logger();
+    ~Logger();//seems not working without explicit destructor
 
     void init();
     void close();
