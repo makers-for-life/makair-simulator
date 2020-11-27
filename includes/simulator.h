@@ -6,10 +6,6 @@
  *****************************************************************************/
 #pragma once
 
-// CONSTANTS ==================================================================
-
-// #define SIMULATION true
-
 // INCLUDES ===================================================================
 
 #include <cstdint>
@@ -37,6 +33,6 @@ class Simulator {
 
     ActuatorsData m_cmds;
     SensorsData m_sensors;
-    float m_dt;
+    float m_dt; // in s
 
 };

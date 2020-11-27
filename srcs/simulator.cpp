@@ -12,7 +12,7 @@
 // FUNCTIONS ==================================================================
 
 Simulator::Simulator()
-  : m_dt(100)
+  : m_dt(0.01) // 10 ms
 {}
 
 void Simulator::run(){

@@ -30,7 +30,8 @@ void SimuStateMachine::init() {
     expiratoryValve.setup();
 }
 
-ActuatorsData SimuStateMachine::compute(SensorsData sensors, int dt){
+ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s){
+    int dt = dt_s * 1000; // here time is in ms
     updateTime(dt);
 
     int pressure = sensors.inspirationPressure;
@@ -40,7 +41,6 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, int dt){
     updateVolume(inspiratoryflow, dt);
 
     int tick;
-
 
     switch (m_state){
         case SETUP:

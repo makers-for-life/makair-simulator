@@ -21,7 +21,7 @@ class SimuStateMachine {
 
     void init();
 
-    ActuatorsData compute(SensorsData sensors, int dt);
+    ActuatorsData compute(SensorsData sensors, float dt_s);
 
     bool isRunning();
 
