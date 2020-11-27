@@ -27,91 +27,91 @@ AlarmController alarmController;
 AlarmController::AlarmController()
     : m_highestPriority(AlarmPriority::ALARM_NONE),
       m_snoozeTime(0u),
-    //   m_alarms({
+      m_alarms({
 
-    //       /**
-    //        * RCM-SW-2
-    //        * The device shall embed a high priority alarm 11 when the pressure is below < 2cmH2O
-    //        * from the 3th cycle.
-    //        */
-    //       Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_2, 3u),
+          /**
+           * RCM-SW-2
+           * The device shall embed a high priority alarm 11 when the pressure is below < 2cmH2O
+           * from the 3th cycle.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_2, 3u),
 
-    //       /* RCM-SW-1
-    //        * The device shall embed a high priority alarm 12 when the plateau pressure is not
-    //        * reached (absolute difference > 20% in absolute value) from the 3th respiratory cycle.
-    //        */
-    //       Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_1, 3u),
+          /* RCM-SW-1
+           * The device shall embed a high priority alarm 12 when the plateau pressure is not
+           * reached (absolute difference > 20% in absolute value) from the 3th respiratory cycle.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_1, 3u),
 
-    //       /**
-    //        * RCM-SW-12
-    //        * The device shall monitor the battery voltage and trig a high priority alarm 13 when
-    //        * voltage is < 24V.
-    //        */
-    //       Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_12, 1u),
+          /**
+           * RCM-SW-12
+           * The device shall monitor the battery voltage and trig a high priority alarm 13 when
+           * voltage is < 24V.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_12, 1u),
 
-    //       /**
-    //        * RCM-SW-3
-    //        * The device shall embed a high priority alarm 14 when the PEEP target is not reached
-    //        * (absolute difference > 2cmH2O) from the 3th respiratory cycle.
-    //        */
-    //       Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_3, 3u),
+          /**
+           * RCM-SW-3
+           * The device shall embed a high priority alarm 14 when the PEEP target is not reached
+           * (absolute difference > 2cmH2O) from the 3th respiratory cycle.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_3, 3u),
 
-    //       /**
-    //        * RCM-SW-6 - NOT IN THIS VERSION
-    //        * The software shall monitor the motor temperature, and raise a high priority alarm 15 if
-    //        * temperature is over 80°C.
-    //        */
-    //       //   Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_6, 1u),
+          /**
+           * RCM-SW-6 - NOT IN THIS VERSION
+           * The software shall monitor the motor temperature, and raise a high priority alarm 15 if
+           * temperature is over 80°C.
+           */
+          //   Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_6, 1u),
 
-    //       /**
-    //        * RCM-SW-18
-    //        * The device shall embed a high priority alarm 17 when the peak pressure is > 80cmH2O.
-    //        */
-    //       Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_18, 1u),
+          /**
+           * RCM-SW-18
+           * The device shall embed a high priority alarm 17 when the peak pressure is > 80cmH2O.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_18, 1u),
 
-    //       /**
-    //        * RCM-SW-8 - NOT IN THIS VERSION
-    //        * The software shall detect pressure out-of-range value in case of pressure sensor
-    //        * disconnection or shortcut (< 0.250V & > 3.1V) and a high Priority Alarm 18 shall be
-    //        * triggered.
-    //        */
-    //       //   Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_8, 1u),
+          /**
+           * RCM-SW-8 - NOT IN THIS VERSION
+           * The software shall detect pressure out-of-range value in case of pressure sensor
+           * disconnection or shortcut (< 0.250V & > 3.1V) and a high Priority Alarm 18 shall be
+           * triggered.
+           */
+          //   Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_8, 1u),
 
-    //       /**
-    //        * RCM-SW-11
-    //        * The device shall monitor the battery voltage and trigger a medium priority alarm 21
-    //        * when voltage is < 24,6V.
-    //        */
-    //       Alarm(AlarmPriority::ALARM_MEDIUM, RCM_SW_11, 1u),
+          /**
+           * RCM-SW-11
+           * The device shall monitor the battery voltage and trigger a medium priority alarm 21
+           * when voltage is < 24,6V.
+           */
+          Alarm(AlarmPriority::ALARM_MEDIUM, RCM_SW_11, 1u),
 
-    //       /**
-    //        * RCM-SW-14
-    //        * The device shall embed a medium priority alarm 22 when the plateau pressure is not
-    //        * reached (absolute difference > 20% in absolute value) until the 2nd respiratory
-    //        * cycle.
-    //        */
-    //       Alarm(AlarmPriority::ALARM_MEDIUM, RCM_SW_14, 2u),
+          /**
+           * RCM-SW-14
+           * The device shall embed a medium priority alarm 22 when the plateau pressure is not
+           * reached (absolute difference > 20% in absolute value) until the 2nd respiratory
+           * cycle.
+           */
+          Alarm(AlarmPriority::ALARM_MEDIUM, RCM_SW_14, 2u),
 
-    //       /**
-    //        * RCM-SW-15
-    //        * The device shall embed a medium priority alarm 23 when the PEEP target is not reached
-    //        * (absolute difference > 2cmH2O) until the 2nd respiratory cycle.
-    //        */
-    //       Alarm(AlarmPriority::ALARM_MEDIUM, RCM_SW_15, 2u),
+          /**
+           * RCM-SW-15
+           * The device shall embed a medium priority alarm 23 when the PEEP target is not reached
+           * (absolute difference > 2cmH2O) until the 2nd respiratory cycle.
+           */
+          Alarm(AlarmPriority::ALARM_MEDIUM, RCM_SW_15, 2u),
 
-    //       /**
-    //        * RCM-SW-19
-    //        * The device shall embed a medium priority alarm 24 when the pressure is < 2cmH2O at the
-    //        * second cycle (patient disconnection).
-    //        */
-    //       Alarm(AlarmPriority::ALARM_MEDIUM, RCM_SW_19, 2u),
+          /**
+           * RCM-SW-19
+           * The device shall embed a medium priority alarm 24 when the pressure is < 2cmH2O at the
+           * second cycle (patient disconnection).
+           */
+          Alarm(AlarmPriority::ALARM_MEDIUM, RCM_SW_19, 2u),
 
-    //       /**
-    //        * RCM-SW-16
-    //        * The device shall embed an information (audible) signal 31 when the mains are
-    //        * disconnected to alert the user (vOut < 26,5V).
-    //        */
-    //       Alarm(AlarmPriority::ALARM_LOW, RCM_SW_16, 1u)}),
+          /**
+           * RCM-SW-16
+           * The device shall embed an information (audible) signal 31 when the mains are
+           * disconnected to alert the user (vOut < 26,5V).
+           */
+          Alarm(AlarmPriority::ALARM_LOW, RCM_SW_16, 1u)}),
       m_tick(0u),
       m_unsnooze(true),
       m_pressure(0u),
@@ -323,3 +323,5 @@ void AlarmController::updateCoreData(uint32_t p_tick,
     m_phase = p_phase;
     m_cycle_number = p_cycle_number;
 }
+
+void AlarmController::updateEnabledAlarms(Alarms enabledAlarms){}

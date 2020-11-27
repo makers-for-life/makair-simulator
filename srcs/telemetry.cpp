@@ -182,7 +182,9 @@ void sendStoppedMessage(uint8_t peakCommand,
                         uint16_t lowTidalVolumeAlarmTresholdValue,
                         uint16_t highTidalVolumeAlarmTresholdValue,
                         uint16_t plateauDurationValue,
-                        uint16_t leakAlarmThresholdValue) {
+                        uint16_t leakAlarmThresholdValue,
+                        uint8_t targetInspiratoryFlow,
+                        uint16_t inspiratoryDurationValue) {
 
     // uint8_t ventilationModeValue;
     // switch (ventilationMode) {
@@ -543,7 +545,9 @@ void sendMachineStateSnapshot(uint32_t cycleValue,
                               uint16_t lowTidalVolumeAlarmTresholdValue,
                               uint16_t highTidalVolumeAlarmTresholdValue,
                               uint16_t plateauDurationValue,
-                              uint16_t leakAlarmThresholdValue) {
+                              uint16_t leakAlarmThresholdValue,
+                              uint8_t targetInspiratoryFlow,
+                              uint16_t inspiratoryDurationValue) {
     // uint8_t currentAlarmSize = 0;
     // for (uint8_t i = 0; i < ALARMS_SIZE; i++) {
     //     if (currentAlarmCodes[i] != 0u) {

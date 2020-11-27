@@ -22,6 +22,16 @@ class String{
     String(const char* s){}
 };
 
+// HardwareTimer
+
+#define MICROSEC_COMPARE_FORMAT 0
+
+class HardwareTimer{
+    public:
+    HardwareTimer(){}
+    void setCaptureCompare(uint16_t a, uint16_t b, uint16_t c){}
+};
+
 // Serial
 
 class SerialFake{
