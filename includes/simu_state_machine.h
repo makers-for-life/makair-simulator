@@ -19,7 +19,7 @@ class SimuStateMachine {
     /// Default constructor
     SimuStateMachine();
 
-    void init();
+    void init(int max_cycle);
 
     ActuatorsData compute(SensorsData sensors, float dt_s);
 
@@ -32,10 +32,13 @@ class SimuStateMachine {
     void updateVolume(int flow, int dt);
     int getVolume();
     void resetVolume();
+    bool shouldStop();
 
     bool m_running;
     SimuState m_state;
     int m_time;
     int m_cycle_start_time;
     int m_volume;
+
+    int m_cycle_uncount;
 };

@@ -25,7 +25,7 @@ void Simulator::run(){
 
 void Simulator::init(){
     m_model.init();
-    m_state_machine.init();
+    m_state_machine.init(10);
 }
 
 void Simulator::loop(){

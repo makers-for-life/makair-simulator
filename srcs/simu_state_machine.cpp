@@ -18,9 +18,14 @@ SimuStateMachine::SimuStateMachine()
     , m_time(0)
     , m_cycle_start_time(0)
     , m_volume(0)
+    , m_cycle_uncount(0)
 {}
 
-void SimuStateMachine::init() {
+void SimuStateMachine::init(int max_cycle) {
+    // for simulation
+    m_cycle_uncount = max_cycle;
+    
+    // for controller
     HardwareTimer *hardwareTimer3;
     inspiratoryValve = PressureValve(hardwareTimer3, TIM_CHANNEL_INSPIRATORY_VALVE,
                                      PIN_INSPIRATORY_VALVE, VALVE_OPEN_STATE, VALVE_CLOSED_STATE);
@@ -52,11 +57,18 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s){
         case STOPPED:
             mainController.stop(getTime());
 
-            if (isRunning())
+            if (!shouldStop())
                 m_state = INIT_CYCLE;
+            else
+                m_running = false;
+                
             break;
 
         case INIT_CYCLE:
+            // for simulation
+            m_cycle_uncount--;
+
+            // for controller
             mainController.initRespiratoryCycle();
             m_cycle_start_time = getTime();
             resetVolume();
@@ -82,19 +94,19 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s){
             break;
 
         case TRIGGED_RAISED:
-            if (isRunning())
-                m_state = END_CYCLE;
-            else
+            if (shouldStop())
                 m_state = STOPPED;
+            else
+                m_state = END_CYCLE;
             break;
 
         case END_CYCLE:
             mainController.endRespiratoryCycle(getTime());
 
-            if (isRunning())
-                m_state = INIT_CYCLE;
-            else
+            if (shouldStop())
                 m_state = STOPPED;
+            else
+                m_state = INIT_CYCLE;
             break;
 
         default:
@@ -128,4 +140,11 @@ int SimuStateMachine::getVolume(){
 
 void SimuStateMachine::resetVolume(){
     m_volume = 0;
+}
+
+bool SimuStateMachine::shouldStop(){
+    if (m_cycle_uncount <= 0)
+        return true;
+    else
+        return false;
 }
