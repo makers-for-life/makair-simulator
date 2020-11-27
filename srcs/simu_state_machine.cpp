@@ -8,6 +8,7 @@
 // INCLUDES ===================================================================
 
 #include "../includes/simu_state_machine.h"
+#include <iostream>
 
 // FUNCTIONS ==================================================================
 
@@ -19,35 +20,44 @@ SimuStateMachine::SimuStateMachine()
     , m_volume(0)
 {}
 
-void SimuStateMachine::init() {}
+void SimuStateMachine::init() {
+    HardwareTimer *hardwareTimer3;
+    inspiratoryValve = PressureValve(hardwareTimer3, TIM_CHANNEL_INSPIRATORY_VALVE,
+                                     PIN_INSPIRATORY_VALVE, VALVE_OPEN_STATE, VALVE_CLOSED_STATE);
+    inspiratoryValve.setup();
+    expiratoryValve = PressureValve(hardwareTimer3, TIM_CHANNEL_EXPIRATORY_VALVE,
+                                    PIN_EXPIRATORY_VALVE, VALVE_OPEN_STATE, VALVE_CLOSED_STATE);
+    expiratoryValve.setup();
+}
 
 ActuatorsData SimuStateMachine::compute(SensorsData sensors, int dt){
     updateTime(dt);
 
     int pressure = sensors.inspirationPressure;
-    // mainController.updatePressure(pressure);
+    mainController.updatePressure(pressure);
     int inspiratoryflow = sensors.inspirationFlow;
-    // mainController.updateInspiratoryFlow(inspiratoryflow);
+    mainController.updateInspiratoryFlow(inspiratoryflow);
     updateVolume(inspiratoryflow, dt);
 
     int tick;
 
+
     switch (m_state){
         case SETUP:
-            // mainController.setup();
+            mainController.setup();
 
             m_state = STOPPED;
             break;
 
         case STOPPED:
-            // mainController.stop(getTime());
+            mainController.stop(getTime());
 
             if (isRunning())
                 m_state = INIT_CYCLE;
             break;
 
         case INIT_CYCLE:
-            // mainController.initRespiratoryCycle();
+            mainController.initRespiratoryCycle();
             m_cycle_start_time = getTime();
             resetVolume();
 
@@ -57,16 +67,16 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, int dt){
         case BREATH:
             tick = (getTime() - m_cycle_start_time) / 10u;
 
-            if (tick >= 10/*mainController.ticksPerCycle()*/)
+            if (tick >= mainController.ticksPerCycle())
                 m_state = END_CYCLE;
             else {
-                // mainController.updateCurrentDeliveredVolume(getVolume());
-                // mainController.updateDt(dt*1000); // milli to micro
-                // mainController.updateTick(tick);
-                // mainController.compute();
+                mainController.updateCurrentDeliveredVolume(getVolume());
+                mainController.updateDt(dt*1000); // milli to micro
+                mainController.updateTick(tick);
+                mainController.compute();
             }
 
-            if (false/*mainController.triggered()*/) {
+            if (mainController.triggered()) {
                 m_state = TRIGGED_RAISED;
             }
             break;
@@ -79,7 +89,7 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, int dt){
             break;
 
         case END_CYCLE:
-            // mainController.endRespiratoryCycle(getTime());
+            mainController.endRespiratoryCycle(getTime());
 
             if (isRunning())
                 m_state = INIT_CYCLE;

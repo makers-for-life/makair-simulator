@@ -123,6 +123,12 @@ void digitalWrite(int a, int b);
 #define PD13 0
 #define PD14 0
 #define PD15 0
+#define D0 0
+#define D1 0
+#define D2 0
+#define D3 0
+#define D4 0
+#define D5 0
 
 #define HIGH 1
 #define LOW 0
