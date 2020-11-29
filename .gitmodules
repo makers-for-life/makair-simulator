@@ -1,0 +1,3 @@
+[submodule "makair-firmware"]
+	path = makair-firmware
+	url = https://github.com/makers-for-life/makair-firmware.git
