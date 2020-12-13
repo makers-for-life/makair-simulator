@@ -12,4 +12,4 @@ echo "lauching postprocess..."
 cd ../data
 #opening venv
 source simulator_venv/bin/activate
-python display_experiment_results.py simulation_output/log_simulator.csv 
+python3 display_experiment_results.py simulation_output/log_simulator.csv 
