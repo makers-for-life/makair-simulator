@@ -12,7 +12,7 @@
 // FUNCTIONS ==================================================================
 
 Simulator::Simulator()
-  : m_dt(0.1) 
+  : m_dt(0.01) // 10 ms
 {}
 
 void Simulator::run(){
@@ -27,6 +27,7 @@ void Simulator::run(){
 
 void Simulator::init(){
     m_model.init();
+    m_state_machine.init(10);
     m_state_machine.init();
     m_logger.init();
     m_cmds.blower=0;

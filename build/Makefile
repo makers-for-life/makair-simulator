@@ -17,20 +17,21 @@ SRC_DIR=../srcs/
 # Path of header files
 HEADER_DIR=../inludes/
 
+# Path of object files
+OBJ_DIR=../build/
+
 # List of project source files ('wildcard' allows to explore the entire folder in a variable)
 SRC= $(wildcard $(SRC_DIR)*.cpp)
 
 # List of objects files generated thanks to the list of sources files ('SRC' variable)
-OBJ= $(SRC:.cpp=.o)
+OBJ= $(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(SRC))
 
 all: $(EXEC)
 
 simulator: $(OBJ)
 		$(CXX) -o $@ $^ $(LDFLAGS)
 
-main.o: $(HEADER_DIR)hello_world.h
-
-%.o: %.cpp
+$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 		$(CXX) -o $@ -c $< $(CXXFLAGS)
 
 # .PHONY is a particular target thats allows to systematically rebuild its dependencies
@@ -38,7 +39,7 @@ main.o: $(HEADER_DIR)hello_world.h
 
 # Delete all intermediate files
 clean:
-		rm -rf $(SRC_DIR)*.o
+		rm -rf $(OBJ_DIR)*.o
 
 # Delete all that can be regenerated and allows a complete project rebuid 
 mrproper: clean
