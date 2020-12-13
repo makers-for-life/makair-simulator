@@ -26,11 +26,14 @@ class String{
 // HardwareTimer
 
 #define MICROSEC_COMPARE_FORMAT 0
+#define TIMER_OUTPUT_COMPARE_PWM1 0
 
 class HardwareTimer{
     public:
     HardwareTimer(){}
     void setCaptureCompare(uint16_t a, uint16_t b, uint16_t c){}
+    void setMode(uint16_t a, uint16_t b, uint16_t c){}
+    void resume(){}
 };
 
 // Serial
