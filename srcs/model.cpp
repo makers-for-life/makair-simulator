@@ -8,7 +8,9 @@
 // INCLUDES ===================================================================
 
 #include "../includes/model.h"
+#include <iostream>
 #include <cmath>
+using namespace std;
 
 // FUNCTIONS ==================================================================
 
@@ -37,6 +39,13 @@ void Model::init() {
 }
 
 SensorsData Model::compute(ActuatorsData cmds, float dt){
+
+    // Clip commands
+    int _min = 0;
+    int _max = 99;
+    cmds.inspirationValve = min(max(cmds.inspirationValve, _min), _max);
+    cmds.expirationValve = min(max(cmds.expirationValve, _min), _max);
+    cmds.blower = min(max(cmds.blower, _min), _max);
 
     // Conversion of actuators command into physical parameters of the model
     float Re = res_valves(cmds.expirationValve, m_Kr);
