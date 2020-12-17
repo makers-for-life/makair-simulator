@@ -12,6 +12,7 @@
 #include "../includes/helper.h"
 #include "../includes/model.h"
 #include "../includes/simu_state_machine.h"
+#include "../includes/logger.h"
 
 /// Simulator
 class Simulator {
@@ -29,10 +30,11 @@ class Simulator {
 
     Model m_model;
     SimuStateMachine m_state_machine;
-    // TODO: Logger m_logger;
+    Logger m_logger;
 
     ActuatorsData m_cmds;
     SensorsData m_sensors;
     float m_dt; // in s
+    float m_time;
 
 };

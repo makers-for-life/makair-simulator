@@ -9,6 +9,8 @@
 
 #include "../includes/simu_state_machine.h"
 #include <iostream>
+#include <tgmath.h>
+
 
 // FUNCTIONS ==================================================================
 
@@ -115,6 +117,10 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s){
     }
 
     ActuatorsData cmds;
+    cmds.expirationValve = getPct(inspiratoryValve.command, inspiratoryValve.minAperture(), inspiratoryValve.maxAperture());
+    cmds.inspirationValve = getPct(expiratoryValve.command, expiratoryValve.minAperture(), expiratoryValve.maxAperture());
+    cmds.blower = getPct(blower.getSpeed(), 0, MAX_BLOWER_SPEED);
+
     return cmds;
 }
 
@@ -147,4 +153,8 @@ bool SimuStateMachine::shouldStop(){
         return true;
     else
         return false;
+}
+
+uint16_t SimuStateMachine::getPct(uint16_t val, uint16_t min, uint16_t max){
+    return 100*(val-min)/(max-min);
 }

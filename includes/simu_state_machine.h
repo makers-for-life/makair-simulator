@@ -33,6 +33,7 @@ class SimuStateMachine {
     int getVolume();
     void resetVolume();
     bool shouldStop();
+    uint16_t getPct(uint16_t val, uint16_t min, uint16_t max);
 
     bool m_running;
     SimuState m_state;

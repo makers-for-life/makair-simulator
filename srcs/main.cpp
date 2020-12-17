@@ -7,13 +7,16 @@
 
 // INCLUDES
 
+
 #include "../includes/simulator.h"
+#include<iostream>
+
 
 // Main function 
-
 int main(void){
 
 	Simulator simulator;
+	std::cout << "program started\n";
 	simulator.run();
 	
 	return 0;

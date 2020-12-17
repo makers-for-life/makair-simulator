@@ -21,16 +21,31 @@ Blower blower;
 
 // FUNCTIONS ==================================================================
 
-Blower::Blower() {
-    // TODO
+Blower::Blower() {}
+
+Blower::Blower(HardwareTimer* p_hardwareTimer, uint16_t p_timerChannel, uint16_t p_blowerPin) {
+    actuator = p_hardwareTimer;
+    timerChannel = p_timerChannel;
+    blowerPin = p_blowerPin;
+    m_stopped = true;
+    m_speed = DEFAULT_BLOWER_SPEED;
 }
 
 void Blower::setup() {
-    // TODO
+    // nothing to do for a simulation
 }
 
 void Blower::runSpeed(uint16_t p_speed) {
-    // TODO
+    if ((p_speed >= MIN_BLOWER_SPEED) && (p_speed <= MAX_BLOWER_SPEED)) {
+        if (m_stopped || (m_speed != p_speed)) {
+            m_speed = p_speed;
+            m_stopped = false;
+        }
+    } else {
+        if (m_stopped) {
+            this->runSpeed(m_speed);
+        }
+    }
 }
 
 int32_t Blower::getBlowerPressure(int32_t p_flow) {
@@ -49,5 +64,6 @@ int32_t Blower::getBlowerPressure(int32_t p_flow) {
 uint16_t Blower::getSpeed() const { return m_speed; }
 
 void Blower::stop() {
-    // TODO
+    m_stopped = true;
+    m_speed = DEFAULT_BLOWER_SPEED;
 }

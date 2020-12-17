@@ -1,2 +1,7 @@
-build/simulator
-build/*.o
+
+*.o
+*build/simulator
+*.vscode/*
+
+data/.idea/*
+data/simulator_venv/*
