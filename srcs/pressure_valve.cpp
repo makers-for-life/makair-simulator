@@ -65,8 +65,6 @@ uint16_t valveAngle2MicroSeconds(uint16_t value) {
 
 int32_t PressureValve::getSectionBigHoseX100() {
     int32_t section;
-    Serial.print(command);
-    Serial.print(",");
     if (command > 105) {
         section = 0;
     } else if (command >= 50) {

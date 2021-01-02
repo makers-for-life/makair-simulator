@@ -16,9 +16,11 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <unistd.h>
 
 // Linux headers
 #include <SerialPort.h>
+#include <SerialStream.h>
 
 using namespace LibSerial;
 
@@ -60,60 +62,73 @@ class HardwareTimer {
     void setCaptureCompare(uint16_t a, uint16_t b, uint16_t c) {}
     void setMode(uint16_t a, uint16_t b, uint16_t c) {}
     void resume() {}
+    void pause() {}
+    void setOverflow(){};
 };
 
 // Serial
 
 class SerialFake {
  public:
-    SerialFake() {}
+    SerialFake() { open = false; }
     SerialFake(char* serialName);
 
     void begin(int32_t baudrate) {}
-    // void print(String s) {}
-    void println() {}
-    void println(String s) {}
     void close();
 
-    void write(uint8_t argument) {
+    // void print(uint16_t s) {}
+    void println() {}
+    void println(String s) {}
+    void print(const char* str) {
         if (open) {
-            serialPort.WriteByte(argument);
+            serialPort.Write(str);
         }
     }
 
-    template <typename T>
-    void write(T* argument, int size) {
-        int nBytes = size * sizeof(T);
-        const uint8_t* pData = (const uint8_t*)argument;
-
-        for (int32_t i = 0; i < nBytes; i++) {
-            write(pData[i]);
+    void write(uint8_t data) {
+        if (open) {
+            serialPort.WriteByte(data);
         }
     }
 
-    template <typename T>
-    void write(T* argument) {
+    void write(const uint8_t* str, size_t size) {
+        for (size_t i = 0; i < size; i++) {
+            write(str[i]);
+        }
+    }
+
+    size_t write(const char* str) {
+
+        if (str == NULL)
+            return 0;
+        int length = sizeof(str) / sizeof(str[0]);
+        write((const uint8_t*)str, length);
+    }
+    size_t write(const char* buffer, size_t size) { write((const uint8_t*)buffer, size); }
+
+    /*void write(T* argument) {
         int nBytes = sizeof(T);
         const uint8_t* pData = (const uint8_t*)argument;
 
         for (int32_t i = 0; i < nBytes; i++) {
             write(pData[i]);
         }
-    }
-
-    template <typename T>
-    void print(T* argument) {
-        write(argument);
-    }
-
-    template <typename T>
-    void print(T argument) {
-        write(argument);
-    }
+    }*/
+    inline void write(bool t) { write((uint8_t)t); }
+    inline void write(int16_t t) { write((const uint8_t*)t, 2); }
+    inline void write(uint16_t t) { write((const uint8_t*)t, 2); }
+    inline void write(int32_t t) { write((const uint8_t*)t, 4); }
+    inline void write(uint32_t t) { write((const uint8_t*)t, 4); }
+    inline void write(int64_t t) { write((const uint8_t*)t, 8); }
+    inline void write(uint64_t t) { write((const uint8_t*)t, 8); }
+    /*inline void write(long long t) { write((uint8_t)t); }
+    inline void write(unsigned long long t) { write((uint8_t)t); }*/
+    // Enable write(char) to fall through to write(uint8_t)
+    inline void write(char c) { write((uint8_t)c); }
 
  private:
     SerialPort serialPort;
-    bool open = false;
+    bool open;
 };
 
 extern SerialFake Serial;

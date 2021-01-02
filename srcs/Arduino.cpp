@@ -13,6 +13,11 @@ SerialFake Serial6;
 SerialFake::SerialFake(char* serialName) {
     serialPort.Open(serialName);
     serialPort.SetBaudRate(BaudRate::BAUD_115200);
+    serialPort.SetFlowControl(FlowControl::FLOW_CONTROL_HARDWARE);
+    serialPort.SetParity(Parity::PARITY_NONE);
+    serialPort.SetStopBits(StopBits::STOP_BITS_1);
+    serialPort.SetSerialPortBlockingStatus(true);
+
     open = true;
 }
 

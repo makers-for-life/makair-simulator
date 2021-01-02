@@ -13,7 +13,7 @@
 // Main function
 int main(void) {
 
-    Serial6 = SerialFake("/dev/pts/1");
+    Serial6 = SerialFake("/dev/pts/3");
     Simulator simulator;
     std::cout << "program started\n";
     simulator.run();

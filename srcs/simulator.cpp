@@ -29,7 +29,7 @@ void Simulator::run() {
 
 void Simulator::init() {
     m_model.init();
-    m_state_machine.init(10);
+    m_state_machine.init(20);
     m_logger.init();
 
     m_cmds.blower = 0;
