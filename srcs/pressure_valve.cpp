@@ -53,12 +53,27 @@ void PressureValve::close() { command = closeApertureAngle; }
 
 void PressureValve::open(uint16_t p_command) { command = p_command; }
 
-uint16_t PressureValve::openLinear(uint16_t p_command){}
+uint16_t PressureValve::openLinear(uint16_t p_command) {}
 
-void PressureValve::openSection(int32_t p_sectionMultiplyBy100){}
+void PressureValve::openSection(int32_t p_sectionMultiplyBy100) {}
 
 uint16_t valveAngle2MicroSeconds(uint16_t value) {
     // Faulhaber motors works with PWM
     // TODO
     return 0;
+}
+
+int32_t PressureValve::getSectionBigHoseX100() {
+    int32_t section;
+    Serial.print(command);
+    Serial.print(",");
+    if (command > 105) {
+        section = 0;
+    } else if (command >= 50) {
+        section = 5760 - 558 * command / 10;
+    } else {
+        section = 4390 - 5 * command - 47 * command * command / 100;
+    }
+
+    return max(int32_t(0), section);
 }

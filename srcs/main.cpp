@@ -7,17 +7,16 @@
 
 // INCLUDES
 
-
 #include "../includes/simulator.h"
-#include<iostream>
+#include <iostream>
 
+// Main function
+int main(void) {
 
-// Main function 
-int main(void){
-
-	Simulator simulator;
-	std::cout << "program started\n";
-	simulator.run();
-	
-	return 0;
+    Serial6 = SerialFake("/dev/pts/1");
+    Simulator simulator;
+    std::cout << "program started\n";
+    simulator.run();
+    Serial6.close();
+    return 0;
 }

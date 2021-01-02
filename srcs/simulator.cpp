@@ -8,15 +8,16 @@
 // INCLUDES ===================================================================
 
 #include "../includes/simulator.h"
+#include <unistd.h>
 
 // FUNCTIONS ==================================================================
 
 Simulator::Simulator()
-  : m_dt(0.01) // 10 ms
-  , m_time(0.0)
-{}
+    : m_dt(0.01)  // 10 ms
+      ,
+      m_time(0.0) {}
 
-void Simulator::run(){
+void Simulator::run() {
 
     init();
 
@@ -26,27 +27,27 @@ void Simulator::run(){
     m_logger.close();
 }
 
-void Simulator::init(){
+void Simulator::init() {
     m_model.init();
     m_state_machine.init(10);
     m_logger.init();
-    
-    m_cmds.blower=0;
-    m_cmds.expirationValve=0;
-    m_cmds.inspirationValve=0;
+
+    m_cmds.blower = 0;
+    m_cmds.expirationValve = 0;
+    m_cmds.inspirationValve = 0;
 }
 
-void Simulator::loop(){
-    //running model
+void Simulator::loop() {
+    // running model
     m_sensors = m_model.compute(m_cmds, m_dt);
 
-    //computing the commands in function of the state of the model. Here, open loop
+    // computing the commands in function of the state of the model. Here, open loop
     m_cmds = m_state_machine.compute(m_sensors, m_dt);
 
-    //Writing the results in a csv file
+    // Writing the results in a csv file
     m_logger.write_log(m_time, m_cmds, m_sensors);
 
-    //moving to the next time step
+    // moving to the next time step
     m_time += m_dt;
-    
+    usleep(10000);
 }

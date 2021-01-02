@@ -1,9 +1,9 @@
 
 # Specify compiler
-CXX=g++
+CXX=g++ 
 
 # Compilation options
-CXXFLAGS=-Wall -Wextra -pedantic
+CXXFLAGS=-Wall -Wextra -pedantic -L/usr/local/lib -lserial -I/usr/local/include/libserial
 
 # Link editing options
 LDFLAGS=
@@ -29,7 +29,7 @@ OBJ= $(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(SRC))
 all: $(EXEC)
 
 simulator: $(OBJ)
-		$(CXX) -o $@ $^ $(LDFLAGS)
+		$(CXX) -o $@ $^ $(LDFLAGS) $(CXXFLAGS)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 		$(CXX) -o $@ -c $< $(CXXFLAGS)

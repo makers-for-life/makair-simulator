@@ -45,7 +45,7 @@ AlarmController::AlarmController()
           /**
            * RCM-SW-12
            * The device shall monitor the battery voltage and trig a high priority alarm 13 when
-           * voltage is < 24V.
+           * voltage is < 22,6V (20% SoC).
            */
           Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_12, 1u),
 
@@ -57,11 +57,52 @@ AlarmController::AlarmController()
           Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_3, 3u),
 
           /**
-           * RCM-SW-6 - NOT IN THIS VERSION
-           * The software shall monitor the motor temperature, and raise a high priority alarm 15 if
-           * temperature is over 80°C.
+           * RCM-SW-4
+           * The device shall embed a high priority alarm 40 when Inspiratory minute Volume is too
+           * low from the 3th respiratory cycle.
            */
-          //   Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_6, 1u),
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_4, 3u),
+
+          /**
+           * RCM-SW-5
+           * The device shall embed a high priority alarm 41 when Inspiratory minute Volume is too
+           * high from the 3th respiratory cycle.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_5, 3u),
+
+          /**
+           * RCM-SW-6
+           * The device shall embed a high priority alarm 42 when Expiratory minute Volume is too
+           * low from the 3th respiratory cycle.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_6, 3u),
+
+          /**
+           * RCM-SW-7
+           * The device shall embed a high priority alarm 43 when Expiratory minute Volume is too
+           * high from the 3th respiratory cycle.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_7, 3u),
+
+          /**
+           * RCM-SW-8
+           * The device shall embed a high priority alarm 44 when Respiratory rate is too low from
+           * the 3th respiratory cycle.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_8, 3u),
+
+          /**
+           * RCM-SW-9
+           * The device shall embed a high priority alarm 45 when Respiratory rate is too high from
+           * the 3th respiratory cycle.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_9, 3u),
+
+          /**
+           * RCM-SW-10
+           * The device shall embed a high priority alarm 46 when Leak is too high.
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_10, 3u),
 
           /**
            * RCM-SW-18
@@ -70,17 +111,9 @@ AlarmController::AlarmController()
           Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_18, 1u),
 
           /**
-           * RCM-SW-8 - NOT IN THIS VERSION
-           * The software shall detect pressure out-of-range value in case of pressure sensor
-           * disconnection or shortcut (< 0.250V & > 3.1V) and a high Priority Alarm 18 shall be
-           * triggered.
-           */
-          //   Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_8, 1u),
-
-          /**
            * RCM-SW-11
            * The device shall monitor the battery voltage and trigger a medium priority alarm 21
-           * when voltage is < 24,6V.
+           * when voltage is < 23,2V (40% SoC).
            */
           Alarm(AlarmPriority::ALARM_MEDIUM, RCM_SW_11, 1u),
 
@@ -111,7 +144,20 @@ AlarmController::AlarmController()
            * The device shall embed an information (audible) signal 31 when the mains are
            * disconnected to alert the user (vOut < 26,5V).
            */
-          Alarm(AlarmPriority::ALARM_LOW, RCM_SW_16, 1u)}),
+          Alarm(AlarmPriority::ALARM_LOW, RCM_SW_16, 1u),
+
+          /**
+           * RCM-SW-20
+           * The device shall embed a medium priority alarm 47 when Tidal Volume is too low
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_20, 3u),
+
+          /**
+           * RCM-SW-21
+           * The device shall embed a medium priority alarm 48 when Tidal Volume is too high
+           */
+          Alarm(AlarmPriority::ALARM_HIGH, RCM_SW_21, 3u),
+      }),
       m_tick(0u),
       m_unsnooze(true),
       m_pressure(0u),
@@ -167,7 +213,8 @@ void AlarmController::detectedAlarm(uint8_t p_alarmCode,
     //             }
 
     //             if (!wasTriggered) {
-    //                 sendAlarmTrap(m_tick, m_pressure, m_phase, m_cycle_number, current->getCode(),
+    //                 sendAlarmTrap(m_tick, m_pressure, m_phase, m_cycle_number,
+    //                 current->getCode(),
     //                               current->getPriority(), true, p_expected, p_measured,
     //                               current->getCyclesSinceTrigger());
     //             }
@@ -212,7 +259,8 @@ void AlarmController::notDetectedAlarm(uint8_t p_alarmCode) {
     //             }
 
     //             if (wasTriggered) {
-    //                 sendAlarmTrap(m_tick, m_pressure, m_phase, m_cycle_number, current->getCode(),
+    //                 sendAlarmTrap(m_tick, m_pressure, m_phase, m_cycle_number,
+    //                 current->getCode(),
     //                               current->getPriority(), false, 0u, 0u,
     //                               current->getCyclesSinceTrigger());
     //             }
@@ -324,4 +372,4 @@ void AlarmController::updateCoreData(uint32_t p_tick,
     m_cycle_number = p_cycle_number;
 }
 
-void AlarmController::updateEnabledAlarms(Alarms enabledAlarms){}
+void AlarmController::updateEnabledAlarms(Alarms enabledAlarms) {}

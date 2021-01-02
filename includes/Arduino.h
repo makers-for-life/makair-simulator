@@ -7,45 +7,113 @@
  *****************************************************************************/
 
 #pragma once
+#ifndef ARDUINO_H
+#define ARDUINO_H
 
-#include <cstdint>
-#include <cmath>
 #include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <cstdint>
+#include <cstring>
 #include <iostream>
+
+// Linux headers
+#include <SerialPort.h>
+
+using namespace LibSerial;
+
 using namespace std;
 
+#define byte char
+
+inline uint32_t millis() {
+    return chrono::duration_cast<chrono::milliseconds>(
+               chrono::system_clock::now().time_since_epoch())
+        .count();
+}
+
+inline uint32_t micros() {
+    return chrono::duration_cast<chrono::microseconds>(
+               chrono::system_clock::now().time_since_epoch())
+        .count();
+}
+
+inline int32_t map(int32_t value, int32_t a, int32_t b, int32_t c, int32_t d) {
+    return c + value * (d - c) / (b - a);
+}
+
 // String
-
-class String{
-    public:
-    String(){}
-    String(int s){}
-    String(const char* s){}
+class String {
+ public:
+    String() {}
+    String(int s) {}
+    String(const char* s) {}
 };
-
 // HardwareTimer
 
 #define MICROSEC_COMPARE_FORMAT 0
 #define TIMER_OUTPUT_COMPARE_PWM1 0
 
-class HardwareTimer{
-    public:
-    HardwareTimer(){}
-    void setCaptureCompare(uint16_t a, uint16_t b, uint16_t c){}
-    void setMode(uint16_t a, uint16_t b, uint16_t c){}
-    void resume(){}
+class HardwareTimer {
+ public:
+    HardwareTimer() {}
+    void setCaptureCompare(uint16_t a, uint16_t b, uint16_t c) {}
+    void setMode(uint16_t a, uint16_t b, uint16_t c) {}
+    void resume() {}
 };
 
 // Serial
 
-class SerialFake{
-    public:
-    SerialFake(){}
+class SerialFake {
+ public:
+    SerialFake() {}
+    SerialFake(char* serialName);
 
-    void print(String s){}
-    void println(){}
-    void println(String s){}
-    void write(String s){}
+    void begin(int32_t baudrate) {}
+    // void print(String s) {}
+    void println() {}
+    void println(String s) {}
+    void close();
+
+    void write(uint8_t argument) {
+        if (open) {
+            serialPort.WriteByte(argument);
+        }
+    }
+
+    template <typename T>
+    void write(T* argument, int size) {
+        int nBytes = size * sizeof(T);
+        const uint8_t* pData = (const uint8_t*)argument;
+
+        for (int32_t i = 0; i < nBytes; i++) {
+            write(pData[i]);
+        }
+    }
+
+    template <typename T>
+    void write(T* argument) {
+        int nBytes = sizeof(T);
+        const uint8_t* pData = (const uint8_t*)argument;
+
+        for (int32_t i = 0; i < nBytes; i++) {
+            write(pData[i]);
+        }
+    }
+
+    template <typename T>
+    void print(T* argument) {
+        write(argument);
+    }
+
+    template <typename T>
+    void print(T argument) {
+        write(argument);
+    }
+
+ private:
+    SerialPort serialPort;
+    bool open = false;
 };
 
 extern SerialFake Serial;
@@ -135,3 +203,5 @@ void digitalWrite(int a, int b);
 
 #define HIGH 1
 #define LOW 0
+
+#endif
