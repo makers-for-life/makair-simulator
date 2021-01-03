@@ -26,7 +26,7 @@ using namespace LibSerial;
 
 using namespace std;
 
-#define byte char
+#define byte uint8_t
 
 inline uint32_t millis() {
     return chrono::duration_cast<chrono::milliseconds>(
@@ -51,19 +51,43 @@ class String {
     String(int s) {}
     String(const char* s) {}
 };
-// HardwareTimer
 
+inline int32_t digitalPinToPinName(int32_t p) { return 0; }
+inline int32_t pinmap_function(int32_t p, int32_t t) { return 0; }
+inline int32_t pinmap_peripheral(int32_t p, int32_t t) { return 0; }
+inline int32_t STM_PIN_CHANNEL(int32_t p) { return 0; }
+
+// HardwareTimer
 #define MICROSEC_COMPARE_FORMAT 0
+#define MICROSEC_FORMAT 0
+#define TICK_FORMAT 0
 #define TIMER_OUTPUT_COMPARE_PWM1 0
+#define TIMER_OUTPUT_COMPARE 0
+#define PinMap_PWM 0
+#define NC 0
+
+class TIM_TypeDef {
+ public:
+    TIM_TypeDef() {}
+};
+extern TIM_TypeDef TIM5;
 
 class HardwareTimer {
  public:
     HardwareTimer() {}
+    HardwareTimer(TIM_TypeDef* t) {}
+    HardwareTimer(TIM_TypeDef& t) {}
     void setCaptureCompare(uint16_t a, uint16_t b, uint16_t c) {}
     void setMode(uint16_t a, uint16_t b, uint16_t c) {}
     void resume() {}
     void pause() {}
-    void setOverflow(){};
+    void setOverflow(int32_t p, int32_t t){};
+    void setOverflow(int32_t p){};
+    void setCount(int32_t p){};
+    void setPreloadEnable(bool p){};
+    void setPrescaleFactor(int32_t p) {}
+    void attachInterrupt(void (*)(HardwareTimer*)) {}
+    int32_t getTimerClkFreq() { return 0; }
 };
 
 // Serial
@@ -126,9 +150,43 @@ class SerialFake {
     // Enable write(char) to fall through to write(uint8_t)
     inline void write(char c) { write((uint8_t)c); }
 
+    uint8_t read() {
+        if (peek_buffer_index >= 0) {
+            uint8_t return_value = peek_buffer[peek_buffer_index];
+            peek_buffer_index--;
+            return return_value;
+        } else {
+            uint8_t next_char;  // variable to store the read result
+            serialPort.ReadByte(next_char, timeout_ms);
+            cout << +next_char << ",";
+            return (uint8_t)next_char;
+        }
+    }
+    uint8_t peek() {
+        uint8_t next_char;
+        serialPort.ReadByte(next_char, timeout_ms);
+        if (peek_buffer_index < 0) {
+            peek_buffer_index = 0;
+        } else {
+            peek_buffer_index++;
+        }
+        peek_buffer[peek_buffer_index] = next_char;
+        return (uint8_t)next_char;
+    }
+    void readBytes(uint8_t* buffer, size_t size) {
+
+        for (size_t i = 0; i < size; i++) {
+            buffer[i] = (uint8_t)read();
+        }
+    }
+    int32_t available() { return serialPort.GetNumberOfBytesAvailable(); }
+
  private:
     SerialPort serialPort;
     bool open;
+    int timeout_ms;
+    uint8_t peek_buffer[10000];
+    int32_t peek_buffer_index;
 };
 
 extern SerialFake Serial;
@@ -215,6 +273,7 @@ void digitalWrite(int a, int b);
 #define D3 0
 #define D4 0
 #define D5 0
+#define PIN_BUZZER 0
 
 #define HIGH 1
 #define LOW 0

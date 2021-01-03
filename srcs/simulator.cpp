@@ -8,6 +8,9 @@
 // INCLUDES ===================================================================
 
 #include "../includes/simulator.h"
+#include "../includes/Arduino.h"
+#include "../includes/serial_control.h"
+
 #include <unistd.h>
 
 // FUNCTIONS ==================================================================
@@ -35,6 +38,7 @@ void Simulator::init() {
     m_cmds.blower = 0;
     m_cmds.expirationValve = 0;
     m_cmds.inspirationValve = 0;
+    m_last_date = micros();
 }
 
 void Simulator::loop() {
@@ -49,5 +53,11 @@ void Simulator::loop() {
 
     // moving to the next time step
     m_time += m_dt;
-    usleep(10000);
+
+    while (micros() - m_last_date < 10000) {
+        // Check serial input
+        serialControlLoop();
+        usleep(10);
+    }
+    m_last_date = micros();
 }
