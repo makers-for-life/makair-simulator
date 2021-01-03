@@ -15,9 +15,8 @@ int main(int argc, char* argv[]) {
 
     cout << "Welcome to Makair simulator" << endl;
     if (argc == 3 && string(argv[1]) == "-p") {
-        Serial6 = SerialFake(argv[1]);
+        Serial6 = SerialFake(argv[2]);
     } else if (argc == 2 && argv[1] == "--help") {
-        Serial6 = SerialFake("/dev/pts/3");
         cout << "Usage : makair-simulator -p [PORT NAME]" << endl;
         cout << "Example : makair-simulator -p /dev/ttyACM0" << endl;
         return 0;
