@@ -8,27 +8,26 @@
 // INCLUDES ===================================================================
 
 #include "../includes/simu_state_machine.h"
+#include "../includes/activation.h"
 #include <iostream>
 #include <tgmath.h>
-
 
 // FUNCTIONS ==================================================================
 
 SimuStateMachine::SimuStateMachine()
-    : m_running(true)
-    , m_state(SETUP)
-    , m_time(0)
-    , m_cycle_start_time(0)
-    , m_volume(0)
-    , m_cycle_uncount(0)
-{}
+    : m_running(true),
+      m_state(SETUP),
+      m_time(0),
+      m_cycle_start_time(0),
+      m_volume(0),
+      m_cycle_uncount(0) {}
 
 void SimuStateMachine::init(int max_cycle) {
     // for simulation
     m_cycle_uncount = max_cycle;
-    
+
     // for controller
-    HardwareTimer *hardwareTimer3;
+    HardwareTimer* hardwareTimer3;
     inspiratoryValve = PressureValve(hardwareTimer3, TIM_CHANNEL_INSPIRATORY_VALVE,
                                      PIN_INSPIRATORY_VALVE, VALVE_OPEN_STATE, VALVE_CLOSED_STATE);
     inspiratoryValve.setup();
@@ -37,8 +36,8 @@ void SimuStateMachine::init(int max_cycle) {
     expiratoryValve.setup();
 }
 
-ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s){
-    int dt = dt_s * 1000; // here time is in ms
+ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
+    int dt = dt_s * 1000;  // here time is in ms
     updateTime(dt);
 
     int pressure = sensors.inspirationPressure;
@@ -49,112 +48,107 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s){
 
     int tick;
 
-    switch (m_state){
-        case SETUP:
-            mainController.setup();
+    switch (m_state) {
+    case SETUP:
+        mainController.setup();
 
-            m_state = STOPPED;
-            break;
+        m_state = STOPPED;
+        break;
 
-        case STOPPED:
-            mainController.stop(getTime());
+    case STOPPED:
+        mainController.stop(getTime());
 
-            if (!shouldStop())
-                m_state = INIT_CYCLE;
-            else
-                m_running = false;
-                
-            break;
+        if (!shouldStop() && activationController.isRunning())
+            m_state = INIT_CYCLE;
 
-        case INIT_CYCLE:
-            // for simulation
-            m_cycle_uncount--;
+        break;
 
-            // for controller
-            mainController.initRespiratoryCycle();
-            m_cycle_start_time = getTime();
-            resetVolume();
+    case INIT_CYCLE:
+        // for simulation
+        m_cycle_uncount--;
 
-            m_state = BREATH;
-            break;
+        // for controller
+        mainController.initRespiratoryCycle();
+        m_cycle_start_time = getTime();
+        resetVolume();
 
-        case BREATH:
-            tick = (getTime() - m_cycle_start_time) / 10u;
+        m_state = BREATH;
+        break;
 
-            if (tick >= mainController.ticksPerCycle())
-                m_state = END_CYCLE;
-            else {
-                mainController.updateCurrentDeliveredVolume(getVolume());
-                mainController.updateDt(dt*1000); // milli to micro
-                mainController.updateTick(tick);
-                mainController.compute();
-            }
+    case BREATH:
+        tick = (getTime() - m_cycle_start_time) / 10u;
 
-            if (mainController.triggered()) {
-                m_state = TRIGGED_RAISED;
-            }
-            break;
+        if (tick >= mainController.ticksPerCycle())
+            m_state = END_CYCLE;
+        else {
+            mainController.updateCurrentDeliveredVolume(getVolume());
+            mainController.updateDt(dt * 1000);  // milli to micro
+            mainController.updateTick(tick);
+            mainController.compute();
+        }
 
-        case TRIGGED_RAISED:
-            if (shouldStop())
-                m_state = STOPPED;
-            else
-                m_state = END_CYCLE;
-            break;
+        if (mainController.triggered()) {
+            m_state = TRIGGED_RAISED;
+        }
 
-        case END_CYCLE:
-            mainController.endRespiratoryCycle(getTime());
-
-            if (shouldStop())
-                m_state = STOPPED;
-            else
-                m_state = INIT_CYCLE;
-            break;
-
-        default:
+        if (!activationController.isRunning()) {
             m_state = SETUP;
-            break;
+        }
+        break;
+
+    case TRIGGED_RAISED:
+        if (shouldStop() || activationController.isRunning())
+            m_state = STOPPED;
+        else
+            m_state = END_CYCLE;
+        break;
+
+    case END_CYCLE:
+        mainController.endRespiratoryCycle(getTime());
+
+        if (shouldStop() || activationController.isRunning())
+            m_state = STOPPED;
+        else
+            m_state = INIT_CYCLE;
+        break;
+
+    default:
+        m_state = SETUP;
+        break;
     }
 
     ActuatorsData cmds;
-    cmds.expirationValve = getPct(inspiratoryValve.command, inspiratoryValve.minAperture(), inspiratoryValve.maxAperture());
-    cmds.inspirationValve = getPct(expiratoryValve.command, expiratoryValve.minAperture(), expiratoryValve.maxAperture());
+    cmds.expirationValve = getPct(inspiratoryValve.command, inspiratoryValve.minAperture(),
+                                  inspiratoryValve.maxAperture());
+    cmds.inspirationValve = getPct(expiratoryValve.command, expiratoryValve.minAperture(),
+                                   expiratoryValve.maxAperture());
     cmds.blower = getPct(blower.getSpeed(), 0, MAX_BLOWER_SPEED);
 
     return cmds;
 }
 
-bool SimuStateMachine::isRunning(){
-    return m_running;
+bool SimuStateMachine::isRunning() { return !shouldStop(); }
+
+void SimuStateMachine::updateTime(int dt) {
+    m_time += dt;
+    ;
 }
 
-void SimuStateMachine::updateTime(int dt){
-    m_time += dt;;
-}
+int SimuStateMachine::getTime() { return m_time; }
 
-int SimuStateMachine::getTime(){
-    return m_time;
-}
+void SimuStateMachine::updateVolume(int flow, int dt) { m_volume += flow * dt / (60 * 1000); }
 
-void SimuStateMachine::updateVolume(int flow, int dt){
-    m_volume += flow * dt /(60 * 1000);
-}
+int SimuStateMachine::getVolume() { return m_volume; }
 
-int SimuStateMachine::getVolume(){
-    return m_volume;
-}
+void SimuStateMachine::resetVolume() { m_volume = 0; }
 
-void SimuStateMachine::resetVolume(){
-    m_volume = 0;
-}
-
-bool SimuStateMachine::shouldStop(){
+bool SimuStateMachine::shouldStop() {
     if (m_cycle_uncount <= 0)
         return true;
     else
         return false;
 }
 
-uint16_t SimuStateMachine::getPct(uint16_t val, uint16_t min, uint16_t max){
-    return 100*(val-min)/(max-min);
+uint16_t SimuStateMachine::getPct(uint16_t val, uint16_t min, uint16_t max) {
+    return 100 * (val - min) / (max - min);
 }
