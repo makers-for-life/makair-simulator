@@ -56,10 +56,12 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
         break;
 
     case STOPPED:
-        mainController.stop(getTime());
 
-        if (!shouldStop() && activationController.isRunning())
+        if (!shouldStop() && activationController.isRunning()) {
             m_state = INIT_CYCLE;
+        } else {
+            mainController.stop(getTime());
+        }
 
         break;
 
@@ -76,10 +78,15 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
         break;
 
     case BREATH:
+
         tick = (getTime() - m_cycle_start_time) / 10u;
 
-        if (tick >= mainController.ticksPerCycle())
+        if (tick >= mainController.ticksPerCycle()) {
             m_state = END_CYCLE;
+            cout << "send end cycle" << endl;
+
+        }
+
         else {
             mainController.updateCurrentDeliveredVolume(getVolume());
             mainController.updateDt(dt * 1000);  // milli to micro
@@ -97,13 +104,14 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
         break;
 
     case TRIGGED_RAISED:
-        if (shouldStop() || activationController.isRunning())
+        if (shouldStop() || !activationController.isRunning())
             m_state = STOPPED;
         else
             m_state = END_CYCLE;
         break;
 
     case END_CYCLE:
+        cout << "end cycle" << endl;
         mainController.endRespiratoryCycle(getTime());
 
         if (shouldStop() || activationController.isRunning())

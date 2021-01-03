@@ -158,7 +158,6 @@ class SerialFake {
         } else {
             uint8_t next_char;  // variable to store the read result
             serialPort.ReadByte(next_char, timeout_ms);
-            cout << +next_char << ",";
             return (uint8_t)next_char;
         }
     }
