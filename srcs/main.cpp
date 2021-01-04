@@ -15,27 +15,46 @@
 // Main function
 int main(int argc, char* argv[]) {
 
+    Serial6 = SerialFake();
+    int resistance = 10;
+    int compliance = 70;
     cout << "Welcome to Makair simulator" << endl;
-    if (argc == 3 && string(argv[1]) == "-p") {
-        Serial6 = SerialFake(argv[2]);
-    } else if (argc == 2 && argv[1] == "--help") {
-        cout << "Usage : makair-simulator -p [PORT NAME]" << endl;
-        cout << "Example : makair-simulator -p /dev/ttyACM0" << endl;
-        return 0;
-    } else if (argc == 1) {
-        Serial6 = SerialFake();
+    for (int i = 0; i < argc; i++) {
+        if (string(argv[i]) == "--help" || string(argv[i]) == "-h") {
+            cout << "Usage : makair-simulator -p [PORT NAME] -r [RESISTANCE] -c [COMPLIANCE]"
+                 << endl;
+            cout << "Example : makair-simulator -p /dev/ttyACM0 -r 10 -c 70" << endl;
+            return 0;
+        }
+    }
+
+    if (argc % 2 != 0) {
+        for (int i = 0; i < (argc - 1) / 2; i++) {
+            if (string(argv[1 + i * 2]) == "-p") {
+                Serial6 = SerialFake(argv[1 + i * 2 + 1]);
+            } else if (string(argv[1 + i * 2]) == "-c") {
+                compliance = stoi(string(argv[1 + i * 2 + 1]));
+            } else if (string(argv[1 + i * 2]) == "-r") {
+                resistance = stoi(string(argv[1 + i * 2 + 1]));
+            } else {
+                cout << " Wrong input" << string(argv[1 + i * 2]) << endl;
+                cout << "Usage : makair-simulator -p [PORT NAME] -r [RESISTANCE] -c [COMPLIANCE]"
+                     << endl;
+                cout << "Example : makair-simulator -p /dev/ttyACM0 -r 10 -c 70" << endl;
+            }
+        }
     } else {
         cout << argc << "    " << argv[1] << endl;
         cout << "Wrong usage" << endl;
-        cout << "Usage : makair-simulator -p [PORT NAME]" << endl;
-        cout << "Example : makair-simulator -p /dev/ttyACM0" << endl;
+        cout << "Usage : makair-simulator -p [PORT NAME] -r [RESISTANCE] -c [COMPLIANCE]" << endl;
+        cout << "Example : makair-simulator -p /dev/ttyACM0 -r 10 -c 70" << endl;
         return 1;
     }
 
     Simulator simulator;
     std::cout << "program started\n";
     activationController.changeState(1);
-    simulator.run(50, 100);
+    simulator.run(resistance, compliance);
     Serial6.close();
     return 0;
 }
