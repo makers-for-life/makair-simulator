@@ -28,7 +28,6 @@ In order to run the simulator that you just built using the instructions above, 
 5. You can now run the control-ui executable on port `serialport/tty1`. For example: `makair-control -p serialport/tty1`
 
 ## Easy way to Run the Simulator and the UI
-You might want to run the simulator in background, with a control UI
-1.Do
-
+You might want to run the simulator in background, with a control UI. You could just use the` install_simulator.sh `bash script located in the utils directory of this repo.
+This script will clone, build and run this repo AND the control-ui repo
 
