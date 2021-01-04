@@ -69,7 +69,9 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
 
     case INIT_CYCLE:
         // for simulation
-        m_cycle_uncount--;
+        if (m_cycle_uncount != -1) {
+            m_cycle_uncount--;
+        }
 
         // for controller
         mainController.initRespiratoryCycle();
@@ -151,7 +153,7 @@ int SimuStateMachine::getVolume() { return m_volume; }
 void SimuStateMachine::resetVolume() { m_volume = 0; }
 
 bool SimuStateMachine::shouldStop() {
-    if (m_cycle_uncount <= 0)
+    if (m_cycle_uncount <= 0 && m_cycle_uncount != -1)  // 1 means infite loop
         return true;
     else
         return false;

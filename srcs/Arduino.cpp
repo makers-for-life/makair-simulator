@@ -31,9 +31,10 @@ void SerialFake::close() { m_serialPort.closeDevice(); }
 void SerialFake::begin(int32_t p_baudrate) {
     if (m_open) {
         if (m_serialPort.openDevice(m_serialName, p_baudrate) != 1) {
-            cout << "Error openning serial device " << m_serialName;
+            cout << "Error openning serial device " << m_serialName << endl;
+            exit(1);
         } else {
-            cout << "Success openning serial device " << m_serialName;
+            cout << "Success openning serial device " << m_serialName << endl;
         }
     }
 }
