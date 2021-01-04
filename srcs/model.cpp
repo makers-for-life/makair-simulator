@@ -27,14 +27,15 @@ Model::Model()
 
       // parameters of the sensors
       m_K_pres(1e-1),     // mmH2O / Pa
-      m_K_flow(10 * 1e6)  // ml/min <- m3/s
+      m_K_flow(60 * 1e6)  // ml/min <- m3/s
 {}
 
 void Model::init(int32_t p_resistance, int32_t p_compliance) {
     // parameters of the patient
-    m_Rf = 1e8;                                      // resistance of leaking in Pa.(m3.s-1)-1
-    m_R = ((float)p_resistance) * 98.0665 / (10e6);  // resistance of the patient in Pa.(m3.s-1)-1
-    m_C = p_compliance * 10e-6 / 98.0665;            // compilance of the patient in m3.Pa-1
+    m_Rf = 1e8;  // resistance of leaking in Pa.(m3.s-1)-1
+    m_R = 5e5;   //((float)p_resistance) * 98.0665 / (10e-6);  // resistance of the patient in
+                 // Pa.(m3.s-1)-1
+    m_C = float(p_compliance) * 1e-6 / 98.0665;  // compilance of the patient in m3.Pa-1
     m_Vp = 0.;  // Volume of air in the lungs of the patient above rest volume in m3
 }
 
@@ -71,8 +72,10 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     SensorsData output;
     output.inspirationPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
     output.inspirationFlow = m_K_flow * (Pbl - output.inspirationPressure) / Ri;
-    cout << "inspiratoryFlow=" << output.inspirationFlow / 1000
-         << "L/min, inspirationPressure=" << output.inspirationPressure << "cmH2O" << endl;
+    output.expirationFlow = m_K_flow * (output.inspirationPressure - 0) / Re;
+    /*cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspirationFlow / 1000
+         << "L/min, expirationFlow=" << output.expirationFlow / 1000
+         << "L/min, inspirationPressure=" << output.inspirationPressure << "cmH2O" << endl;*/
 
     return (output);
 }
