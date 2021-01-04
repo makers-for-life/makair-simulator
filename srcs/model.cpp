@@ -27,7 +27,7 @@ Model::Model()
 
       // parameters of the sensors
       m_K_pres(1e-1),     // mmH2O / Pa
-      m_K_flow(60 * 1e6)  // ml/min <- m3/s
+      m_K_flow(10 * 1e6)  // ml/min <- m3/s
 {}
 
 void Model::init(int32_t p_resistance, int32_t p_compliance) {
@@ -71,6 +71,8 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     SensorsData output;
     output.inspirationPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
     output.inspirationFlow = m_K_flow * (Pbl - output.inspirationPressure) / Ri;
+    cout << "inspiratoryFlow=" << output.inspirationFlow / 1000
+         << "L/min, inspirationPressure=" << output.inspirationPressure << "cmH2O" << endl;
 
     return (output);
 }

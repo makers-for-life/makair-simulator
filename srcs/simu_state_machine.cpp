@@ -45,7 +45,13 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
     int pressure = sensors.inspirationPressure;
     mainController.updatePressure(pressure);
     int inspiratoryflow = sensors.inspirationFlow;
-    mainController.updateInspiratoryFlow(inspiratoryflow);
+    if (inspiratoryflow >= 0) {
+        mainController.updateInspiratoryFlow(inspiratoryflow);
+        mainController.updateExpiratoryFlow(0);
+    } else {
+        mainController.updateInspiratoryFlow(0);
+        mainController.updateExpiratoryFlow(inspiratoryflow);
+    }
     updateVolume(inspiratoryflow, dt);
 
     int tick;

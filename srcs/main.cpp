@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     Simulator simulator;
     std::cout << "program started\n";
     activationController.changeState(1);
-    simulator.run(10, 30);
+    simulator.run(50, 100);
     Serial6.close();
     return 0;
 }
