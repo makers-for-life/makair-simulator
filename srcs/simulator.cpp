@@ -20,9 +20,9 @@ Simulator::Simulator()
       ,
       m_time(0.0) {}
 
-void Simulator::run() {
+void Simulator::run(int32_t p_resistance, int32_t p_compliance) {
 
-    init();
+    init(p_resistance, p_compliance);
 
     while (m_state_machine.isRunning())
         loop();
@@ -30,8 +30,8 @@ void Simulator::run() {
     m_logger.close();
 }
 
-void Simulator::init() {
-    m_model.init();
+void Simulator::init(int32_t p_resistance, int32_t p_compliance) {
+    m_model.init(p_resistance, p_compliance);
     m_state_machine.init(-1);
     m_logger.init();
 

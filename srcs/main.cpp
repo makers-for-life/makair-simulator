@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 
     Simulator simulator;
     std::cout << "program started\n";
-    simulator.run();
+    simulator.run(10, 30);
     Serial6.close();
     return 0;
 }

@@ -20,10 +20,10 @@ class Simulator {
     /// Default constructor
     Simulator();
 
-    void run();
+    void run(int32_t p_resistance, int32_t p_compliance);
 
  private:
-    void init();
+    void init(int32_t p_resistance, int32_t p_compliance);
 
     void loop();
 

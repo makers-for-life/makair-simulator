@@ -9,34 +9,33 @@
 // INCLUDES ===================================================================
 
 #include "../includes/helper.h"
+#include <cstdint>
+#include <unistd.h>
 
 /// Model
 class Model {
-  public:
+ public:
     /// Default constructor
     Model();
 
-    void init();
+    void init(int32_t p_resistance, int32_t p_compliance);
 
     SensorsData compute(ActuatorsData cmds, float dt);
 
-  private:
-    
-    //parameters of the patient
-    float m_Rf; // resistance of leaking in Pa.(m.s-1)-1
-    float m_R; // resistance of the patient in Pa.(m.s-1)-1
-    float m_C; // compilance of the patient in m3.Pa-1
-    float m_Vp; // Volume of air in the lungs of the patient above rest volume in m3 
+ private:
+    // parameters of the patient
+    float m_Rf;  // resistance of leaking in Pa.(m.s-1)-1
+    float m_R;   // resistance of the patient in Pa.(m.s-1)-1
+    float m_C;   // compilance of the patient in m3.Pa-1
+    float m_Vp;  // Volume of air in the lungs of the patient above rest volume in m3
 
-    //parameters of the actuators
-    float m_Kr; // coefficient of resistance in Pa.(m.s-1)-1 / %
-    float m_K_blower; // coefficient of blower pressure in Pa / %
+    // parameters of the actuators
+    float m_Kr;        // coefficient of resistance in Pa.(m.s-1)-1 / %
+    float m_K_blower;  // coefficient of blower pressure in Pa / %
 
-    //parameters of the sensors
-    float m_K_pres; // mmH2O / Pa
-    float m_K_flow; // ml / m3
-
+    // parameters of the sensors
+    float m_K_pres;  // mmH2O / Pa
+    float m_K_flow;  // ml / m3
 };
-
 
 float res_valves(int opening_valve, float K_r);
