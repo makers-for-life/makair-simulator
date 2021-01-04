@@ -7,7 +7,9 @@
 
 // INCLUDES
 
+#include "../includes/activation.h"
 #include "../includes/simulator.h"
+
 #include <iostream>
 
 // Main function
@@ -32,6 +34,7 @@ int main(int argc, char* argv[]) {
 
     Simulator simulator;
     std::cout << "program started\n";
+    activationController.changeState(1);
     simulator.run(10, 30);
     Serial6.close();
     return 0;

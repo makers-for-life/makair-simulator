@@ -26,8 +26,8 @@ Model::Model()
       m_K_blower(100),  // coefficient of blower pressure in Pa / %
 
       // parameters of the sensors
-      m_K_pres(1e-1),  // mmH2O / Pa
-      m_K_flow(1e6)    // ml/min <- m3/s
+      m_K_pres(1e-1),     // mmH2O / Pa
+      m_K_flow(60 * 1e6)  // ml/min <- m3/s
 {}
 
 void Model::init(int32_t p_resistance, int32_t p_compliance) {

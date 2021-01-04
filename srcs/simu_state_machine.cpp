@@ -68,6 +68,7 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
         break;
 
     case INIT_CYCLE:
+        cout << "new cycle" << endl;
         // for simulation
         if (m_cycle_uncount != -1) {
             m_cycle_uncount--;
