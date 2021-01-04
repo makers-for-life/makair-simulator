@@ -18,11 +18,7 @@
 #include <iostream>
 #include <unistd.h>
 
-// Linux headers
-#include <SerialPort.h>
-#include <SerialStream.h>
-
-using namespace LibSerial;
+#include "../includes/serialib.h"
 
 using namespace std;
 
@@ -94,50 +90,20 @@ class HardwareTimer {
 
 class SerialFake {
  public:
-    SerialFake() { open = false; }
-    SerialFake(char* serialName);
+    SerialFake();
+    SerialFake(char* p_serialName);
 
-    void begin(int32_t baudrate) {}
+    void begin(int32_t p_baudrate);
     void close();
 
-    // void print(uint16_t s) {}
     void println() {}
     void println(String s) {}
-    void print(const char* str) {
-        if (open) {
-            serialPort.Write(str);
-        }
-    }
 
-    void write(uint8_t data) {
-        if (open) {
-            serialPort.WriteByte(data);
-        }
-    }
-
-    void write(const uint8_t* str, size_t size) {
-        for (size_t i = 0; i < size; i++) {
-            write(str[i]);
-        }
-    }
-
-    size_t write(const char* str) {
-
-        if (str == NULL)
-            return 0;
-        int length = sizeof(str) / sizeof(str[0]);
-        write((const uint8_t*)str, length);
-    }
-    size_t write(const char* buffer, size_t size) { write((const uint8_t*)buffer, size); }
-
-    /*void write(T* argument) {
-        int nBytes = sizeof(T);
-        const uint8_t* pData = (const uint8_t*)argument;
-
-        for (int32_t i = 0; i < nBytes; i++) {
-            write(pData[i]);
-        }
-    }*/
+    void print(const char* str);
+    void write(uint8_t data);
+    void write(const uint8_t* str, size_t size);
+    // void write(const char* str);
+    void write(const char* buffer, size_t size) { write((const uint8_t*)buffer, size); }
     inline void write(bool t) { write((uint8_t)t); }
     inline void write(int16_t t) { write((const uint8_t*)t, 2); }
     inline void write(uint16_t t) { write((const uint8_t*)t, 2); }
@@ -145,47 +111,20 @@ class SerialFake {
     inline void write(uint32_t t) { write((const uint8_t*)t, 4); }
     inline void write(int64_t t) { write((const uint8_t*)t, 8); }
     inline void write(uint64_t t) { write((const uint8_t*)t, 8); }
-    /*inline void write(long long t) { write((uint8_t)t); }
-    inline void write(unsigned long long t) { write((uint8_t)t); }*/
-    // Enable write(char) to fall through to write(uint8_t)
     inline void write(char c) { write((uint8_t)c); }
 
-    uint8_t read() {
-        if (peek_buffer_index >= 0) {
-            uint8_t return_value = peek_buffer[peek_buffer_index];
-            peek_buffer_index--;
-            return return_value;
-        } else {
-            uint8_t next_char;  // variable to store the read result
-            serialPort.ReadByte(next_char, timeout_ms);
-            return (uint8_t)next_char;
-        }
-    }
-    uint8_t peek() {
-        uint8_t next_char;
-        serialPort.ReadByte(next_char, timeout_ms);
-        if (peek_buffer_index < 0) {
-            peek_buffer_index = 0;
-        } else {
-            peek_buffer_index++;
-        }
-        peek_buffer[peek_buffer_index] = next_char;
-        return (uint8_t)next_char;
-    }
-    void readBytes(uint8_t* buffer, size_t size) {
-
-        for (size_t i = 0; i < size; i++) {
-            buffer[i] = (uint8_t)read();
-        }
-    }
-    int32_t available() { return serialPort.GetNumberOfBytesAvailable(); }
+    uint8_t read();
+    uint8_t peek();
+    void readBytes(uint8_t* buffer, size_t size);
+    int32_t available();
 
  private:
-    SerialPort serialPort;
-    bool open;
-    int timeout_ms;
-    uint8_t peek_buffer[10000];
-    int32_t peek_buffer_index;
+    serialib m_serialPort;
+    bool m_open;
+    int m_timeoutMs;
+    uint8_t m_peekBuffer[10000];  // todo better
+    int32_t m_peekBufferIndex;
+    char* m_serialName;
 };
 
 extern SerialFake Serial;

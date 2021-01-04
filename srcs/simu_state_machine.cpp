@@ -9,6 +9,7 @@
 
 #include "../includes/simu_state_machine.h"
 #include "../includes/activation.h"
+#include "../includes/telemetry.h"
 #include <iostream>
 #include <tgmath.h>
 
@@ -34,6 +35,7 @@ void SimuStateMachine::init(int max_cycle) {
     expiratoryValve = PressureValve(hardwareTimer3, TIM_CHANNEL_EXPIRATORY_VALVE,
                                     PIN_EXPIRATORY_VALVE, VALVE_OPEN_STATE, VALVE_CLOSED_STATE);
     expiratoryValve.setup();
+    initTelemetry();
 }
 
 ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
@@ -83,7 +85,6 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
 
         if (tick >= mainController.ticksPerCycle()) {
             m_state = END_CYCLE;
-            cout << "send end cycle" << endl;
 
         }
 
@@ -111,7 +112,6 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
         break;
 
     case END_CYCLE:
-        cout << "end cycle" << endl;
         mainController.endRespiratoryCycle(getTime());
 
         if (shouldStop() || activationController.isRunning())

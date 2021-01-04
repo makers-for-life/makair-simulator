@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
         cout << "Example : makair-simulator -p /dev/ttyACM0" << endl;
         return 0;
     } else if (argc == 1) {
-        Serial6 = SerialFake(argv[2]);
+        Serial6 = SerialFake();
     } else {
         cout << argc << "    " << argv[1] << endl;
         cout << "Wrong usage" << endl;
