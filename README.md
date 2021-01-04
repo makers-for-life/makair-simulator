@@ -29,5 +29,5 @@ In order to run the simulator that you just built using the instructions above, 
 
 ## Easy way to Run the Simulator and the UI
 You might want to run the simulator in background, with a control UI. You could just use the` install_simulator.sh `bash script located in the utils directory of this repo.
-This script will clone, build and run this repo AND the control-ui repo
+This script will clone, build and run this repo AND the [control-ui](https://github.com/makers-for-life/makair-control-ui) repo
 
