@@ -38,6 +38,15 @@ Model::Model()
         m_previousInspiratoryFlowMeanMovingMean[i] = 0;
     }
     m_previousInspiratoryFlowMean = 0;
+
+    m_previousExpiratoryValvePositionMeanMovingMeanIndex = 0;
+    m_previousInspiratoryValvePositionMeanMovingMeanIndex = 0;
+    for (int32_t i = 0; i < PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE; i++) {
+        m_previousInspiratoryValvePositionMeanMovingMean[i] = 0;
+        m_previousExpiratoryValvePositionMeanMovingMean[i] = 0;
+    }
+    m_previousInspiratoryValvePositionMean = 0;
+    m_previousExpiratoryValvePositionMean = 0;
 }
 
 void Model::init(int32_t p_resistance, int32_t p_compliance) {
@@ -59,9 +68,34 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     cmds.expirationValve = min(max(cmds.expirationValve, _min), _max);
     cmds.blower = min(max(cmds.blower, _min), _max);
 
+    m_previousExpiratoryValvePositionMeanMovingMeanIndex++;
+    m_previousInspiratoryValvePositionMeanMovingMeanIndex++;
+    if (m_previousInspiratoryValvePositionMeanMovingMeanIndex
+        >= PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE) {
+        m_previousInspiratoryValvePositionMeanMovingMeanIndex = 0;
+    }
+    if (m_previousExpiratoryValvePositionMeanMovingMeanIndex
+        >= PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE) {
+        m_previousExpiratoryValvePositionMeanMovingMeanIndex = 0;
+    }
+    m_previousInspiratoryValvePositionMeanMovingMean
+        [m_previousInspiratoryValvePositionMeanMovingMeanIndex] = cmds.inspirationValve;
+    m_previousExpiratoryValvePositionMeanMovingMean
+        [m_previousExpiratoryValvePositionMeanMovingMeanIndex] = cmds.expirationValve;
+    int32_t sumInspiratory = 0;
+    int32_t sumExpiratory = 0;
+    for (int32_t i = 0; i < PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE; i++) {
+        sumInspiratory += m_previousInspiratoryValvePositionMeanMovingMean[i];
+        sumExpiratory += m_previousExpiratoryValvePositionMeanMovingMean[i];
+    }
+    m_previousInspiratoryValvePositionMean =
+        sumInspiratory / PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE;
+    m_previousExpiratoryValvePositionMean =
+        sumExpiratory / PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE;
+
     // Conversion of actuators command into physical parameters of the model
-    float Re = res_valves(cmds.expirationValve, m_Kr, m_Kroffset);
-    float Ri = res_valves(cmds.inspirationValve, m_Kr, m_Kroffset);
+    float Re = res_valves(m_previousExpiratoryValvePositionMean, m_Kr, m_Kroffset);
+    float Ri = res_valves(m_previousInspiratoryValvePositionMean, m_Kr, m_Kroffset);
     float Pbl = blower.getBlowerPressure(m_previousInspiratoryFlowMean)
                 / m_K_pres;  // m_K_blower * cmds.blower;  // dynamic of the blower is not taken
                              // into account yet
