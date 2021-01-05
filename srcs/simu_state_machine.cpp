@@ -50,6 +50,7 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
     mainController.updateExpiratoryFlow(expiratoryflow);
 
     updateVolume(inspiratoryflow, dt);
+    updateVolumeExpi(expiratoryflow, dt);
 
     int tick;
 
@@ -81,6 +82,7 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
         mainController.initRespiratoryCycle();
         m_cycle_start_time = getTime();
         resetVolume();
+        resetVolumeExpi();
 
         m_state = BREATH;
         break;
@@ -96,6 +98,7 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
 
         else {
             mainController.updateCurrentDeliveredVolume(getVolume());
+            mainController.updateCurrentExpiratoryVolume(getVolumeExpi());
             mainController.updateDt(dt * 1000);  // milli to micro
             mainController.updateTick(tick);
             mainController.compute();
@@ -151,10 +154,15 @@ void SimuStateMachine::updateTime(int dt) {
 int SimuStateMachine::getTime() { return m_time; }
 
 void SimuStateMachine::updateVolume(int flow, int dt) { m_volume += flow * dt / (60 * 1000); }
+void SimuStateMachine::updateVolumeExpi(int flow, int dt) {
+    m_volumeExpi += flow * dt / (60 * 1000);
+}
 
 int SimuStateMachine::getVolume() { return m_volume; }
+int SimuStateMachine::getVolumeExpi() { return m_volumeExpi; }
 
 void SimuStateMachine::resetVolume() { m_volume = 0; }
+void SimuStateMachine::resetVolumeExpi() { m_volumeExpi = 0; }
 
 bool SimuStateMachine::shouldStop() {
     if (m_cycle_uncount <= 0 && m_cycle_uncount != -1)  // 1 means infite loop
