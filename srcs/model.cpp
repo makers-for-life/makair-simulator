@@ -34,7 +34,7 @@ Model::Model()
 void Model::init(int32_t p_resistance, int32_t p_compliance) {
     // parameters of the patient
     m_Rf = 10000 * 1e8;                               // resistance of leaking in Pa.(m3.s-1)-1
-    m_R = ((float)p_resistance) * 98.0665 / (10e-6);  // resistance of the patient in Pa.(m3.s-1)-1
+    m_R = ((float)p_resistance) * 98.0665 / (10e-3);  // resistance of the patient in Pa.(m3.s-1)-1
     m_C = float(p_compliance) * 1e-6 / 98.0665;       // compilance of the patient in m3.Pa-1
     m_Vp = 0.;  // Volume of air in the lungs of the patient above rest volume in m3
     cout << m_R << endl;
@@ -63,7 +63,7 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     /*cout << ", Pbl=" << Pbl << ", m_R=" << m_R << ", Ri=" << Ri << ", Ref=" << Ref << ", Re=" <<
        Re
          << ", P_factor=" << m_K_flow * P_factor / 1000
-         << ", cmds.inspirationValve =" << cmds.inspirationValve
+         << ", cmds.inspirationValve=" << cmds.inspirationValve
          << ", cmds.expirationValve=" << cmds.expirationValve << endl;*/
 
     // influence of volume present in patient's lungs on the flow
@@ -80,13 +80,13 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     output.inspirationPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
     output.inspirationFlow = m_K_flow * (Pbl - output.inspirationPressure / m_K_pres) / Ri;
     output.expirationFlow = m_K_flow * (output.inspirationPressure / m_K_pres - 0) / Re;
-    cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspirationFlow / 1000
+    /*cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspirationFlow / 1000
          << "L/min, expirationFlow=" << output.expirationFlow / 1000
          << "L/min, inspirationPressure=" << output.inspirationPressure
          << "mmH2O, blowerPressre=" << Pbl * m_K_pres << "mmH2O, flow=" << flow * m_K_flow / 1000
          << "L/min, Pfactor=" << m_K_flow * P_factor / 1000
          << "L/min, V_factor=" << m_K_flow * V_factor / 1000
-         << "L/min, cmdinspi= " << cmds.inspirationValve << "%, " << endl;
+         << "L/min, cmdinspi= " << cmds.inspirationValve << "%, " << endl;*/
 
     return (output);
 }
@@ -99,5 +99,9 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
  * @K_r the coefficient of resistance in Pa.(m3.s-1)-1 / %
  */
 float res_valves(int opening_valve, float K_r, float K_roffset) {
-    return ((opening_valve)*K_r + K_roffset);
+    if (opening_valve == 100) {
+        return 1e10;
+    } else {
+        return ((opening_valve)*K_r + K_roffset);
+    }
 }
