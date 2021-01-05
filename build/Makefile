@@ -3,7 +3,7 @@
 CXX=g++ 
 
 # Compilation options
-CXXFLAGS=-w -pedantic
+CXXFLAGS=-w -pedantic -L/usr/local/lib -lserial -I/usr/local/include/libserial -pthread
 
 # Link editing options
 LDFLAGS=
