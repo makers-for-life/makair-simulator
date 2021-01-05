@@ -22,17 +22,18 @@ Model::Model()
       m_Vp(nanf("")),
 
       // parameters of the actuators
-      m_Kr(1e6),        // coefficient of resistance in Pa.(m3.s-1)-1 / %
-      m_K_blower(100),  // coefficient of blower pressure in Pa / %
+      m_Kr(6e4),            // coefficient of resistance in Pa.(m3.s-1)-1 / %
+      m_Kroffset(1 * 1e6),  // coefficient of resistance offsetin Pa.(m3.s-1)-1
+      m_K_blower(100),      // coefficient of blower pressure in Pa / %
 
       // parameters of the sensors
       m_K_pres(1e-1),     // mmH2O / Pa
-      m_K_flow(10 * 1e6)  // ml/min <- m3/s
+      m_K_flow(60 * 1e6)  // ml/min <- m3/s
 {}
 
 void Model::init(int32_t p_resistance, int32_t p_compliance) {
     // parameters of the patient
-    m_Rf = 1e8;                                       // resistance of leaking in Pa.(m3.s-1)-1
+    m_Rf = 10000 * 1e8;                               // resistance of leaking in Pa.(m3.s-1)-1
     m_R = ((float)p_resistance) * 98.0665 / (10e-6);  // resistance of the patient in Pa.(m3.s-1)-1
     m_C = float(p_compliance) * 1e-6 / 98.0665;       // compilance of the patient in m3.Pa-1
     m_Vp = 0.;  // Volume of air in the lungs of the patient above rest volume in m3
@@ -43,15 +44,15 @@ void Model::init(int32_t p_resistance, int32_t p_compliance) {
 SensorsData Model::compute(ActuatorsData cmds, float dt) {
 
     // Clip commands
-    int _min = 0;
-    int _max = 99;
+    int _min = 1;
+    int _max = 100;
     cmds.inspirationValve = min(max(cmds.inspirationValve, _min), _max);
     cmds.expirationValve = min(max(cmds.expirationValve, _min), _max);
     cmds.blower = min(max(cmds.blower, _min), _max);
 
     // Conversion of actuators command into physical parameters of the model
-    float Re = res_valves(cmds.expirationValve, m_Kr);
-    float Ri = res_valves(cmds.inspirationValve, m_Kr);
+    float Re = res_valves(cmds.expirationValve, m_Kr, m_Kroffset);
+    float Ri = res_valves(cmds.inspirationValve, m_Kr, m_Kroffset);
     float Pbl = m_K_blower * cmds.blower;  // dynamic of the blower is not taken into account yet
 
     // resistance of expiration valve and leak are in paralell
@@ -59,6 +60,11 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
 
     // influence of blower and atm pressure on the flow (derivative of the volume)
     float P_factor = (Ref * Pbl) / (m_R * (Ref + Ri) + Ref * Ri);
+    /*cout << ", Pbl=" << Pbl << ", m_R=" << m_R << ", Ri=" << Ri << ", Ref=" << Ref << ", Re=" <<
+       Re
+         << ", P_factor=" << m_K_flow * P_factor / 1000
+         << ", cmds.inspirationValve =" << cmds.inspirationValve
+         << ", cmds.expirationValve=" << cmds.expirationValve << endl;*/
 
     // influence of volume present in patient's lungs on the flow
     float V_factor = -m_Vp * (Ref + Ri) / (m_C * (m_R * (Ref + Ri) + Ref * Ri));
@@ -72,13 +78,15 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // computation of sensor data
     SensorsData output;
     output.inspirationPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
-    output.inspirationFlow = m_K_flow * (Pbl - output.inspirationPressure) / Ri;
-    output.expirationFlow = m_K_flow * (output.inspirationPressure - 0) / Re;
+    output.inspirationFlow = m_K_flow * (Pbl - output.inspirationPressure / m_K_pres) / Ri;
+    output.expirationFlow = m_K_flow * (output.inspirationPressure / m_K_pres - 0) / Re;
     cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspirationFlow / 1000
          << "L/min, expirationFlow=" << output.expirationFlow / 1000
          << "L/min, inspirationPressure=" << output.inspirationPressure
          << "mmH2O, blowerPressre=" << Pbl * m_K_pres << "mmH2O, flow=" << flow * m_K_flow / 1000
-         << "L/min" << endl;
+         << "L/min, Pfactor=" << m_K_flow * P_factor / 1000
+         << "L/min, V_factor=" << m_K_flow * V_factor / 1000
+         << "L/min, cmdinspi= " << cmds.inspirationValve << "%, " << endl;
 
     return (output);
 }
@@ -90,4 +98,6 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
  * @opening_valve in % of the maximum opening
  * @K_r the coefficient of resistance in Pa.(m3.s-1)-1 / %
  */
-float res_valves(int opening_valve, float K_r) { return ((100 - opening_valve) * K_r); }
+float res_valves(int opening_valve, float K_r, float K_roffset) {
+    return ((opening_valve)*K_r + K_roffset);
+}

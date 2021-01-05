@@ -132,10 +132,10 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
     }
 
     ActuatorsData cmds;
-    cmds.expirationValve = getPct(inspiratoryValve.command, inspiratoryValve.minAperture(),
-                                  inspiratoryValve.maxAperture());
-    cmds.inspirationValve = getPct(expiratoryValve.command, expiratoryValve.minAperture(),
-                                   expiratoryValve.maxAperture());
+    cmds.inspirationValve = getPct(inspiratoryValve.command, inspiratoryValve.minAperture(),
+                                   inspiratoryValve.maxAperture());
+    cmds.expirationValve = getPct(expiratoryValve.command, expiratoryValve.minAperture(),
+                                  expiratoryValve.maxAperture());
     cmds.blower = getPct(blower.getSpeed(), 0, MAX_BLOWER_SPEED);
 
     return cmds;

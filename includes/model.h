@@ -31,6 +31,7 @@ class Model {
 
     // parameters of the actuators
     float m_Kr;        // coefficient of resistance in Pa.(m.s-1)-1 / %
+    float m_Kroffset;  // coefficient of resistance in Pa.(m.s-1)-1
     float m_K_blower;  // coefficient of blower pressure in Pa / %
 
     // parameters of the sensors
@@ -38,4 +39,4 @@ class Model {
     float m_K_flow;  // ml / m3
 };
 
-float res_valves(int opening_valve, float K_r);
+float res_valves(int opening_valve, float K_r, float K_roffset);
