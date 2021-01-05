@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 
     Simulator simulator;
     std::cout << "program started\n";
-    // activationController.changeState(1);
+    activationController.changeState(1);
     simulator.run(resistance, compliance);
     Serial6.close();
     return 0;

@@ -8,6 +8,8 @@
 // INCLUDES ===================================================================
 
 #include "../includes/model.h"
+#include "../includes/blower.h"
+
 #include <cmath>
 #include <iostream>
 using namespace std;
@@ -53,7 +55,9 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // Conversion of actuators command into physical parameters of the model
     float Re = res_valves(cmds.expirationValve, m_Kr, m_Kroffset);
     float Ri = res_valves(cmds.inspirationValve, m_Kr, m_Kroffset);
-    float Pbl = m_K_blower * cmds.blower;  // dynamic of the blower is not taken into account yet
+    float Pbl = blower.getBlowerPressure(m_previousInspiratoryFlow)
+                / m_K_pres;  // m_K_blower * cmds.blower;  // dynamic of the blower is not taken
+                             // into account yet
 
     // resistance of expiration valve and leak are in paralell
     float Ref = Re * m_Rf / (Re + m_Rf);
@@ -77,17 +81,17 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
 
     // computation of sensor data
     SensorsData output;
-    output.inspirationPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
-    output.inspirationFlow = m_K_flow * (Pbl - output.inspirationPressure / m_K_pres) / Ri;
-    output.expirationFlow = m_K_flow * (output.inspirationPressure / m_K_pres - 0) / Re;
-    /*cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspirationFlow / 1000
-         << "L/min, expirationFlow=" << output.expirationFlow / 1000
-         << "L/min, inspirationPressure=" << output.inspirationPressure
+    output.inspiratoryPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
+    output.inspiratoryFlow = m_K_flow * (Pbl - output.inspiratoryPressure / m_K_pres) / Ri;
+    output.expiratoryFlow = m_K_flow * (output.inspiratoryPressure / m_K_pres - 0) / Re;
+    /*cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspiratoryFlow / 1000
+         << "L/min, expiratoryFlow=" << output.expiratoryFlow / 1000
+         << "L/min, inspiratoryPressure=" << output.inspiratoryPressure
          << "mmH2O, blowerPressre=" << Pbl * m_K_pres << "mmH2O, flow=" << flow * m_K_flow / 1000
          << "L/min, Pfactor=" << m_K_flow * P_factor / 1000
          << "L/min, V_factor=" << m_K_flow * V_factor / 1000
          << "L/min, cmdinspi= " << cmds.inspirationValve << "%, " << endl;*/
-
+    m_previousInspiratoryFlow = output.inspiratoryFlow;
     return (output);
 }
 

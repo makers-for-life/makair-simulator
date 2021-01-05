@@ -37,6 +37,7 @@ class Model {
     // parameters of the sensors
     float m_K_pres;  // mmH2O / Pa
     float m_K_flow;  // ml / m3
+    int32_t m_previousInspiratoryFlow;
 };
 
 float res_valves(int opening_valve, float K_r, float K_roffset);

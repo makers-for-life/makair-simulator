@@ -42,10 +42,10 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
     int dt = dt_s * 1000;  // here time is in ms
     updateTime(dt);
 
-    int pressure = sensors.inspirationPressure;
+    int pressure = sensors.inspiratoryPressure;
     mainController.updatePressure(pressure);
-    int inspiratoryflow = sensors.inspirationFlow;
-    int expiratoryflow = sensors.expirationFlow;
+    int inspiratoryflow = sensors.inspiratoryFlow;
+    int expiratoryflow = sensors.expiratoryFlow;
     mainController.updateInspiratoryFlow(inspiratoryflow);
     mainController.updateExpiratoryFlow(expiratoryflow);
 

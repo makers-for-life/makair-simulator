@@ -9,9 +9,9 @@
 // STRUCTURES =================================================================
 
 struct SensorsData {
-    int inspirationFlow = -1;
-    int expirationFlow = -1;
-    int inspirationPressure = -1;
+    int inspiratoryFlow = -1;
+    int expiratoryFlow = -1;
+    int inspiratoryPressure = -1;
 };
 
 struct ActuatorsData {  // in % of max value
