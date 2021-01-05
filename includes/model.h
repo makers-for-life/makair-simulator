@@ -11,6 +11,7 @@
 #include "../includes/helper.h"
 #include <cstdint>
 #include <unistd.h>
+#define PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE 20
 
 /// Model
 class Model {
@@ -37,7 +38,9 @@ class Model {
     // parameters of the sensors
     float m_K_pres;  // mmH2O / Pa
     float m_K_flow;  // ml / m3
-    int32_t m_previousInspiratoryFlow;
+    int32_t m_previousInspiratoryFlowMean;
+    int32_t m_previousInspiratoryFlowMeanMovingMean[PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE];
+    int32_t m_previousInspiratoryFlowMeanMovingMeanIndex;
 };
 
 float res_valves(int opening_valve, float K_r, float K_roffset);

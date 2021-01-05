@@ -31,11 +31,18 @@ Model::Model()
       // parameters of the sensors
       m_K_pres(1e-1),     // mmH2O / Pa
       m_K_flow(60 * 1e6)  // ml/min <- m3/s
-{}
+
+{
+    m_previousInspiratoryFlowMeanMovingMeanIndex = 0;
+    for (int32_t i = 0; i < PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE; i++) {
+        m_previousInspiratoryFlowMeanMovingMean[i] = 0;
+    }
+    m_previousInspiratoryFlowMean = 0;
+}
 
 void Model::init(int32_t p_resistance, int32_t p_compliance) {
     // parameters of the patient
-    m_Rf = 10000 * 1e8;                               // resistance of leaking in Pa.(m3.s-1)-1
+    m_Rf = 1000000 * 1e8;                             // resistance of leaking in Pa.(m3.s-1)-1
     m_R = ((float)p_resistance) * 98.0665 / (10e-3);  // resistance of the patient in Pa.(m3.s-1)-1
     m_C = float(p_compliance) * 1e-6 / 98.0665;       // compilance of the patient in m3.Pa-1
     m_Vp = 0.;  // Volume of air in the lungs of the patient above rest volume in m3
@@ -55,7 +62,7 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // Conversion of actuators command into physical parameters of the model
     float Re = res_valves(cmds.expirationValve, m_Kr, m_Kroffset);
     float Ri = res_valves(cmds.inspirationValve, m_Kr, m_Kroffset);
-    float Pbl = blower.getBlowerPressure(m_previousInspiratoryFlow)
+    float Pbl = blower.getBlowerPressure(m_previousInspiratoryFlowMean)
                 / m_K_pres;  // m_K_blower * cmds.blower;  // dynamic of the blower is not taken
                              // into account yet
 
@@ -83,15 +90,32 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     SensorsData output;
     output.inspiratoryPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
     output.inspiratoryFlow = m_K_flow * (Pbl - output.inspiratoryPressure / m_K_pres) / Ri;
+    int32_t leakFlow = m_K_flow * (Pbl - output.inspiratoryPressure / m_K_pres) / m_Rf;
     output.expiratoryFlow = m_K_flow * (output.inspiratoryPressure / m_K_pres - 0) / Re;
+    if (output.inspiratoryFlow < 0) {
+        cout << output.inspiratoryFlow / 1000 << "L/min";
+    }
     /*cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspiratoryFlow / 1000
          << "L/min, expiratoryFlow=" << output.expiratoryFlow / 1000
+         << "L/min, leakFlow=" << leakFlow / 1000
          << "L/min, inspiratoryPressure=" << output.inspiratoryPressure
          << "mmH2O, blowerPressre=" << Pbl * m_K_pres << "mmH2O, flow=" << flow * m_K_flow / 1000
          << "L/min, Pfactor=" << m_K_flow * P_factor / 1000
          << "L/min, V_factor=" << m_K_flow * V_factor / 1000
          << "L/min, cmdinspi= " << cmds.inspirationValve << "%, " << endl;*/
-    m_previousInspiratoryFlow = output.inspiratoryFlow;
+
+    m_previousInspiratoryFlowMeanMovingMeanIndex++;
+    if (m_previousInspiratoryFlowMeanMovingMeanIndex
+        >= PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE) {
+        m_previousInspiratoryFlowMeanMovingMeanIndex = 0;
+    }
+    m_previousInspiratoryFlowMeanMovingMean[m_previousInspiratoryFlowMeanMovingMeanIndex] =
+        output.inspiratoryFlow;
+    int32_t sum = 0;
+    for (int32_t i = 0; i < PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE; i++) {
+        sum += m_previousInspiratoryFlowMeanMovingMean[i];
+    }
+    m_previousInspiratoryFlowMean = sum / PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE;
     return (output);
 }
 
