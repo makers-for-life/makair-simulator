@@ -132,7 +132,7 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     m_previousPresp = (flow * m_R + m_Vp / m_C);
     output.inspiratoryFlow = m_K_flow * Qinsp;
     output.expiratoryFlow = m_K_flow * Qexp;
-    m_previousInspiratoryFlow = Qinsp;
+    m_previousInspiratoryFlow = m_K_flow * Qinsp;
     m_previousPbl = Pbl;
 
     return (output);
