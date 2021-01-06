@@ -13,6 +13,7 @@
 #include <unistd.h>
 #define PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE 1
 #define PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE 5
+#define P_FACTOR_MOVING_MEAN_SIZE 2
 
 /// Model
 class Model {
@@ -48,6 +49,8 @@ class Model {
     int32_t
         m_previousExpiratoryValvePositionMeanMovingMean[PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE];
     int32_t m_previousExpiratoryValvePositionMeanMovingMeanIndex;
+    float m_pFactorMeanMovingMean[P_FACTOR_MOVING_MEAN_SIZE];
+    int32_t m_pFactorMeanMovingMeanIndex;
     int32_t m_previousInspiratoryValvePositionMean;
     int32_t m_previousExpiratoryValvePositionMean;
     float previousPbl;

@@ -45,6 +45,12 @@ Model::Model()
         m_previousInspiratoryValvePositionMeanMovingMean[i] = 0;
         m_previousExpiratoryValvePositionMeanMovingMean[i] = 0;
     }
+
+    for (int32_t i = 0; i < P_FACTOR_MOVING_MEAN_SIZE; i++) {
+        m_pFactorMeanMovingMean[i] = 0.0;
+    }
+    m_pFactorMeanMovingMeanIndex = 0;
+
     m_previousInspiratoryValvePositionMean = 0;
     m_previousExpiratoryValvePositionMean = 0;
 
@@ -101,8 +107,13 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     /*float newPbl = blower.getBlowerPressure(m_previousInspiratoryFlowMean)
                    / m_K_pres;  */
 
-    float newPbl = m_K_blower * cmds.blower;  // dynamic of the blower is not taken
-                                              // into account yet
+    // float newPbl = m_K_blower * cmds.blower;  // dynamic of the blower is not taken
+    // into account yet
+
+    float newPbl = (703.0 * cmds.blower / 100.0 - 281.0 * m_previousInspiratoryFlowMean / 100000.0
+                    - 832.0 * (m_previousInspiratoryFlowMean / 100.0)
+                          * (m_previousInspiratoryFlowMean / 100.0) / 1000000.0)
+                   / m_K_pres;
     float Pbl;
     if (newPbl > previousPbl) {
         Pbl = min(newPbl, previousPbl + 300);
@@ -115,7 +126,18 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     float Ref = Re * m_Rf / (Re + m_Rf);
 
     // influence of blower and atm pressure on the flow (derivative of the volume)
-    float P_factor = (Ref * Pbl) / (m_R * (Ref + Ri) + Ref * Ri);
+    m_pFactorMeanMovingMeanIndex++;
+    if (m_pFactorMeanMovingMeanIndex >= P_FACTOR_MOVING_MEAN_SIZE) {
+        m_pFactorMeanMovingMeanIndex = 0;
+    }
+    m_pFactorMeanMovingMean[m_pFactorMeanMovingMeanIndex] =
+        (Ref * Pbl) / (m_R * (Ref + Ri) + Ref * Ri);
+    float sumPfactor = 0;
+    for (int32_t i = 0; i < P_FACTOR_MOVING_MEAN_SIZE; i++) {
+        sumPfactor += m_pFactorMeanMovingMean[i];
+    }
+
+    float P_factor = sumPfactor / P_FACTOR_MOVING_MEAN_SIZE;
 
     // influence of volume present in patient's lungs on the flow
     float V_factor = -m_Vp * (Ref + Ri) / (m_C * (m_R * (Ref + Ri) + Ref * Ri));
