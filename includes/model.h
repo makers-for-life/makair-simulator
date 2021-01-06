@@ -50,6 +50,7 @@ class Model {
     int32_t m_previousExpiratoryValvePositionMeanMovingMeanIndex;
     int32_t m_previousInspiratoryValvePositionMean;
     int32_t m_previousExpiratoryValvePositionMean;
+    float previousPbl;
 };
 
 float res_valves(int opening_valve, float K_r, float K_roffset);

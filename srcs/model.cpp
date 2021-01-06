@@ -47,6 +47,8 @@ Model::Model()
     }
     m_previousInspiratoryValvePositionMean = 0;
     m_previousExpiratoryValvePositionMean = 0;
+
+    previousPbl = 0.0;
 }
 
 void Model::init(int32_t p_resistance, int32_t p_compliance) {
@@ -96,9 +98,16 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // Conversion of actuators command into physical parameters of the model
     float Re = res_valves(m_previousExpiratoryValvePositionMean, m_Kr, m_Kroffset);
     float Ri = res_valves(m_previousInspiratoryValvePositionMean, m_Kr, m_Kroffset);
-    float Pbl = blower.getBlowerPressure(m_previousInspiratoryFlowMean)
-                / m_K_pres;  // m_K_blower * cmds.blower;  // dynamic of the blower is not taken
-                             // into account yet
+    float newPbl = blower.getBlowerPressure(m_previousInspiratoryFlowMean)
+                   / m_K_pres;  // m_K_blower * cmds.blower;  // dynamic of the blower is not taken
+                                // into account yet
+    float Pbl;
+    if (newPbl > previousPbl) {
+        Pbl = min(newPbl, previousPbl + 300);
+    } else {
+        Pbl = max(newPbl, previousPbl - 300);
+    }
+    previousPbl = Pbl;
 
     // resistance of expiration valve and leak are in paralell
     float Ref = Re * m_Rf / (Re + m_Rf);
