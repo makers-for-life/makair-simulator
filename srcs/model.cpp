@@ -174,7 +174,7 @@ float res_valves(int opening_valve, float K_r, float K_roffset) {
 
     float x = opening_valve;
     if (opening_valve <= 40) {
-        return_value = 204725.0 * x + 387000.0;
+        return_value = 33408.0 * x + 387000.0;
 
     } else if (opening_valve <= 72.0) {
         return_value = 5.1467340524981079e+009 - 6.1181197775600815e+008 * x
