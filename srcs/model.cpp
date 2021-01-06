@@ -128,7 +128,7 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
          << ", P_factor=" << m_K_flow * P_factor / 1000
          << ", V_factor=" << m_K_flow * V_factor / 1000 << ", flow=" << m_K_flow * flow / 1000
          << ", cmds.inspirationValve=" << m_previousInspiratoryValvePositionMean
-         << ", cmds.expirationValve=" << m_previousInspiratoryValvePositionMean << endl;
+         << ", cmds.expirationValve=" << m_previousExpiratoryValvePositionMean << endl;
     // cout << (res_valves(39, 1.0, 1.0)) << ", " << (res_valves(40, 1.0, 1.0)) << endl;
 
     // computation of sensor data
