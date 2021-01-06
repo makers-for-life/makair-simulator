@@ -126,15 +126,13 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     output.inspiratoryFlow = m_K_flow * (Pbl - output.inspiratoryPressure / m_K_pres) / Ri;
     int32_t leakFlow = m_K_flow * (Pbl - output.inspiratoryPressure / m_K_pres) / m_Rf;
     output.expiratoryFlow = m_K_flow * (output.inspiratoryPressure / m_K_pres - 0) / Re;
-    if (output.inspiratoryFlow < 0) {
-        cout << output.inspiratoryFlow / 1000 << "L/min";
-    }
+
     /*cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspiratoryFlow / 1000
          << "L/min, expiratoryFlow=" << output.expiratoryFlow / 1000
-         << "L/min, leakFlow=" << leakFlow / 1000
+         << "L/min, flow=" << flow * m_K_flow / 1000 << "L/min, leakFlow=" << leakFlow / 1000
          << "L/min, inspiratoryPressure=" << output.inspiratoryPressure
-         << "mmH2O, blowerPressre=" << Pbl * m_K_pres << "mmH2O, flow=" << flow * m_K_flow / 1000
-         << "L/min, Pfactor=" << m_K_flow * P_factor / 1000
+         << "mmH2O, blowerPressre=" << Pbl * m_K_pres
+         << "mmH2O, Pfactor=" << m_K_flow * P_factor / 1000
          << "L/min, V_factor=" << m_K_flow * V_factor / 1000
          << "L/min, cmdinspi= " << cmds.inspirationValve << "%, " << endl;*/
 

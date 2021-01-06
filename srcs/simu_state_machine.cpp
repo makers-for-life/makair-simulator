@@ -99,7 +99,7 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
         else {
             mainController.updateCurrentDeliveredVolume(getVolume());
             mainController.updateCurrentExpiratoryVolume(getVolumeExpi());
-            mainController.updateDt(dt * 1000);  // milli to micro
+            mainController.updateDt(dt * 1000);  // millis to micros
             mainController.updateTick(tick);
             mainController.compute();
         }
@@ -153,13 +153,15 @@ void SimuStateMachine::updateTime(int dt) {
 
 int SimuStateMachine::getTime() { return m_time; }
 
-void SimuStateMachine::updateVolume(int flow, int dt) { m_volume += flow * dt / (60 * 1000); }
+void SimuStateMachine::updateVolume(int flow, int dt) {
+    m_volume += float(flow) * float(dt) / (60.0 * 1000.0);
+}
 void SimuStateMachine::updateVolumeExpi(int flow, int dt) {
-    m_volumeExpi += flow * dt / (60 * 1000);
+    m_volumeExpi += float(flow) * float(dt) / (60.0 * 1000.0);
 }
 
-int SimuStateMachine::getVolume() { return m_volume; }
-int SimuStateMachine::getVolumeExpi() { return m_volumeExpi; }
+int SimuStateMachine::getVolume() { return int32_t(m_volume); }
+int SimuStateMachine::getVolumeExpi() { return int32_t(m_volumeExpi); }
 
 void SimuStateMachine::resetVolume() { m_volume = 0; }
 void SimuStateMachine::resetVolumeExpi() { m_volumeExpi = 0; }

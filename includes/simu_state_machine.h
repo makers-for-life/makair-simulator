@@ -30,8 +30,8 @@ class SimuStateMachine {
     int getTime();
     void updateVolume(int flow, int dt);
     void updateVolumeExpi(int flow, int dt);
-    int getVolume();
-    int getVolumeExpi();
+    int32_t getVolume();
+    int32_t getVolumeExpi();
     void resetVolume();
     void resetVolumeExpi();
     bool shouldStop();
@@ -41,8 +41,8 @@ class SimuStateMachine {
     SimuState m_state;
     int m_time;
     int m_cycle_start_time;
-    int m_volume;
-    int m_volumeExpi;
+    float m_volume;
+    float m_volumeExpi;
 
     int m_cycle_uncount;
 };
