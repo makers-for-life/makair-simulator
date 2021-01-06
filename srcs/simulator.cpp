@@ -43,8 +43,8 @@ void Simulator::init(int32_t p_resistance, int32_t p_compliance) {
 
 void Simulator::loop() {
     // running model
-    for (int i = 0; i < 10; i++) {
-        m_sensors = m_model.compute(m_cmds, m_dt / 10);
+    for (int i = 0; i < 20; i++) {
+        m_sensors = m_model.compute(m_cmds, m_dt / 20);
     }
 
     // computing the commands in function of the state of the model. Here, open loop
