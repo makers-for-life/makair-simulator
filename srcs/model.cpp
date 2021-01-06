@@ -26,7 +26,7 @@ Model::Model()
       // parameters of the actuators
       m_Kr(6e4),            // coefficient of resistance in Pa.(m3.s-1)-1 / %
       m_Kroffset(1 * 1e6),  // coefficient of resistance offsetin Pa.(m3.s-1)-1
-      m_K_blower(100),      // coefficient of blower pressure in Pa / %
+      m_K_blower(70),       // coefficient of blower pressure in Pa / %
 
       // parameters of the sensors
       m_K_pres(1e-1),     // mmH2O / Pa
@@ -64,7 +64,7 @@ void Model::init(int32_t p_resistance, int32_t p_compliance) {
 SensorsData Model::compute(ActuatorsData cmds, float dt) {
 
     // Clip commands
-    int _min = 1;
+    int _min = 0;
     int _max = 100;
     cmds.inspirationValve = min(max(cmds.inspirationValve, _min), _max);
     cmds.expirationValve = min(max(cmds.expirationValve, _min), _max);
@@ -98,9 +98,11 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // Conversion of actuators command into physical parameters of the model
     float Re = res_valves(m_previousExpiratoryValvePositionMean, m_Kr, m_Kroffset);
     float Ri = res_valves(m_previousInspiratoryValvePositionMean, m_Kr, m_Kroffset);
-    float newPbl = blower.getBlowerPressure(m_previousInspiratoryFlowMean)
-                   / m_K_pres;  // m_K_blower * cmds.blower;  // dynamic of the blower is not taken
-                                // into account yet
+    /*float newPbl = blower.getBlowerPressure(m_previousInspiratoryFlowMean)
+                   / m_K_pres;  */
+
+    float newPbl = m_K_blower * cmds.blower;  // dynamic of the blower is not taken
+                                              // into account yet
     float Pbl;
     if (newPbl > previousPbl) {
         Pbl = min(newPbl, previousPbl + 300);
