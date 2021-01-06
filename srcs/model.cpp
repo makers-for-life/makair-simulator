@@ -117,17 +117,18 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
 
     // influence of volume present in patient's lungs on the flow
     float V_factor = -m_Vp * (Ref + Ri) / (m_C * (m_R * (Ref + Ri) + Ref * Ri));
-    cout << ", Pbl=" << Pbl << ", m_R=" << m_R << ", Ri=" << Ri << ", Ref=" << Ref << ", Re=" << Re
-         << ", P_factor=" << m_K_flow * P_factor / 1000
-         << ", V_factor=" << m_K_flow * V_factor / 1000
-         << ", cmds.inspirationValve=" << cmds.inspirationValve
-         << ", cmds.expirationValve=" << cmds.expirationValve << endl;
 
     // patient's flow
     float flow = P_factor + V_factor;
 
     // conputation of the new patient's lung's volume
     m_Vp += flow * dt;
+
+    cout << ", Pbl=" << Pbl << ", m_R=" << m_R << ", Ri=" << Ri << ", Ref=" << Ref << ", Re=" << Re
+         << ", P_factor=" << m_K_flow * P_factor / 1000
+         << ", V_factor=" << m_K_flow * V_factor / 1000 << ", flow=" << m_K_flow * flow / 1000
+         << ", cmds.inspirationValve=" << cmds.inspirationValve
+         << ", cmds.expirationValve=" << cmds.expirationValve << endl;
 
     // computation of sensor data
     SensorsData output;
@@ -178,7 +179,7 @@ float res_valves(int opening_valve, float K_r, float K_roffset) {
                            + 143.0 * pow(x, 4) - 2.05 * pow(x, 5) + 0.0111 * pow(x, 6);
             // cout << "inf72";
         } else {
-            return_value = 1122854.25 * x - 80811174.0;
+            return_value = 1124997854.25 * x - 80999811174.0;
         }
         // cout << return_value << endl;
 
