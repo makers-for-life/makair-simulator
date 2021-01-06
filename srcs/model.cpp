@@ -171,28 +171,28 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
  */
 float res_valves(int opening_valve, float K_r, float K_roffset) {
     float return_value;
-    if (opening_valve == 100) {
-        return_value = 1e10;
+
+    float x = opening_valve;
+    if (opening_valve <= 40) {
+        return_value = 204725.0 * x + 387000.0;
+
+    } else if (opening_valve <= 72.0) {
+        return_value = 5.1467340524981079e+009 - 6.1181197775600815e+008 * x
+                       + 3.0148832673133574e+007 * pow(x, 2) - 7.8827886257496232e+005 * pow(x, 3)
+                       + 1.1536362294209976e+004 * pow(x, 4) - 8.9625225665302438e+001 * pow(x, 5)
+                       + 2.8899388749241267e-001 * pow(x, 6);
+
+    } else if (opening_valve <= 76.0) {
+        return_value = 32561335.5 * x - 2310083471.0;
+    } else if (opening_valve <= 80.0) {
+        return_value = 721934512.0 * x - 54702444885.0;
+    } else if (opening_valve <= 84.0) {
+        return_value = 3235655141.5 * x - 255800095245.0;
+    } else if (opening_valve <= 100.0) {
+        return_value = 521589460.5 * x - 27818578041.0;
     } else {
-        float x = opening_valve;
-        if (opening_valve <= 40) {
-            return_value = 204725.0 * x + 387000.0;
-
-        } else if (opening_valve <= 72.0) {
-            return_value =
-                5.1467340524981079e+009 - 6.1181197775600815e+008 * x
-                + 3.0148832673133574e+007 * pow(x, 2) - 7.8827886257496232e+005 * pow(x, 3)
-                + 1.1536362294209976e+004 * pow(x, 4) - 8.9625225665302438e+001 * pow(x, 5)
-                + 2.8899388749241267e-001 * pow(x, 6);
-            // 581686.0 - 334863.0 * x + 65967.0 * pow(x, 2) - 4555.0 * pow(x,
-            // 3)+ 143.0 * pow(x, 4) - 2.05 * pow(x, 5) + 0.0111 * pow(x, 6);
-            // cout << "inf72";
-        } else {
-            return_value = 1123261825.0 * x - 80847040600.0;
-        }
-        // cout << return_value << endl;
-
-        // return ((opening_valve)*K_r + K_roffset);
+        cout << "error in valve angle" << endl;
+        return_value = 1e10;
     }
     return return_value;
 }
