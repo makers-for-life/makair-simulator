@@ -11,9 +11,7 @@
 #include "../includes/helper.h"
 #include <cstdint>
 #include <unistd.h>
-#define PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE 1
 #define PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE 1
-#define P_FACTOR_MOVING_MEAN_SIZE 1
 
 /// Model
 class Model {
@@ -40,21 +38,15 @@ class Model {
     // parameters of the sensors
     float m_K_pres;  // mmH2O / Pa
     float m_K_flow;  // ml / m3
-    int32_t m_previousInspiratoryFlowMean;
-    int32_t m_previousInspiratoryFlowMeanMovingMean[PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE];
-    int32_t m_previousInspiratoryFlowMeanMovingMeanIndex;
+
     int32_t
         m_previousInspiratoryValvePositionMeanMovingMean[PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE];
     int32_t m_previousInspiratoryValvePositionMeanMovingMeanIndex;
     int32_t
         m_previousExpiratoryValvePositionMeanMovingMean[PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE];
     int32_t m_previousExpiratoryValvePositionMeanMovingMeanIndex;
-    float m_pFactorMeanMovingMean[P_FACTOR_MOVING_MEAN_SIZE];
-    int32_t m_pFactorMeanMovingMeanIndex;
     int32_t m_previousInspiratoryValvePositionMean;
     int32_t m_previousExpiratoryValvePositionMean;
-    float previousPbl;
+    float m_previousPbl;
     float m_previousPresp;
 };
-
-float res_valves(int opening_valve, float K_r, float K_roffset);

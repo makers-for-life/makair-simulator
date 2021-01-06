@@ -54,7 +54,7 @@ Model::Model()
     m_previousInspiratoryValvePositionMean = 0;
     m_previousExpiratoryValvePositionMean = 0;
 
-    previousPbl = 0.0;
+    m_previousPbl = 0.0;
     m_previousPresp = 0.0;
 }
 
@@ -101,14 +101,7 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
         sumInspiratory / PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE;
     m_previousExpiratoryValvePositionMean =
         sumExpiratory / PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE;
-
-    // Conversion of actuators command into physical parameters of the model
-    float Re = res_valves(m_previousExpiratoryValvePositionMean, m_Kr, m_Kroffset);
-    float Ri = res_valves(m_previousInspiratoryValvePositionMean, m_Kr, m_Kroffset);
-    /*float newPbl = blower.getBlowerPressure(m_previousInspiratoryFlowMean)
-                   / m_K_pres;  */
-
-    // float newPbl = m_K_blower * cmds.blower;  // dynamic of the blower is not taken
+    // dynamic of the blower is not taken
     // into account yet
 
     float newPbl = (703.0 * cmds.blower / 100.0 - 281.0 * m_previousInspiratoryFlowMean / 100000.0
@@ -116,12 +109,12 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
                           * (m_previousInspiratoryFlowMean / 100.0) / 1000000.0)
                    / m_K_pres;
     float Pbl;
-    if (newPbl > previousPbl) {
-        Pbl = min(newPbl, previousPbl + 30);
+    if (newPbl > m_previousPbl) {
+        Pbl = min(newPbl, m_previousPbl + 30);
     } else {
-        Pbl = max(newPbl, previousPbl - 30);
+        Pbl = max(newPbl, m_previousPbl - 30);
     }
-    previousPbl = Pbl;
+    m_previousPbl = Pbl;
 
     // resistance of expiration valve and leak are in paralell
     float Ref = Re * m_Rf / (Re + m_Rf);
@@ -138,100 +131,18 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
             ? 0
             : A1 * sqrt((2.0 / rho) * (m_previousPresp - 0) / (pow((1 / A2surA1exp), 2) - 1));
 
-    // influence of blower and atm pressure on the flow (derivative of the volume)
-    /*m_pFactorMeanMovingMeanIndex++;
-    if (m_pFactorMeanMovingMeanIndex >= P_FACTOR_MOVING_MEAN_SIZE) {
-        m_pFactorMeanMovingMeanIndex = 0;
-    }
-    m_pFactorMeanMovingMean[m_pFactorMeanMovingMeanIndex] =
-        Qinsp - Qexp;  //(Ref * Pbl) / (m_R * (Ref + Ri) + Ref * Ri);
-    float sumPfactor = 0;
-    for (int32_t i = 0; i < P_FACTOR_MOVING_MEAN_SIZE; i++) {
-        sumPfactor += m_pFactorMeanMovingMean[i];
-    }
-
-    float P_factor = sumPfactor / P_FACTOR_MOVING_MEAN_SIZE;*/
-
-    // influence of volume present in patient's lungs on the flow
-    // float V_factor = -m_Vp * (Ref + Ri) / (m_C * (m_R * (Ref + Ri) + Ref * Ri));
-
     // patient's flow
     float flow = Qinsp - Qexp;  // P_factor + V_factor;
 
     // conputation of the new patient's lung's volume
     m_Vp += flow * dt;
 
-    cout << ", Pbl=" << Pbl << ", Qinsp=" << m_K_flow * Qinsp / 1000
-         << ", Qexp=" << m_K_flow * Qexp / 1000 << ", m_previousPresp=" << m_previousPresp
-         << ", A2surA1insp=" << A2surA1insp << ", A2surA1exp=" << A2surA1exp
-         << ", flow=" << m_K_flow * flow / 1000
-         << ", cmds.inspirationValve=" << m_previousInspiratoryValvePositionMean
-         << ", cmds.expirationValve=" << m_previousExpiratoryValvePositionMean << endl;
-    // cout << (res_valves(39, 1.0, 1.0)) << ", " << (res_valves(40, 1.0, 1.0)) << endl;
-
     // computation of sensor data
     SensorsData output;
     output.inspiratoryPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
     m_previousPresp = (flow * m_R + m_Vp / m_C);
     output.inspiratoryFlow = m_K_flow * Qinsp;
-    // int32_t leakFlow = m_K_flow * (Pbl - output.inspiratoryPressure / m_K_pres) / m_Rf;
     output.expiratoryFlow = m_K_flow * Qexp;
 
-    /*cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspiratoryFlow / 1000
-         << "L/min, expiratoryFlow=" << output.expiratoryFlow / 1000
-         << "L/min, flow=" << flow * m_K_flow / 1000 << "L/min, leakFlow=" << leakFlow / 1000
-         << "L/min, inspiratoryPressure=" << output.inspiratoryPressure
-         << "mmH2O, blowerPressre=" << Pbl * m_K_pres
-         << "mmH2O, Pfactor=" << m_K_flow * P_factor / 1000
-         << "L/min, V_factor=" << m_K_flow * V_factor / 1000
-         << "L/min, cmdinspi= " << cmds.inspirationValve << "%, " << endl;*/
-
-    m_previousInspiratoryFlowMeanMovingMeanIndex++;
-    if (m_previousInspiratoryFlowMeanMovingMeanIndex
-        >= PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE) {
-        m_previousInspiratoryFlowMeanMovingMeanIndex = 0;
-    }
-    m_previousInspiratoryFlowMeanMovingMean[m_previousInspiratoryFlowMeanMovingMeanIndex] =
-        output.inspiratoryFlow;
-    int32_t sum = 0;
-    for (int32_t i = 0; i < PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE; i++) {
-        sum += m_previousInspiratoryFlowMeanMovingMean[i];
-    }
-    m_previousInspiratoryFlowMean = sum / PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE;
     return (output);
-}
-
-/**
- * function thats compute the resistance of the valves depending of the
- * openning. Here the relation is linear, but it can be upgraded to a more
- * realistic model
- * @opening_valve in % of the maximum opening
- * @K_r the coefficient of resistance in Pa.(m3.s-1)-1 / %
- */
-float res_valves(int opening_valve, float K_r, float K_roffset) {
-    float return_value;
-
-    float x = opening_valve;
-    if (opening_valve <= 40) {
-        return_value = 33408.0 * x + 387000.0;
-
-    } else if (opening_valve <= 72.0) {
-        return_value = 5.1467340524981079e+009 - 6.1181197775600815e+008 * x
-                       + 3.0148832673133574e+007 * pow(x, 2) - 7.8827886257496232e+005 * pow(x, 3)
-                       + 1.1536362294209976e+004 * pow(x, 4) - 8.9625225665302438e+001 * pow(x, 5)
-                       + 2.8899388749241267e-001 * pow(x, 6);
-
-    } else if (opening_valve <= 76.0) {
-        return_value = 32561335.5 * x - 2310083471.0;
-    } else if (opening_valve <= 80.0) {
-        return_value = 721934512.0 * x - 54702444885.0;
-    } else if (opening_valve <= 84.0) {
-        return_value = 3235655141.5 * x - 255800095245.0;
-    } else if (opening_valve <= 100.0) {
-        return_value = 521589460.5 * x - 27818578041.0;
-    } else {
-        cout << "error in valve angle" << endl;
-        return_value = 1e10;
-    }
-    return return_value;
 }
