@@ -33,11 +33,6 @@ Model::Model()
       m_K_flow(60 * 1e6)  // ml/min <- m3/s
 
 {
-    m_previousInspiratoryFlowMeanMovingMeanIndex = 0;
-    for (int32_t i = 0; i < PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE; i++) {
-        m_previousInspiratoryFlowMeanMovingMean[i] = 0;
-    }
-    m_previousInspiratoryFlowMean = 0;
 
     m_previousExpiratoryValvePositionMeanMovingMeanIndex = 0;
     m_previousInspiratoryValvePositionMeanMovingMeanIndex = 0;
@@ -46,16 +41,12 @@ Model::Model()
         m_previousExpiratoryValvePositionMeanMovingMean[i] = 0;
     }
 
-    for (int32_t i = 0; i < P_FACTOR_MOVING_MEAN_SIZE; i++) {
-        m_pFactorMeanMovingMean[i] = 0.0;
-    }
-    m_pFactorMeanMovingMeanIndex = 0;
-
     m_previousInspiratoryValvePositionMean = 0;
     m_previousExpiratoryValvePositionMean = 0;
 
     m_previousPbl = 0.0;
     m_previousPresp = 0.0;
+    m_previousInspiratoryFlow = 0.0;
 }
 
 void Model::init(int32_t p_resistance, int32_t p_compliance) {
@@ -104,9 +95,9 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // dynamic of the blower is not taken
     // into account yet
 
-    float newPbl = (703.0 * cmds.blower / 100.0 - 281.0 * m_previousInspiratoryFlowMean / 100000.0
-                    - 832.0 * (m_previousInspiratoryFlowMean / 100.0)
-                          * (m_previousInspiratoryFlowMean / 100.0) / 1000000.0)
+    float newPbl = (703.0 * cmds.blower / 100.0 - 281.0 * m_previousInspiratoryFlow / 100000.0
+                    - 832.0 * (m_previousInspiratoryFlow / 100.0)
+                          * (m_previousInspiratoryFlow / 100.0) / 1000000.0)
                    / m_K_pres;
     float Pbl;
     if (newPbl > m_previousPbl) {
@@ -114,10 +105,8 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     } else {
         Pbl = max(newPbl, m_previousPbl - 30);
     }
-    m_previousPbl = Pbl;
 
-    // resistance of expiration valve and leak are in paralell
-    float Ref = Re * m_Rf / (Re + m_Rf);
+    // Calculate flow using venturi relation : https://en.wikipedia.org/wiki/Venturi_effect
     float A1 = 3.32e-05;
     float A2surA1insp = max(0.0, -9.35E-03 * m_previousInspiratoryValvePositionMean + 0.809);
     float A2surA1exp = max(0.0, -9.35E-03 * m_previousExpiratoryValvePositionMean + 0.809);
@@ -143,6 +132,8 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     m_previousPresp = (flow * m_R + m_Vp / m_C);
     output.inspiratoryFlow = m_K_flow * Qinsp;
     output.expiratoryFlow = m_K_flow * Qexp;
+    m_previousInspiratoryFlow = Qinsp;
+    m_previousPbl = Pbl;
 
     return (output);
 }

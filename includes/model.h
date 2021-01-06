@@ -49,4 +49,5 @@ class Model {
     int32_t m_previousExpiratoryValvePositionMean;
     float m_previousPbl;
     float m_previousPresp;
+    float m_previousInspiratoryFlow;
 };
