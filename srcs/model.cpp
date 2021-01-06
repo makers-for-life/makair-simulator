@@ -55,6 +55,7 @@ Model::Model()
     m_previousExpiratoryValvePositionMean = 0;
 
     previousPbl = 0.0;
+    m_previousPresp = 0.0;
 }
 
 void Model::init(int32_t p_resistance, int32_t p_compliance) {
@@ -124,33 +125,46 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
 
     // resistance of expiration valve and leak are in paralell
     float Ref = Re * m_Rf / (Re + m_Rf);
+    float A1 = 3.32e-05;
+    float A2surA1insp = max(0.0, -9.35E-03 * m_previousInspiratoryValvePositionMean + 0.809);
+    float A2surA1exp = max(0.0, -9.35E-03 * m_previousExpiratoryValvePositionMean + 0.809);
+    float rho = 1.2;
+    float Qinsp =
+        (Pbl - m_previousPresp < 0)
+            ? 0
+            : A1 * sqrt((2.0 / rho) * (Pbl - m_previousPresp) / (pow((1 / A2surA1insp), 2) - 1));
+    float Qexp =
+        (m_previousPresp - 0 < 0)
+            ? 0
+            : A1 * sqrt((2.0 / rho) * (m_previousPresp - 0) / (pow((1 / A2surA1exp), 2) - 1));
 
     // influence of blower and atm pressure on the flow (derivative of the volume)
-    m_pFactorMeanMovingMeanIndex++;
+    /*m_pFactorMeanMovingMeanIndex++;
     if (m_pFactorMeanMovingMeanIndex >= P_FACTOR_MOVING_MEAN_SIZE) {
         m_pFactorMeanMovingMeanIndex = 0;
     }
     m_pFactorMeanMovingMean[m_pFactorMeanMovingMeanIndex] =
-        (Ref * Pbl) / (m_R * (Ref + Ri) + Ref * Ri);
+        Qinsp - Qexp;  //(Ref * Pbl) / (m_R * (Ref + Ri) + Ref * Ri);
     float sumPfactor = 0;
     for (int32_t i = 0; i < P_FACTOR_MOVING_MEAN_SIZE; i++) {
         sumPfactor += m_pFactorMeanMovingMean[i];
     }
 
-    float P_factor = sumPfactor / P_FACTOR_MOVING_MEAN_SIZE;
+    float P_factor = sumPfactor / P_FACTOR_MOVING_MEAN_SIZE;*/
 
     // influence of volume present in patient's lungs on the flow
-    float V_factor = -m_Vp * (Ref + Ri) / (m_C * (m_R * (Ref + Ri) + Ref * Ri));
+    // float V_factor = -m_Vp * (Ref + Ri) / (m_C * (m_R * (Ref + Ri) + Ref * Ri));
 
     // patient's flow
-    float flow = P_factor + V_factor;
+    float flow = Qinsp - Qexp;  // P_factor + V_factor;
 
     // conputation of the new patient's lung's volume
     m_Vp += flow * dt;
 
-    cout << ", Pbl=" << Pbl << ", m_R=" << m_R << ", Ri=" << Ri << ", Ref=" << Ref << ", Re=" << Re
-         << ", P_factor=" << m_K_flow * P_factor / 1000
-         << ", V_factor=" << m_K_flow * V_factor / 1000 << ", flow=" << m_K_flow * flow / 1000
+    cout << ", Pbl=" << Pbl << ", Qinsp=" << m_K_flow * Qinsp / 1000
+         << ", Qexp=" << m_K_flow * Qexp / 1000 << ", m_previousPresp=" << m_previousPresp
+         << ", A2surA1insp=" << A2surA1insp << ", A2surA1exp=" << A2surA1exp
+         << ", flow=" << m_K_flow * flow / 1000
          << ", cmds.inspirationValve=" << m_previousInspiratoryValvePositionMean
          << ", cmds.expirationValve=" << m_previousExpiratoryValvePositionMean << endl;
     // cout << (res_valves(39, 1.0, 1.0)) << ", " << (res_valves(40, 1.0, 1.0)) << endl;
@@ -158,9 +172,10 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // computation of sensor data
     SensorsData output;
     output.inspiratoryPressure = m_K_pres * (flow * m_R + m_Vp / m_C);
-    output.inspiratoryFlow = m_K_flow * (Pbl - output.inspiratoryPressure / m_K_pres) / Ri;
-    int32_t leakFlow = m_K_flow * (Pbl - output.inspiratoryPressure / m_K_pres) / m_Rf;
-    output.expiratoryFlow = m_K_flow * (output.inspiratoryPressure / m_K_pres - 0) / Re;
+    m_previousPresp = (flow * m_R + m_Vp / m_C);
+    output.inspiratoryFlow = m_K_flow * Qinsp;
+    // int32_t leakFlow = m_K_flow * (Pbl - output.inspiratoryPressure / m_K_pres) / m_Rf;
+    output.expiratoryFlow = m_K_flow * Qexp;
 
     /*cout << "volume=" << m_Vp * 1e6 << "mL, inspiratoryFlow=" << output.inspiratoryFlow / 1000
          << "L/min, expiratoryFlow=" << output.expiratoryFlow / 1000

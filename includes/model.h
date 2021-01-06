@@ -12,8 +12,8 @@
 #include <cstdint>
 #include <unistd.h>
 #define PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE 1
-#define PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE 5
-#define P_FACTOR_MOVING_MEAN_SIZE 2
+#define PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE 1
+#define P_FACTOR_MOVING_MEAN_SIZE 1
 
 /// Model
 class Model {
@@ -54,6 +54,7 @@ class Model {
     int32_t m_previousInspiratoryValvePositionMean;
     int32_t m_previousExpiratoryValvePositionMean;
     float previousPbl;
+    float m_previousPresp;
 };
 
 float res_valves(int opening_valve, float K_r, float K_roffset);
