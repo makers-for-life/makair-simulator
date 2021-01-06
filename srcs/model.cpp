@@ -124,11 +124,13 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // conputation of the new patient's lung's volume
     m_Vp += flow * dt;
 
-    cout << ", Pbl=" << Pbl << ", m_R=" << m_R << ", Ri=" << Ri << ", Ref=" << Ref << ", Re=" << Re
+    /*cout << ", Pbl=" << Pbl << ", m_R=" << m_R << ", Ri=" << Ri << ", Ref=" << Ref << ", Re=" <<
+       Re
          << ", P_factor=" << m_K_flow * P_factor / 1000
          << ", V_factor=" << m_K_flow * V_factor / 1000 << ", flow=" << m_K_flow * flow / 1000
          << ", cmds.inspirationValve=" << cmds.inspirationValve
-         << ", cmds.expirationValve=" << cmds.expirationValve << endl;
+         << ", cmds.expirationValve=" << cmds.expirationValve << endl;*/
+    cout << (res_valves(39, 1.0, 1.0)) << ", " << (res_valves(40, 1.0, 1.0)) << endl;
 
     // computation of sensor data
     SensorsData output;
@@ -174,18 +176,17 @@ float res_valves(int opening_valve, float K_r, float K_roffset) {
         return_value = 1e10;
     } else {
         float x = opening_valve;
-        if (opening_valve <= 72.0) {
+        if (opening_valve <= 40) {
+            return_value = 204725.0 * x + 387000.0;
+
+        } else if (opening_valve <= 72.0) {
             return_value =
-                387044.0 + 8189.0 * x + -69.3 * pow(x, 2) + -407.0 * pow(x, 3) + 87.5 * pow(x, 4)
-                + -7.5 * pow(x, 5) + 0.343 * pow(x, 6) + -9.1e-03 * pow(x, 7) + 1.4e-04 * pow(x, 8)
-                + -1.16e-06 * pow(x, 9)
-                + 3.99e-09
-                      * pow(x,
-                            10);  // 581686.0 - 334863.0 * x + 65967.0 * pow(x, 2) - 4555.0 * pow(x,
-                                  // 3)+ 143.0 * pow(x, 4) - 2.05 * pow(x, 5) + 0.0111 * pow(x, 6);
+                3.12e9 - 2.24e8 * x + 6e6 * pow(x, 2) - 71376.0 * pow(x, 3) + 319.0 * pow(x, 4);
+            // 581686.0 - 334863.0 * x + 65967.0 * pow(x, 2) - 4555.0 * pow(x,
+            // 3)+ 143.0 * pow(x, 4) - 2.05 * pow(x, 5) + 0.0111 * pow(x, 6);
             // cout << "inf72";
         } else {
-            return_value = 1124997854.25 * x - 80999811174.0;
+            return_value = 1123261825.0 * x - 80847040600.0;
         }
         // cout << return_value << endl;
 
