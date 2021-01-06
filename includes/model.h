@@ -11,7 +11,7 @@
 #include "../includes/helper.h"
 #include <cstdint>
 #include <unistd.h>
-#define PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE 5
+#define PREVIOUS_INSPIRATORY_FLOW_MOVING_MEAN_SIZE 1
 #define PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE 5
 
 /// Model
