@@ -175,8 +175,14 @@ float res_valves(int opening_valve, float K_r, float K_roffset) {
     } else {
         float x = opening_valve;
         if (opening_valve <= 72.0) {
-            return_value = 581686.0 - 334863.0 * x + 65967.0 * pow(x, 2) - 4555.0 * pow(x, 3)
-                           + 143.0 * pow(x, 4) - 2.05 * pow(x, 5) + 0.0111 * pow(x, 6);
+            return_value =
+                387044.0 + 8189.0 * x + -69.3 * pow(x, 2) + -407.0 * pow(x, 3) + 87.5 * pow(x, 4)
+                + -7.5 * pow(x, 5) + 0.343 * pow(x, 6) + -9.1e-03 * pow(x, 7) + 1.4e-04 * pow(x, 8)
+                + -1.16e-06 * pow(x, 9)
+                + 3.99e-09
+                      * pow(x,
+                            10);  // 581686.0 - 334863.0 * x + 65967.0 * pow(x, 2) - 4555.0 * pow(x,
+                                  // 3)+ 143.0 * pow(x, 4) - 2.05 * pow(x, 5) + 0.0111 * pow(x, 6);
             // cout << "inf72";
         } else {
             return_value = 1124997854.25 * x - 80999811174.0;
