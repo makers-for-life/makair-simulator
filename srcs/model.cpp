@@ -117,9 +117,9 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
                    / m_K_pres;
     float Pbl;
     if (newPbl > previousPbl) {
-        Pbl = min(newPbl, previousPbl + 150);
+        Pbl = min(newPbl, previousPbl + 30);
     } else {
-        Pbl = max(newPbl, previousPbl - 150);
+        Pbl = max(newPbl, previousPbl - 30);
     }
     previousPbl = Pbl;
 
