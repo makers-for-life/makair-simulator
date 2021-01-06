@@ -124,13 +124,12 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // conputation of the new patient's lung's volume
     m_Vp += flow * dt;
 
-    /*cout << ", Pbl=" << Pbl << ", m_R=" << m_R << ", Ri=" << Ri << ", Ref=" << Ref << ", Re=" <<
-       Re
+    cout << ", Pbl=" << Pbl << ", m_R=" << m_R << ", Ri=" << Ri << ", Ref=" << Ref << ", Re=" << Re
          << ", P_factor=" << m_K_flow * P_factor / 1000
          << ", V_factor=" << m_K_flow * V_factor / 1000 << ", flow=" << m_K_flow * flow / 1000
-         << ", cmds.inspirationValve=" << cmds.inspirationValve
-         << ", cmds.expirationValve=" << cmds.expirationValve << endl;*/
-    cout << (res_valves(39, 1.0, 1.0)) << ", " << (res_valves(40, 1.0, 1.0)) << endl;
+         << ", cmds.inspirationValve=" << m_previousInspiratoryValvePositionMean
+         << ", cmds.expirationValve=" << m_previousInspiratoryValvePositionMean << endl;
+    // cout << (res_valves(39, 1.0, 1.0)) << ", " << (res_valves(40, 1.0, 1.0)) << endl;
 
     // computation of sensor data
     SensorsData output;
@@ -181,7 +180,10 @@ float res_valves(int opening_valve, float K_r, float K_roffset) {
 
         } else if (opening_valve <= 72.0) {
             return_value =
-                3.12e9 - 2.24e8 * x + 6e6 * pow(x, 2) - 71376.0 * pow(x, 3) + 319.0 * pow(x, 4);
+                5.1467340524981079e+009 - 6.1181197775600815e+008 * x
+                + 3.0148832673133574e+007 * pow(x, 2) - 7.8827886257496232e+005 * pow(x, 3)
+                + 1.1536362294209976e+004 * pow(x, 4) - 8.9625225665302438e+001 * pow(x, 5)
+                + 2.8899388749241267e-001 * pow(x, 6);
             // 581686.0 - 334863.0 * x + 65967.0 * pow(x, 2) - 4555.0 * pow(x,
             // 3)+ 143.0 * pow(x, 4) - 2.05 * pow(x, 5) + 0.0111 * pow(x, 6);
             // cout << "inf72";
