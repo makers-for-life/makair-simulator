@@ -19,7 +19,7 @@ class Model {
     /// Default constructor
     Model();
 
-    void init(int32_t p_resistance, int32_t p_compliance);
+    void init(int32_t p_resistance, int32_t p_compliance, int32_t p_inertance);
 
     SensorsData compute(ActuatorsData cmds, float dt);
 
@@ -28,6 +28,7 @@ class Model {
     float m_Rf;  // resistance of leaking in Pa.(m.s-1)-1
     float m_R;   // resistance of the patient in Pa.(m.s-1)-1
     float m_C;   // compilance of the patient in m3.Pa-1
+    float m_I;   // Inertance of the patient in  Pa m−3 s2
     float m_Vp;  // Volume of air in the lungs of the patient above rest volume in m3
 
     // parameters of the actuators
@@ -50,4 +51,5 @@ class Model {
     float m_previousPbl;
     float m_previousPresp;
     float m_previousInspiratoryFlow;
+    float m_previousFlow;
 };
