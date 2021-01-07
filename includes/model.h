@@ -11,7 +11,7 @@
 #include "../includes/helper.h"
 #include <cstdint>
 #include <unistd.h>
-#define PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE 1
+#define PREVIOUS_VALVE_POSITION_TABLE_SIZE 100
 
 /// Model
 class Model {
@@ -32,25 +32,15 @@ class Model {
     float m_Vpatient;  // Volume of air in the lungs of the patient above rest volume in m3
     float m_Vcircuit;  // Volume of air in the circuit in m3
 
-    // parameters of the actuators
-    float m_Kr;        // coefficient of resistance in Pa.(m.s-1)-1 / %
-    float m_Kroffset;  // coefficient of resistance in Pa.(m.s-1)-1
-    float m_K_blower;  // coefficient of blower pressure in Pa / %
-
     // parameters of the sensors
     float m_K_pres;  // mmH2O / Pa
     float m_K_flow;  // ml / m3
 
-    int32_t
-        m_previousInspiratoryValvePositionMeanMovingMean[PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE];
-    int32_t m_previousInspiratoryValvePositionMeanMovingMeanIndex;
-    int32_t
-        m_previousExpiratoryValvePositionMeanMovingMean[PREVIOUS_VALVE_POSITION_MOVING_MEAN_SIZE];
-    int32_t m_previousExpiratoryValvePositionMeanMovingMeanIndex;
-    int32_t m_previousInspiratoryValvePositionMean;
-    int32_t m_previousExpiratoryValvePositionMean;
+    int32_t m_previousInspiratoryValvePositionLastValues[PREVIOUS_VALVE_POSITION_TABLE_SIZE];
+    int32_t m_previousInspiratoryValvePositionLastValuesIndex;
+    int32_t m_previousExpiratoryValvePositionLastValues[PREVIOUS_VALVE_POSITION_TABLE_SIZE];
+    int32_t m_previousExpiratoryValvePositionLastValuesIndex;
     float m_previousPbl;
-    float m_previousPresp;
     float m_previousInspiratoryFlow;
     float m_previousVentilatorPressure;
     float m_previousPreviousVentilatorPressure;
