@@ -57,7 +57,7 @@ void Model::init(int32_t p_resistance, int32_t p_compliance, int32_t p_inertance
     m_Rf = 1000000 * 1e8;                             // resistance of leaking in Pa.(m3.s-1)-1
     m_R = ((float)p_resistance) * 98.0665 / (10e-3);  // resistance of the patient in Pa.(m3.s-1)-1
     m_C = float(p_compliance) * 1e-6 / 98.0665;       // compilance of the patient in m3.Pa-1
-    m_Ce = m_C / 500.0;                               //
+    m_Ce = m_C / 250.0;                               //
     m_Vpatient = 0.0;  // Volume of air in the lungs of the patient above rest volume in m3
     m_Vcircuit = 0.0;  // Volume of air in the circuit in m3
     cout << m_R << endl;
