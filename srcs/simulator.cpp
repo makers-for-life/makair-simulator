@@ -31,7 +31,7 @@ void Simulator::run(int32_t p_resistance, int32_t p_compliance) {
 }
 
 void Simulator::init(int32_t p_resistance, int32_t p_compliance) {
-    m_model.init(p_resistance, p_compliance, 1.0e3);
+    m_model.init(p_resistance, p_compliance, 10.0);
     m_state_machine.init(-1);
     m_logger.init();
 
