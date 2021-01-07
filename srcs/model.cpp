@@ -58,7 +58,7 @@ void Model::init(int32_t p_resistance, int32_t p_compliance, int32_t p_inertance
     m_Rf = 1000000 * 1e8;                             // resistance of leaking in Pa.(m3.s-1)-1
     m_R = ((float)p_resistance) * 98.0665 / (10e-3);  // resistance of the patient in Pa.(m3.s-1)-1
     m_C = float(p_compliance) * 1e-6 / 98.0665;       // compilance of the patient in m3.Pa-1
-    m_Ce = 8e-9;                                      //
+    m_Ce = 4e-8;                                      //
     m_Vpatient = 0.0;  // Volume of air in the lungs of the patient above rest volume in m3
     m_Vcircuit = 0.0;  // Volume of air in the circuit in m3
     cout << m_R << endl;
@@ -146,12 +146,12 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // computation of sensor data
     SensorsData output;
     output.inspiratoryPressure = m_K_pres * (patientFlow * m_R + m_Vpatient / m_C);
-    /*cout << "ventilatorPressure=" << ventilatorPressure << ", Pbl=" << Pbl
+    cout << "ventilatorPressure=" << ventilatorPressure << ", Pbl=" << Pbl
          << ", m_previousPresp=" << m_previousPresp
          << ", ventilatorFlow=" << m_K_flow * ventilatorFlow / 1000
          << ", circuitFlow=" << m_K_flow * circuitFlow / 1000
          << ", patientFlow=" << m_K_flow * patientFlow / 1000 << ", m_Vpatient=" << m_Vpatient * 1e6
-         << ", m_Vcircuit=" << m_Vcircuit * 1e6 << endl;*/
+         << ", m_Vcircuit=" << m_Vcircuit * 1e6 << endl;
 
     output.inspiratoryFlow = m_K_flow * Qinsp;
     output.expiratoryFlow = m_K_flow * Qexp;
