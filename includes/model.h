@@ -52,6 +52,7 @@ class Model {
     float m_previousPbl;
     float m_previousPresp;
     float m_previousInspiratoryFlow;
-    float m_previousPatientFlow;
     float m_previousVentilatorPressure;
+    float m_previousPreviousVentilatorPressure;
+    float m_previousVentilatorFlow;
 };

@@ -48,8 +48,9 @@ Model::Model()
     m_previousPbl = 0.0;
     m_previousPresp = 0.0;
     m_previousInspiratoryFlow = 0.0;
-    m_previousPatientFlow = 0.0;
     m_previousVentilatorPressure = 0.0;
+    m_previousPreviousVentilatorPressure = 0.0;
+    m_previousVentilatorFlow = 0.0;
 }
 
 void Model::init(int32_t p_resistance, int32_t p_compliance, int32_t p_inertance) {
@@ -57,7 +58,7 @@ void Model::init(int32_t p_resistance, int32_t p_compliance, int32_t p_inertance
     m_Rf = 1000000 * 1e8;                             // resistance of leaking in Pa.(m3.s-1)-1
     m_R = ((float)p_resistance) * 98.0665 / (10e-3);  // resistance of the patient in Pa.(m3.s-1)-1
     m_C = float(p_compliance) * 1e-6 / 98.0665;       // compilance of the patient in m3.Pa-1
-    m_Ce = m_C / 125.0;                               //
+    m_Ce = 8e-9;                                      //
     m_Vpatient = 0.0;  // Volume of air in the lungs of the patient above rest volume in m3
     m_Vcircuit = 0.0;  // Volume of air in the circuit in m3
     cout << m_R << endl;
@@ -116,18 +117,25 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     float A2surA1insp = max(0.0, -9.35E-03 * m_previousInspiratoryValvePositionMean + 0.809);
     float A2surA1exp = max(0.0, -9.35E-03 * m_previousExpiratoryValvePositionMean + 0.809);
     float rho = 1.2;
-    float Qinsp =
-        (Pbl - m_previousPresp < 0)
-            ? 0
-            : A1 * sqrt((2.0 / rho) * (Pbl - m_previousPresp) / (pow((1 / A2surA1insp), 2) - 1));
-    float Qexp =
-        (m_previousPresp - 0 < 0)
-            ? 0
-            : A1 * sqrt((2.0 / rho) * (m_previousPresp - 0) / (pow((1 / A2surA1exp), 2) - 1));
+    float Qinsp = (Pbl - m_previousVentilatorPressure < 0)
+                      ? 0
+                      : A1
+                            * sqrt((2.0 / rho) * (Pbl - m_previousVentilatorPressure)
+                                   / (pow((1 / A2surA1insp), 2) - 1));
+    float Qexp = (m_previousVentilatorPressure - 0 < 0)
+                     ? 0
+                     : A1
+                           * sqrt((2.0 / rho) * (m_previousVentilatorPressure - 0)
+                                  / (pow((1 / A2surA1exp), 2) - 1));
 
     // patient's flow
     float ventilatorFlow = Qinsp - Qexp;
-    float ventilatorPressure = m_previousPatientFlow * m_R + m_Vpatient / m_C;
+    float di = ventilatorFlow - m_previousVentilatorFlow;
+    float ventilatorPressure =
+        (m_R * m_Ce * (2 * m_previousVentilatorPressure - m_previousPreviousVentilatorPressure)
+         + (1 - m_Ce / m_C) * m_previousVentilatorPressure * dt + dt * dt * ventilatorFlow / m_C
+         + m_R * di * dt)
+        / ((1 - m_Ce / m_C) * dt + m_R * m_Ce);  // m_previousPatientFlow * m_R + m_Vpatient / m_C;
     float circuitFlow = m_Ce * (ventilatorPressure - m_previousVentilatorPressure) / dt;
     float patientFlow = ventilatorFlow - circuitFlow;
 
@@ -138,19 +146,21 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // computation of sensor data
     SensorsData output;
     output.inspiratoryPressure = m_K_pres * (patientFlow * m_R + m_Vpatient / m_C);
-    cout << "ventilatorPressure=" << ventilatorPressure << ", Pbl=" << Pbl
+    /*cout << "ventilatorPressure=" << ventilatorPressure << ", Pbl=" << Pbl
          << ", m_previousPresp=" << m_previousPresp
          << ", ventilatorFlow=" << m_K_flow * ventilatorFlow / 1000
          << ", circuitFlow=" << m_K_flow * circuitFlow / 1000
-         << ", patientFlow=" << m_K_flow * patientFlow / 1000 << endl;
+         << ", patientFlow=" << m_K_flow * patientFlow / 1000 << ", m_Vpatient=" << m_Vpatient * 1e6
+         << ", m_Vcircuit=" << m_Vcircuit * 1e6 << endl;*/
 
-    m_previousPresp = ventilatorPressure;
     output.inspiratoryFlow = m_K_flow * Qinsp;
     output.expiratoryFlow = m_K_flow * Qexp;
 
     m_previousInspiratoryFlow = m_K_flow * Qinsp;
     m_previousPbl = Pbl;
-    m_previousPatientFlow = patientFlow;
+    // m_previousPatientFlow = patientFlow;
+    m_previousVentilatorFlow = ventilatorFlow;
+    m_previousPreviousVentilatorPressure = m_previousVentilatorPressure;
     m_previousVentilatorPressure = ventilatorPressure;
 
     return (output);
