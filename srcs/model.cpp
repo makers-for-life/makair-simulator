@@ -21,8 +21,8 @@ Model::Model()
       m_Rf(nanf("")),
       m_R(nanf("")),
       m_C(nanf("")),
-      m_I(nanf("")),
-      m_Vp(nanf("")),
+      m_Ce(nanf("")),
+      m_Vpatient(nanf("")),
 
       // parameters of the actuators
       m_Kr(6e4),            // coefficient of resistance in Pa.(m3.s-1)-1 / %
@@ -48,7 +48,8 @@ Model::Model()
     m_previousPbl = 0.0;
     m_previousPresp = 0.0;
     m_previousInspiratoryFlow = 0.0;
-    m_previousFlow = 0.0;
+    m_previousPatientFlow = 0.0;
+    m_previousVentilatorPressure = 0.0;
 }
 
 void Model::init(int32_t p_resistance, int32_t p_compliance, int32_t p_inertance) {
@@ -56,8 +57,9 @@ void Model::init(int32_t p_resistance, int32_t p_compliance, int32_t p_inertance
     m_Rf = 1000000 * 1e8;                             // resistance of leaking in Pa.(m3.s-1)-1
     m_R = ((float)p_resistance) * 98.0665 / (10e-3);  // resistance of the patient in Pa.(m3.s-1)-1
     m_C = float(p_compliance) * 1e-6 / 98.0665;       // compilance of the patient in m3.Pa-1
-    m_I = 1.0;                                        // p_inertance * 98.0665 * 1e3;
-    m_Vp = 0.;  // Volume of air in the lungs of the patient above rest volume in m3
+    m_Ce = m_C / 1000.0;                              //
+    m_Vpatient = 0.0;  // Volume of air in the lungs of the patient above rest volume in m3
+    m_Vcircuit = 0.0;  // Volume of air in the circuit in m3
     cout << m_R << endl;
     cout << m_C << endl;
 }
@@ -124,24 +126,32 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
             : A1 * sqrt((2.0 / rho) * (m_previousPresp - 0) / (pow((1 / A2surA1exp), 2) - 1));
 
     // patient's flow
-    float flow = Qinsp - Qexp;  // P_factor + V_factor;
+    float ventilatorFlow = Qinsp - Qexp;
+    float ventilatorPressure = m_previousPatientFlow * m_R + m_Vpatient / m_C;
+    float circuitFlow = m_Ce * (ventilatorPressure - m_previousVentilatorPressure) / dt;
+    float patientFlow = ventilatorFlow - circuitFlow;
 
     // conputation of the new patient's lung's volume
-    m_Vp += flow * dt;
-    float flowDerivative = (flow - m_previousFlow) / dt;
+    m_Vpatient += patientFlow * dt;
+    m_Vcircuit += circuitFlow * dt;
 
     // computation of sensor data
     SensorsData output;
-    output.inspiratoryPressure = m_K_pres * (flowDerivative * m_I + flow * m_R + m_Vp / m_C);
-    m_previousPresp = (flow * m_R + m_Vp / m_C);
+    output.inspiratoryPressure = m_K_pres * (patientFlow * m_R + m_Vpatient / m_C);
+    cout << "ventilatorPressure=" << ventilatorPressure << ", Pbl=" << Pbl
+         << ", m_previousPresp=" << m_previousPresp
+         << ", ventilatorFlow=" << m_K_flow * ventilatorFlow / 1000
+         << ", circuitFlow=" << m_K_flow * circuitFlow / 1000
+         << ", patientFlow=" << m_K_flow * patientFlow / 1000 << endl;
+
+    m_previousPresp = ventilatorPressure;
     output.inspiratoryFlow = m_K_flow * Qinsp;
     output.expiratoryFlow = m_K_flow * Qexp;
-    /*cout << "pressure=" << output.inspiratoryPressure << ", flow=" << m_K_flow * flow / 1000
-         << ", m_previousFlow=" << m_K_flow * m_previousFlow / 1000 << endl;*/
 
     m_previousInspiratoryFlow = m_K_flow * Qinsp;
     m_previousPbl = Pbl;
-    m_previousFlow = flow;
+    m_previousPatientFlow = patientFlow;
+    m_previousVentilatorPressure = ventilatorPressure;
 
     return (output);
 }
