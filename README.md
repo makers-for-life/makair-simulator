@@ -13,7 +13,7 @@
 In order to setup your environment and build the code, please follow the following commands :
 
 1. You need a toolchain able to compile c++. On ubuntu : `sudo apt install build-essential `
-2. Clone this repo on your machine : `git clone https://github.com/makers-for-life/makair-simulator`
+2. Clone this repo on your machine : `git clone https://github.com/makers-for-life/makair-simulator --recurse-submodules`
 3. Go in the build directory `cd makair-simulator/build`
 4. Compile the project `make`
 5. You get an executable called `simulator` in the build directory
@@ -26,9 +26,9 @@ In order to setup your environment and build the code, please follow the followi
 2. Add the /bin directory of the compiler to the PATH.
 3. Install 'Make for Windows" http://gnuwin32.sourceforge.net/packages/make.htm
 4. Add the /bin directory of gnuwin32 to the PATH.
-5. Clone this repo on your machine : `git clone https://github.com/makers-for-life/makair-simulator`
-6. Create a new git script, using the following command `
-
+5. Clone this repo on your machine : `git clone https://github.com/makers-for-life/makair-simulator --recurse-submodules`
+6. Create a new git script, using the following command 
+```
     git checkout -- "$symlink"
     src="${symdir}/$(cat "$symlink")"
 
@@ -56,16 +56,18 @@ In order to setup your environment and build the code, please follow the followi
     { print }
     END { exit status_code }
   '
-}`
+}
 
 __git_rm_symlinks
 ETX
 )"
-
 git config --global alias.rm-symlink '!git rm-symlinks'  # for back-compat.
+```
+7. Execute the previous command inside the repo `git rm-symlinks`
+8. In the `build` directory, replace the content of the Makefile by the content of the MakefileWindows
+9. In the `build` directory, run `make`
 
-
-## How To Run?
+## How To Run on linux or Mac?
 
 In order to run the simulator that you just built using the instructions above, please follow the following commands:
 1. Install socat. On ubuntu : `sudo apt install socat `
