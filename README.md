@@ -6,7 +6,7 @@
 
 | Version | Last Changelog | Ready? |
 | ------- | -------------- | ------ |
-| V1.0.x | Functionnal simumlator usable with UI | ❌
+| V1.0.x | Functionnal simulator usable with UI | ❌
 
 ## How To Build the simulator on Linux or Mac?
 
@@ -75,6 +75,17 @@ In order to run the simulator that you just built using the instructions above, 
 3. Create fakes serial ports with socat : `socat -d -d pty,link=serialport/tty0,raw,echo=0 pty,link=serialport/tty1,raw,echo=0 `
 4. Run the simulator, specifying the serial port (`-p`), the lungs resistance (`-r`), and the compliance (`-c`) : `./simulator -p serialport/tty0 -r 10 -c 70`
 5. You can now run the control-ui executable on port `serialport/tty1`. For example: `makair-control -p serialport/tty1`
+
+## How To Run on Windows ?
+
+In order to run the simulator that you just built using the instructions above, please follow the following instructions:
+1. Create a fake serial port, using com0com 2.2 : https://sourceforge.net/projects/com0com/files/com0com/2.2.2.0/ . Make sure to download the signed version, otherwise Windows will insult you.
+2. Install com0com using `setup.exe` that you have juste downloaded
+3. In the install directory of com0com, run `setupc.exe` . It will open a specific command prompt
+4. In the command com0com prompt, create a pair of "fake" serial ports : `install PortName=CNCA0 PortName=CNCB0`
+5. In the command com0com prompt, set the baudrate emulation to yes : `change CNCA0 EmuBR=yes`
+6. Run the simulator, specifying the serial port (`-p`), the lungs resistance (`-r`), and the compliance (`-c`) : `simulator.exe -p \\.\CNCA0  10 -c 70`. As in this example, make sure to have `\\.\` before the name of the serial port.
+7. You can now run the control-ui executable on port `CNCB0`. For example: `makair-control.exe -p CNCB0`. For some unknown reason, the `\\.\` prefix is not required for the port name here.
 
 ## Easy way to Run the Simulator and the UI
 You might want to run the simulator in background, with a control UI. You could just use the` install_simulator.sh `bash script located in the utils directory of this repo.
