@@ -16,7 +16,6 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
-#include <unistd.h>
 
 #include "../includes/serialib.h"
 
@@ -24,17 +23,9 @@ using namespace std;
 
 #define byte uint8_t
 
-inline uint32_t millis() {
-    return chrono::duration_cast<chrono::milliseconds>(
-               chrono::system_clock::now().time_since_epoch())
-        .count();
-}
+uint64_t millis();
 
-inline uint32_t micros() {
-    return chrono::duration_cast<chrono::microseconds>(
-               chrono::system_clock::now().time_since_epoch())
-        .count();
-}
+uint64_t micros();
 
 inline int32_t map(int32_t value, int32_t a, int32_t b, int32_t c, int32_t d) {
     return c + value * (d - c) / (b - a);

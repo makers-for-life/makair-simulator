@@ -35,5 +35,5 @@ class Simulator {
     SensorsData m_sensors;
     float m_dt;  // in s
     float m_time;
-    uint32_t m_last_date;
+    uint64_t m_last_date;
 };

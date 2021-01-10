@@ -1,5 +1,18 @@
 #include "../includes/Arduino.h"
 
+
+uint64_t micros() {
+    uint64_t us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+    return us; 
+}
+
+uint64_t millis()
+{
+    uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::
+                  now().time_since_epoch()).count();
+    return ms; 
+}
+
 // Serial
 
 SerialFake Serial;
@@ -21,7 +34,7 @@ SerialFake::SerialFake(char* p_serialName) {
     m_serialPort.SetStopBits(StopBits::STOP_BITS_1);
     m_serialPort.Setm_serialPortBlockingStatus(true);*/
 
-    m_timeoutMs = 10;
+    m_timeoutMs = 1;
     m_open = true;
     m_peekBufferIndex = -1;
 }
@@ -30,8 +43,9 @@ void SerialFake::close() { m_serialPort.closeDevice(); }
 
 void SerialFake::begin(int32_t p_baudrate) {
     if (m_open) {
-        if (m_serialPort.openDevice(m_serialName, p_baudrate) != 1) {
-            cout << "Error openning serial device " << m_serialName << endl;
+        int open = m_serialPort.openDevice(m_serialName, p_baudrate);
+        if ( open!= 1) {
+            cout << "Error openning serial device " << m_serialName << "error:"<<open<<endl;
             exit(1);
         } else {
             cout << "Success openning serial device " << m_serialName << endl;
