@@ -154,12 +154,12 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     SensorsData output;
     output.inspiratoryPressure = m_K_pres * (ventilatorPressure);
 
-    cout << m_Vpatient << ", circuit=" << m_Vcircuit << ", Qinsp=" << Qinsp * m_K_flow / 1000
+    /*cout << m_Vpatient << ", circuit=" << m_Vcircuit << ", Qinsp=" << Qinsp * m_K_flow / 1000
          << ", Qexp=" << Qexp * m_K_flow / 1000 << ", Pbl=" << Pbl
          << ", m_previousVentilatorPressure=" << m_previousVentilatorPressure
          << ", A2surA1exp=" << A2surA1exp
          << ", previousExpiratoryValvePosition=" << previousExpiratoryValvePosition
-         << "inspiratoryPressure=" << (patientFlow * m_R + m_Vpatient / m_C) << endl;
+         << "inspiratoryPressure=" << (patientFlow * m_R + m_Vpatient / m_C) << endl;*/
 
     output.inspiratoryFlow = m_K_flow * Qinsp;
     output.expiratoryFlow = m_K_flow * Qexp;
