@@ -76,13 +76,22 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     if (m_previousExpiratoryValvePositionLastValuesIndex >= PREVIOUS_VALVE_POSITION_TABLE_SIZE) {
         m_previousExpiratoryValvePositionLastValuesIndex = 0;
     }
-    float previousInspiratoryValvePosition = m_previousInspiratoryValvePositionLastValues
-        [m_previousInspiratoryValvePositionLastValuesIndex];
+    float suminspi = 0.0;
+    float sumexpi = 0.0;
+    for (int32_t i = 0; i < PREVIOUS_VALVE_POSITION_TABLE_SIZE; i++) {
+        suminspi += m_previousInspiratoryValvePositionLastValues[i];
+        sumexpi += m_previousExpiratoryValvePositionLastValues[i];
+    }
+    float previousInspiratoryValvePosition =
+        suminspi
+        / PREVIOUS_VALVE_POSITION_TABLE_SIZE; /*m_previousInspiratoryValvePositionLastValues
+[m_previousInspiratoryValvePositionLastValuesIndex];*/
     m_previousInspiratoryValvePositionLastValues
         [m_previousInspiratoryValvePositionLastValuesIndex] = cmds.inspirationValve;
 
-    float previousExpiratoryValvePosition = m_previousExpiratoryValvePositionLastValues
-        [m_previousExpiratoryValvePositionLastValuesIndex];
+    float previousExpiratoryValvePosition =
+        sumexpi / PREVIOUS_VALVE_POSITION_TABLE_SIZE; /*m_previousExpiratoryValvePositionLastValues
+[m_previousExpiratoryValvePositionLastValuesIndex];*/
     m_previousExpiratoryValvePositionLastValues[m_previousExpiratoryValvePositionLastValuesIndex] =
         cmds.expirationValve;
 
@@ -143,7 +152,14 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
 
     // computation of sensor data
     SensorsData output;
-    output.inspiratoryPressure = m_K_pres * (patientFlow * m_R + m_Vpatient / m_C);
+    output.inspiratoryPressure = m_K_pres * (ventilatorPressure);
+
+    cout << m_Vpatient << ", circuit=" << m_Vcircuit << ", Qinsp=" << Qinsp * m_K_flow / 1000
+         << ", Qexp=" << Qexp * m_K_flow / 1000 << ", Pbl=" << Pbl
+         << ", m_previousVentilatorPressure=" << m_previousVentilatorPressure
+         << ", A2surA1exp=" << A2surA1exp
+         << ", previousExpiratoryValvePosition=" << previousExpiratoryValvePosition
+         << "inspiratoryPressure=" << (patientFlow * m_R + m_Vpatient / m_C) << endl;
 
     output.inspiratoryFlow = m_K_flow * Qinsp;
     output.expiratoryFlow = m_K_flow * Qexp;

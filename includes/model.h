@@ -10,8 +10,8 @@
 
 #include "../includes/helper.h"
 #include <cstdint>
-#include "../includes/Arduino.h"
-#define PREVIOUS_VALVE_POSITION_TABLE_SIZE 100
+#include <unistd.h>
+#define PREVIOUS_VALVE_POSITION_TABLE_SIZE 200
 
 /// Model
 class Model {
