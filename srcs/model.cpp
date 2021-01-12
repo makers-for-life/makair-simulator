@@ -46,7 +46,7 @@ Model::Model()
 
 void Model::init(int32_t p_resistance, int32_t p_compliance, int32_t p_inertance) {
     // parameters of the patient
-    m_Rf = 1000000 * 1e8;                            // resistance of leaking in Pa.(m3.s-1)-1
+    m_Rf = 0.0 * 1000000 * 1e8;                      // resistance of leaking in Pa.(m3.s-1)-1
     m_R = ((float)p_resistance) * 98.0665 / (1e-3);  // resistance of the patient in Pa.(m3.s-1)-1
     m_C = float(p_compliance) * 1e-6 / 98.0665;      // compilance of the patient in m3.Pa-1
     m_Ce = 2e-8;                                     //
@@ -141,9 +141,14 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
         (m_R * m_Ce * (2 * m_previousVentilatorPressure - m_previousPreviousVentilatorPressure)
          + (1 - m_Ce / m_C) * m_previousVentilatorPressure * dt + dt * dt * ventilatorFlow / m_C
          + m_R * di * dt)
-        / ((1 - m_Ce / m_C) * dt + m_R * m_Ce);  // m_previousPatientFlow * m_R + m_Vpatient / m_C;
+        / ((1 - m_Ce / m_C) * dt + m_R * m_Ce);  // m_previousPatientFlow * m_R + m_Vpatient /
+    m_C;
     float circuitFlow = m_Ce * (ventilatorPressure - m_previousVentilatorPressure) / dt;
     float patientFlow = ventilatorFlow - circuitFlow;
+
+    // This prevent long term deviation. This is something similar to a kalman filter.
+    ventilatorPressure =
+        (0.01 * (patientFlow * m_R + m_Vpatient / m_C) + ventilatorPressure) / 1.01;
 
     // conputation of the new patient's lung's volume
     m_Vpatient += patientFlow * dt;
@@ -156,9 +161,8 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
 
     /*cout << m_Vpatient << ", circuit=" << m_Vcircuit << ", Qinsp=" << Qinsp * m_K_flow / 1000
          << ", Qexp=" << Qexp * m_K_flow / 1000 << ", Pbl=" << Pbl
-         << ", m_previousVentilatorPressure=" << m_previousVentilatorPressure
-         << ", A2surA1exp=" << A2surA1exp
-         << ", previousExpiratoryValvePosition=" << previousExpiratoryValvePosition
+         << ", ventilatorPressure=" << ventilatorPressure
+         << ", previousInspiratoryValvePosition=" << previousInspiratoryValvePosition
          << "inspiratoryPressure=" << (patientFlow * m_R + m_Vpatient / m_C) << endl;*/
 
     output.inspiratoryFlow = m_K_flow * Qinsp;
