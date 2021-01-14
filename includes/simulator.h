@@ -34,6 +34,5 @@ class Simulator {
     ActuatorsData m_cmds;
     SensorsData m_sensors;
     float m_dt;  // in s
-    float m_time;
     uint64_t m_last_date;
 };

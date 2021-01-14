@@ -23,9 +23,16 @@ using namespace std;
 
 #define byte uint8_t
 
-uint64_t millis();
+extern uint32_t timestamp_microsecond;
+extern uint32_t timestamp_millisecond;
 
-uint64_t micros();
+uint32_t millis();
+
+uint32_t micros();
+
+uint64_t systemMicros();
+
+uint64_t systemMillis();
 
 inline int32_t map(int32_t value, int32_t a, int32_t b, int32_t c, int32_t d) {
     return c + value * (d - c) / (b - a);
@@ -111,7 +118,8 @@ class SerialFake {
 
  private:
     serialib m_serialPort;
-    bool m_open;
+    bool m_streamStderr;
+    bool m_streamSerial;
     int m_timeoutMs;
     uint8_t m_peekBuffer[10000];  // todo better
     int32_t m_peekBufferIndex;

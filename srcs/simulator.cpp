@@ -17,8 +17,12 @@
 
 Simulator::Simulator()
     : m_dt(0.01)  // 10 ms
-      ,
-      m_time(0.0) {}
+
+{
+
+    timestamp_microsecond = 0u;
+    timestamp_millisecond = 0u;
+}
 
 void Simulator::run(int32_t p_resistance, int32_t p_compliance) {
 
@@ -38,7 +42,7 @@ void Simulator::init(int32_t p_resistance, int32_t p_compliance) {
     m_cmds.blower = 0;
     m_cmds.expirationValve = 0;
     m_cmds.inspirationValve = 0;
-    m_last_date = micros();
+    m_last_date = systemMicros();
 }
 
 void Simulator::loop() {
@@ -51,15 +55,15 @@ void Simulator::loop() {
     m_cmds = m_state_machine.compute(m_sensors, m_dt);
 
     // Writing the results in a csv file
-    m_logger.write_log(m_time, m_cmds, m_sensors);
+    // m_logger.write_log(float(timestamp_millisecond) / 1000.0, m_cmds, m_sensors);
 
     // moving to the next time step
-    m_time += m_dt;
-
-    while (micros() - m_last_date < 10000) {
+    timestamp_millisecond += uint32_t(m_dt * 1000.0);
+    timestamp_microsecond += uint32_t(m_dt * 1000000.0);
+    while (systemMicros() - m_last_date < 10000) {
         // Check serial input
         serialControlLoop();
         usleep(10);
     }
-    m_last_date = micros();
+    m_last_date = systemMicros();
 }
