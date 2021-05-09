@@ -11,11 +11,11 @@
 #include "../includes/helper.h"
 #include "../includes/main_controller.h"
 
-enum SimuState {SETUP, STOPPED, INIT_CYCLE, BREATH, TRIGGED_RAISED, END_CYCLE};
+enum SimuState { SETUP, STOPPED, INIT_CYCLE, BREATH, TRIGGED_RAISED, END_CYCLE };
 
 /// Simulation state machine
 class SimuStateMachine {
-  public:
+ public:
     /// Default constructor
     SimuStateMachine();
 
@@ -25,13 +25,15 @@ class SimuStateMachine {
 
     bool isRunning();
 
-
-  private:
+ private:
     void updateTime(int dt);
     int getTime();
     void updateVolume(int flow, int dt);
-    int getVolume();
+    void updateVolumeExpi(int flow, int dt);
+    int32_t getVolume();
+    int32_t getVolumeExpi();
     void resetVolume();
+    void resetVolumeExpi();
     bool shouldStop();
     uint16_t getPct(uint16_t val, uint16_t min, uint16_t max);
 
@@ -39,7 +41,8 @@ class SimuStateMachine {
     SimuState m_state;
     int m_time;
     int m_cycle_start_time;
-    int m_volume;
+    float m_volume;
+    float m_volumeExpi;
 
     int m_cycle_uncount;
 };
