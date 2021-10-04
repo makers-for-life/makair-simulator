@@ -87,7 +87,7 @@ In order to run the simulator that you just built using the instructions above, 
 6. Run the simulator, specifying the serial port (`-p`), the lungs resistance (`-r`), and the compliance (`-c`) : `simulator.exe -p \\.\CNCA0  10 -c 70`. As in this example, make sure to have `\\.\` before the name of the serial port.
 7. You can now run the control-ui executable on port `CNCB0`. For example: `makair-control.exe -p CNCB0`. For some unknown reason, the `\\.\` prefix is not required for the port name here.
 
-## Easy way to Run the Simulator and the UI
+## Easy way to Run the Simulator and the UI (linux only)
 You might want to run the simulator in background, with a control UI. You could just use the` install_simulator.sh `bash script located in the utils directory of this repo.
 This script will clone, build and run this repo AND the [control-ui](https://github.com/makers-for-life/makair-control-ui) repo
 
