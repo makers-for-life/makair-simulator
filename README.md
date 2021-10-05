@@ -27,7 +27,7 @@ In order to setup your environment and build the code, please follow the followi
 3. Install 'Make for Windows" http://gnuwin32.sourceforge.net/packages/make.htm
 4. Add the /bin directory of gnuwin32 to the PATH.
 5. Clone this repo on your machine : `git clone https://github.com/makers-for-life/makair-simulator --recurse-submodules`
-6. Create a new git script, using the following command 
+6. Create a new git script, using the command below. This will convert linux symlinks to windows symlinks
 ```
     git checkout -- "$symlink"
     src="${symdir}/$(cat "$symlink")"
@@ -93,5 +93,5 @@ This script will clone, build and run this repo AND the [control-ui](https://git
 
 ## RCC patient equation
 ![IMG_20211005_092929](https://user-images.githubusercontent.com/10956689/135980051-f7d4eaaa-6643-4dcf-b2d9-db3d4663749b.jpg)
-![IMG_20211005_092937](https://user-images.githubusercontent.com/10956689/135980063-656f9c20-a3e1-4461-aa42-9093d1bea68f.jpg)
+![IMG_20211005_092937](https://user-images.githubusercontent.com/10956689/135980664-5cc8be00-bf33-4e1c-b68c-276e584252d4.jpg)
 
