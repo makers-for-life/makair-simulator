@@ -6,7 +6,7 @@
 
 | Version | Last Changelog | Ready? |
 | ------- | -------------- | ------ |
-| V1.0.x | Functionnal simulator usable with UI | ❌
+| V1.0.x | Functionnal simulator usable with UI | ✅
 
 ## How To Build the simulator on Linux or Mac?
 
