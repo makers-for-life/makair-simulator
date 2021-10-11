@@ -90,10 +90,12 @@ In order to run the simulator that you just built using the instructions above, 
 7. You can now run the control-ui executable on port `CNCB0`. For example: `makair-control.exe -p CNCB0`. For some unknown reason, the `\\.\` prefix is not required for the port name here.
 
 ## Easy way to Run the Simulator and the UI (linux only)
-You might want to run the simulator in background, with a control UI. You could just use the `install-libs.sh` and the ` install_simulator.sh `bash scripts located in the utils directory of this repo.
+You might want to run the simulator in background, with a control UI. You could just use the `install-libs.sh` and the ` install_simulator.sh `bash scripts located in the utils directory of this repo. You might need to manually uncomment the line "#define SIMULATOR" in includes/config.h in the makair-firmware submodule.
+
 `install-libs.sh` script will install the requiered libs
+
 `install_simulator.sh ` script will clone, build and run this repo AND the [control-ui](https://github.com/makers-for-life/makair-control-ui) repo
-You might need to manually uncomment the line "#define SIMULATOR" in includes/config.h in the makair-firmware submodule.
+
 
 ## RCC patient equation
 ![IMG_20211005_092929](https://user-images.githubusercontent.com/10956689/135980051-f7d4eaaa-6643-4dcf-b2d9-db3d4663749b.jpg)
