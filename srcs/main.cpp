@@ -8,10 +8,6 @@
 // INCLUDES
 
 #include "../includes/main.h"
-#include "../includes/activation.h"
-#include "../includes/simulator.h"
-
-#include <iostream>
 
 // Main function
 int main(int argc, char* argv[]) {
@@ -74,7 +70,8 @@ int main(int argc, char* argv[]) {
     Simulator simulator;
     std::cout << "program started\n";
     activationController.changeState(1);
-    simulator.run(resistance, compliance);
+    PatientModel patientModel(resistance, 2.0, compliance, 0.0, 20, 5, 500);
+    simulator.run(patientModel);
     Serial6.close();
     return 0;
 }

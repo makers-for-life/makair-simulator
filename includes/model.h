@@ -9,6 +9,8 @@
 // INCLUDES ===================================================================
 
 #include "../includes/helper.h"
+#include "../includes/patient_model.h"
+
 #include <cstdint>
 #include <unistd.h>
 #define PREVIOUS_VALVE_POSITION_TABLE_SIZE 200
@@ -19,22 +21,20 @@ class Model {
     /// Default constructor
     Model();
 
-    void init(int32_t p_resistance, int32_t p_compliance, int32_t p_inertance);
+    void init(PatientModel& p_patientModel);
 
     SensorsData compute(ActuatorsData cmds, float dt);
 
  private:
-    // parameters of the patient
-    float m_Rf;        // resistance of leaking in Pa.(m.s-1)-1
-    float m_R;         // resistance of the patient in Pa.(m.s-1)-1
-    float m_C;         // compilance of the patient in m3.Pa-1
-    float m_Ce;        // compilance of the circuit in m3.Pa-1
-    float m_Vpatient;  // Volume of air in the lungs of the patient above rest volume in m3
+    // Patient model containing of datas (resistance, compliance, etc...)
+    PatientModel* m_patientModel;
+
+    // parameters of the circuit
     float m_Vcircuit;  // Volume of air in the circuit in m3
 
     // parameters of the sensors
-    float m_K_pres;  // mmH2O / Pa
-    float m_K_flow;  // ml / m3
+    float m_K_pres = 1e-1;      // mmH2O / Pa
+    float m_K_flow = 60 * 1e6;  // ml / m3
 
     int32_t m_previousInspiratoryValvePositionLastValues[PREVIOUS_VALVE_POSITION_TABLE_SIZE];
     int32_t m_previousInspiratoryValvePositionLastValuesIndex;
@@ -45,4 +45,6 @@ class Model {
     float m_previousVentilatorPressure;
     float m_previousPreviousVentilatorPressure;
     float m_previousVentilatorFlow;
+    float m_previousMusclePressure;
+    float m_musclePressure;
 };

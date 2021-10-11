@@ -11,6 +11,7 @@
 #include "../includes/helper.h"
 #include "../includes/logger.h"
 #include "../includes/model.h"
+#include "../includes/patient_model.h"
 #include "../includes/simu_state_machine.h"
 #include <cstdint>
 
@@ -20,10 +21,10 @@ class Simulator {
     /// Default constructor
     Simulator();
 
-    void run(int32_t p_resistance, int32_t p_compliance);
+    void run(PatientModel& p_patientModel);
 
  private:
-    void init(int32_t p_resistance, int32_t p_compliance);
+    void init(PatientModel& p_patientModel);
 
     void loop();
 

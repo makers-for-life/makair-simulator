@@ -24,9 +24,9 @@ Simulator::Simulator()
     timestamp_millisecond = 0u;
 }
 
-void Simulator::run(int32_t p_resistance, int32_t p_compliance) {
+void Simulator::run(PatientModel& p_patientModel) {
 
-    init(p_resistance, p_compliance);
+    init(p_patientModel);
 
     while (m_state_machine.isRunning())
         loop();
@@ -34,8 +34,8 @@ void Simulator::run(int32_t p_resistance, int32_t p_compliance) {
     m_logger.close();
 }
 
-void Simulator::init(int32_t p_resistance, int32_t p_compliance) {
-    m_model.init(p_resistance, p_compliance, 10.0);
+void Simulator::init(PatientModel& p_patientModel) {
+    m_model.init(p_patientModel);
     m_state_machine.init(-1);
     m_logger.init();
 
