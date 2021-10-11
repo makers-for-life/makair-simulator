@@ -1,12 +1,13 @@
 
 # Specify compiler
-CXX=g++ 
+CXX=g++
+
+# Specify linker
+LINK=g++
 
 # Compilation options
-CXXFLAGS=-w -pedantic  -pthread
+CXXFLAGS=-lstdc
 
-# Link editing options
-LDFLAGS=
 
 # Names of the executables to be generated
 EXEC=simulator
@@ -29,18 +30,20 @@ OBJ= $(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(SRC))
 all: $(EXEC)
 
 simulator: $(OBJ)
-		$(CXX) -o $@ $^ $(LDFLAGS) $(CXXFLAGS)
+		$(LINK) -o $@ $^
 
+# https://linux.die.net/man/1/gcc
+# Tu as mis les paramètres au mauvais endroit.
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
-		$(CXX) -o $@ -c $< $(CXXFLAGS)
+		$(CXX) -o $@  -c $< $(CXXFLAGS)
 
 # .PHONY is a particular target thats allows to systematically rebuild its dependencies
 .PHONY: clean mrproper
 
 # Delete all intermediate files
 clean:
-		rm -rf $(OBJ_DIR)*.o
+		del *.o
 
 # Delete all that can be regenerated and allows a complete project rebuid 
 mrproper: clean
-		rm -rf $(EXEC)
+		del $(EXEC)

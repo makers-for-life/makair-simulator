@@ -1,0 +1,1 @@
+../makair-firmware/srcs/activation.cpp

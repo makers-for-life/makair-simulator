@@ -8,11 +8,12 @@
 
 // INCLUDES ===================================================================
 
-#include <cstdint>
 #include "../includes/helper.h"
-#include "../includes/model.h"
-#include "../includes/simu_state_machine.h"
 #include "../includes/logger.h"
+#include "../includes/model.h"
+#include "../includes/patient_model.h"
+#include "../includes/simu_state_machine.h"
+#include <cstdint>
 
 /// Simulator
 class Simulator {
@@ -20,11 +21,10 @@ class Simulator {
     /// Default constructor
     Simulator();
 
-    void run();
+    void run(PatientModel& p_patientModel);
 
  private:
-
-    void init();
+    void init(PatientModel& p_patientModel);
 
     void loop();
 
@@ -34,7 +34,6 @@ class Simulator {
 
     ActuatorsData m_cmds;
     SensorsData m_sensors;
-    float m_dt; // in s
-    float m_time;
-
+    float m_dt;  // in s
+    uint64_t m_last_date;
 };
