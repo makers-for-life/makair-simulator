@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 git clone https://github.com/makers-for-life/makair-simulator --recurse-submodules
-git --git-dir makair-simulator/.git --work-tree=makair-simulator checkout test-with-ui
+git --git-dir makair-simulator/.git --work-tree=makair-simulator checkout master
 git --git-dir makair-simulator/.git --work-tree=makair-simulator pull
-git --git-dir makair-simulator/makair-firmware/.git --work-tree=makair-simulator/makair-firmware/ checkout dev
+git --git-dir makair-simulator/makair-firmware/.git --work-tree=makair-simulator/makair-firmware/ checkout master
 git --git-dir makair-simulator/makair-firmware/.git --work-tree=makair-simulator/makair-firmware/ pull
 make -C makair-simulator/build
 
