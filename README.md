@@ -15,8 +15,9 @@ In order to setup your environment and build the code, please follow the followi
 1. You need a toolchain able to compile c++. On ubuntu : `sudo apt install build-essential `
 2. Clone this repo on your machine : `git clone https://github.com/makers-for-life/makair-simulator --recurse-submodules`
 3. Go in the build directory `cd makair-simulator/build`
-4. Compile the project `make`
-5. You get an executable called `simulator` in the build directory
+4. In the makair-firmware submodule, uncomment the line "#define SIMULATOR" in includes/config.h
+5. Compile the project `make`
+6. You get an executable called `simulator` in the build directory
 
 ## How To Build the simulator on Windows?
 
@@ -65,7 +66,8 @@ git config --global alias.rm-symlink '!git rm-symlinks'  # for back-compat.
 ```
 7. Execute the previous command inside the repo `git rm-symlinks`
 8. In the `build` directory, replace the content of the Makefile by the content of the MakefileWindows
-9. In the `build` directory, run `make`
+9. In the makair-firmware submodule, uncomment the line "#define SIMULATOR" in includes/config.h
+10. In the `build` directory, run `make`
 
 ## How To Run on linux or Mac?
 
@@ -90,6 +92,7 @@ In order to run the simulator that you just built using the instructions above, 
 ## Easy way to Run the Simulator and the UI (linux only)
 You might want to run the simulator in background, with a control UI. You could just use the` install_simulator.sh `bash script located in the utils directory of this repo.
 This script will clone, build and run this repo AND the [control-ui](https://github.com/makers-for-life/makair-control-ui) repo
+You might need to manually uncomment the line "#define SIMULATOR" in includes/config.h in the makair-firmware submodule.
 
 ## RCC patient equation
 ![IMG_20211005_092929](https://user-images.githubusercontent.com/10956689/135980051-f7d4eaaa-6643-4dcf-b2d9-db3d4663749b.jpg)
