@@ -73,7 +73,7 @@ In order to run the simulator that you just built using the instructions above, 
 1. Install socat. On ubuntu : `sudo apt install socat `
 2. Create a directory to place the serial port file, for this example a directory called dev `mkdir serialport `
 3. Create fakes serial ports with socat : `socat -d -d pty,link=serialport/tty0,raw,echo=0 pty,link=serialport/tty1,raw,echo=0 `
-4. Run the simulator, specifying the serial port (`-p`), the lungs resistance (`-r`), the compliance (`-c`),  the spontaneousBreathRate (`--spontaneousBreathRate`),  the spontaneousBreathEffort (`--spontaneousBreathEffort`),  the spontaneousBreathDuration (`--spontaneousBreathDuration`)  : `./simulator -p serialport/tty0 -r 10 -c 70 --spontaneousBreathRate 20 --spontaneousBreathEffort 5 --spontaneousBreathDuration 200`
+4. Run the simulator, specifying the serial port (`-p`), the lungs resistance (`-r`), the compliance (`-c`),  the spontaneousBreathRate (`--spontaneousBreathRate`),  the spontaneousBreathEffort (`--spontaneousBreathEffort`),  the spontaneousBreathDuration (`--spontaneousBreathDuration`). Example : `./simulator -p serialport/tty0 -r 10 -c 70 --spontaneousBreathRate 20 --spontaneousBreathEffort 5 --spontaneousBreathDuration 200`
 5. You can now run the control-ui executable on port `serialport/tty1`. For example: `makair-control -p serialport/tty1`
 
 ## How To Run on Windows ?
