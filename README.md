@@ -90,7 +90,7 @@ In order to run the simulator that you just built using the instructions above, 
 7. You can now run the control-ui executable on port `CNCB0`. For example: `makair-control.exe -p CNCB0`. For some unknown reason, the `\\.\` prefix is not required for the port name here.
 
 ## Easy way to Run the Simulator and the UI (linux only)
-You might want to run the simulator in background, with a control UI. You could just use the `install-libs.sh` and the ` install_simulator.sh `bash scripts located in the utils directory of this repo. You might need to manually uncomment the line "#define SIMULATOR" in includes/config.h in the makair-firmware submodule.
+You might want to run the simulator in background, with a control UI. You could just use the `install-libs.sh` and the ` install_simulator.sh `bash scripts located in the utils directory of this repo. 
 
 `install-libs.sh` script will install the requiered libs
 
