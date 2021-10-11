@@ -9,6 +9,7 @@
 // INCLUDES ===================================================================
 
 #include "../includes/helper.h"
+#include <cmath>
 #include <cstdint>
 #include <unistd.h>
 
@@ -24,14 +25,20 @@ class PatientModel {
                  float p_spontaneousBreathEffort,
                  float p_spontaneousBreathDuration);
 
+    float computeMusclePressure();
+
     /// Getters
     float getRl() { return m_Rl; };
     float getCl() { return m_Cl; };
     float getCt() { return m_Ct; };
     float getVpatient() { return m_Vpatient; };
+    float getMusclePressure() { return computeMusclePressure(); };
 
     /// Setters
-    float setVpatient(float p_Vpatient) { m_Vpatient = p_Vpatient; };
+    void setVpatient(float p_Vpatient) { m_Vpatient = p_Vpatient; };
+    void updateTimeUs(int64_t dt) {
+        timestampUs += dt;
+    };  // update with time increment in microseconds
 
  private:
     // parameters of the patient
@@ -45,6 +52,5 @@ class PatientModel {
     float m_spontaneousBreathEffort;    // spontaneous breath effort in Pa
     float m_spontaneousBreathDuration;  // duration of the effort of spontaneous breath rate in s.
 
-    float m_previousMusclePressure;
-    float m_musclePressure;
+    int64_t timestampUs;  // time since starting in ms
 };

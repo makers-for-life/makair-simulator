@@ -10,8 +10,6 @@
 #include "../includes/patient_model.h"
 #include "../includes/Arduino.h"
 
-#include <unistd.h>
-
 // FUNCTIONS ==================================================================
 
 /**
@@ -45,5 +43,40 @@ PatientModel::PatientModel(float p_Rl,
         p_spontaneousBreathEffort * 98.0665;  // spontaneous breath effort in Pa
     m_spontaneousBreathDuration =
         p_spontaneousBreathDuration
-        / 1000.0;  // duration of the effort of spontaneous breath rate in s.
+        / 1000.0;     // duration of the effort of spontaneous breath rate in s.
+    timestampUs = 0;  // time since starting in ms
+}
+
+/**
+ * Compute pressure given by the patient muscles
+ * Pressure is a sinusoidal effort during m_spontaneousBreathDuration, with an amplitude of
+ * m_spontaneousBreathEffort
+ *
+ * @return musclePressure in Pa
+ *
+ */
+
+float PatientModel::computeMusclePressure() {
+
+    int64_t breathDurationMs = int64_t(1000.0 / m_spontaneousBreathRate);
+    int64_t effortDurationMs = 1000 * m_spontaneousBreathDuration;
+    int64_t timestampMs = timestampUs / 1000;
+
+    float musclePressure;
+
+    if (timestampMs % breathDurationMs <= effortDurationMs
+        && (effortDurationMs != 0
+            && breathDurationMs != 0)) {  // first condition to check if now is during spontaneous
+                                          // effort, second condition to avoid 0 division
+
+        float effortPogress = float(timestampMs % breathDurationMs) / float(effortDurationMs);
+
+        musclePressure = m_spontaneousBreathEffort * sin(M_PI * effortPogress);
+        cout << musclePressure << endl;
+    } else {
+
+        musclePressure = 0.0;
+    }
+
+    return musclePressure;
 }

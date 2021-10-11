@@ -36,9 +36,13 @@ Model::Model() {
 void Model::init(PatientModel& p_patientModel) {
     m_Vcircuit = 0.0;  // Volume of air in the circuit in m3
     m_patientModel = &p_patientModel;
+    m_musclePressure = 0.0;  // m_patientModel->getMusclePressure();
 }
 
 SensorsData Model::compute(ActuatorsData cmds, float dt) {
+
+    // update with time increment in microseconds
+    m_patientModel->updateTimeUs(int64_t(dt * 1000000));
 
     // Clip commands
     int _min = 0;
@@ -121,6 +125,8 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     float Rl = m_patientModel->getRl();
     float Cl = m_patientModel->getCl();
     float Ct = m_patientModel->getCt();
+    float m_musclePressure = m_patientModel->getMusclePressure();
+    // cout << m_patientModel->getMusclePressure() << endl;
 
     float ventilatorFlow = Qinsp - Qexp;
     float di = ventilatorFlow - m_previousVentilatorFlow;
