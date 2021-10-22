@@ -9,7 +9,6 @@
 // INCLUDES ===================================================================
 
 #include "../includes/helper.h"
-#include "../includes/logger.h"
 #include "../includes/model.h"
 #include "../includes/patient_model.h"
 #include "../includes/simu_state_machine.h"
@@ -30,7 +29,6 @@ class Simulator {
 
     Model m_model;
     SimuStateMachine m_state_machine;
-    Logger m_logger;
 
     ActuatorsData m_cmds;
     SensorsData m_sensors;

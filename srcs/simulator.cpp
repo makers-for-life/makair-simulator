@@ -30,14 +30,11 @@ void Simulator::run(PatientModel& p_patientModel) {
 
     while (m_state_machine.isRunning())
         loop();
-
-    m_logger.close();
 }
 
 void Simulator::init(PatientModel& p_patientModel) {
     m_model.init(p_patientModel);
     m_state_machine.init(-1);
-    m_logger.init();
 
     m_cmds.blower = 0;
     m_cmds.expirationValve = 0;
@@ -53,9 +50,6 @@ void Simulator::loop() {
 
     // computing the commands in function of the state of the model. Here, open loop
     m_cmds = m_state_machine.compute(m_sensors, m_dt);
-
-    // Writing the results in a csv file
-    // m_logger.write_log(float(timestamp_millisecond) / 1000.0, m_cmds, m_sensors);
 
     // moving to the next time step
     timestamp_millisecond += uint32_t(m_dt * 1000.0);
