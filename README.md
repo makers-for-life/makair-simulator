@@ -103,5 +103,6 @@ You might want to run the simulator in background, with a control UI. You could 
 
 ## How to build for WASM (Web assembly)
 1. Replace build/Makefile by build/Makefile-wasm
-2. make
-3. On a computer, you might have an error related to "SharedArrayBuffer". Running a webserver on your working directory will fix this (`python3 -m http.server`). Then go to http://0.0.0.0:8000/makair-simulator.html
+2. Uncomment `#define SIMULATOR_WASM` in includes/config.h
+3. make
+4. On a computer, you might have an error related to "SharedArrayBuffer". Running a webserver on your working directory will fix this (`python3 -m http.server`). Then go to http://0.0.0.0:8000/makair-simulator.html
