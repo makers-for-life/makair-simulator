@@ -9,6 +9,7 @@
 
 #include "../includes/main.h"
 
+#ifndef SIMULATOR_WASM
 // Main function
 int main(int argc, char* argv[]) {
 
@@ -114,13 +115,32 @@ int main(int argc, char* argv[]) {
         cout << "Wrong usage, check --help" << endl;
         return 1;
     }
-
-    Simulator simulator;
     std::cout << "program started\n";
     activationController.changeState(1);
     PatientModel patientModel(resistance, 2.0, compliance, 0.0, spontaneousBreathRate,
                               spontaneousBreathEffort, spontaneousBreathDuration);
-    simulator.run(patientModel);
+    simulator.startAndRun(patientModel);
     Serial6.close();
     return 0;
 }
+
+#else
+int main(int argc, char* argv[]) {
+
+    std::cout << "program started\n";
+    int resistance = 10;                // in cmh2O/L/s
+    int compliance = 70;                // in mL/cmH2O
+    int spontaneousBreathRate = 0;      // in cycle/min
+    int spontaneousBreathEffort = 0;    // in cmH2O
+    int spontaneousBreathDuration = 0;  // in ms
+
+    // to do Serial6 = SerialFake();
+    activationController.changeState(1);
+    PatientModel patientModel(resistance, 2.0, compliance, 0.0, spontaneousBreathRate,
+                              spontaneousBreathEffort, spontaneousBreathDuration);
+    simulator.startAndRun(patientModel);
+    return 0;
+}
+#endif
+
+// EMSCRIPTEN_BINDINGS(my_module) { emscripten::function("loop", &loop, allow_raw_pointers()); }

@@ -13,6 +13,7 @@
 #include "../includes/patient_model.h"
 #include "../includes/simu_state_machine.h"
 #include <cstdint>
+#include <emscripten.h>
 
 /// Simulator
 class Simulator {
@@ -20,13 +21,11 @@ class Simulator {
     /// Default constructor
     Simulator();
 
-    void run(PatientModel& p_patientModel);
-
- private:
+    void startAndRun(PatientModel& p_patientModel);
     void init(PatientModel& p_patientModel);
-
     void loop();
 
+ private:
     Model m_model;
     SimuStateMachine m_state_machine;
 
@@ -35,3 +34,5 @@ class Simulator {
     float m_dt;  // in s
     uint64_t m_last_date;
 };
+
+extern Simulator simulator;

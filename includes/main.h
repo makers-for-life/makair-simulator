@@ -2,6 +2,9 @@
 #include "../includes/activation.h"
 #include "../includes/patient_model.h"
 #include "../includes/simulator.h"
+#include <emscripten/bind.h>
+
+using namespace emscripten;
 
 #include <iostream>
 

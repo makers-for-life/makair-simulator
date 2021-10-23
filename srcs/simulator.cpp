@@ -13,6 +13,9 @@
 
 #include <unistd.h>
 
+// INITIALISATION =============================================================
+Simulator simulator;
+
 // FUNCTIONS ==================================================================
 
 Simulator::Simulator()
@@ -24,7 +27,7 @@ Simulator::Simulator()
     timestamp_millisecond = 0u;
 }
 
-void Simulator::run(PatientModel& p_patientModel) {
+void Simulator::startAndRun(PatientModel& p_patientModel) {
 
     init(p_patientModel);
 
@@ -57,7 +60,12 @@ void Simulator::loop() {
     while (systemMicros() - m_last_date < 10000) {
         // Check serial input
         serialControlLoop();
+#ifdef SIMULATOR_WASM
+        emscripten_sleep(0.01);
+#else
         usleep(10);
+#endif
     }
+
     m_last_date = systemMicros();
 }
