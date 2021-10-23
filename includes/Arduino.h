@@ -17,7 +17,9 @@
 #include <cstring>
 #include <iostream>
 
+#include "../includes/config.h"
 #include "../includes/serialib.h"
+#include <emscripten/val.h>
 
 using namespace std;
 
@@ -90,6 +92,12 @@ class SerialFake {
  public:
     SerialFake();
     SerialFake(char* p_serialName);
+    SerialFake(char* p_serialName,
+               uint8_t* p_TXserialBuffer,
+               int32_t* p_TXserialBufferIndex,
+               uint8_t* p_RXserialBuffer,
+               int32_t* p_RXserialBufferIndex,
+               int32_t p_SERIAL_BUFFER_SIZE);
 
     void begin(int32_t p_baudrate);
     void close();
@@ -124,6 +132,11 @@ class SerialFake {
     uint8_t m_peekBuffer[10000];  // todo better
     int32_t m_peekBufferIndex;
     char* m_serialName;
+    uint8_t* m_TXserialBuffer;
+    int32_t* m_TXserialBufferIndex;
+    uint8_t* m_RXserialBuffer;
+    int32_t* m_RXserialBufferIndex;
+    int32_t m_SERIAL_BUFFER_SIZE;
 };
 
 extern SerialFake Serial;

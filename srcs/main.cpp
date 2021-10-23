@@ -9,6 +9,11 @@
 
 #include "../includes/main.h"
 
+uint8_t TXserialBuffer[SERIAL_BUFFER_SIZE];
+int32_t TXserialBufferIndex = 0;
+uint8_t RXserialBuffer[SERIAL_BUFFER_SIZE];
+int32_t RXserialBufferIndex = 0;
+
 #ifndef SIMULATOR_WASM
 // Main function
 int main(int argc, char* argv[]) {
@@ -134,7 +139,8 @@ int main(int argc, char* argv[]) {
     int spontaneousBreathEffort = 0;    // in cmH2O
     int spontaneousBreathDuration = 0;  // in ms
 
-    // to do Serial6 = SerialFake();
+    Serial6 = SerialFake("emscripten", TXserialBuffer, &TXserialBufferIndex, RXserialBuffer,
+                         &RXserialBufferIndex, SERIAL_BUFFER_SIZE);
     activationController.changeState(1);
     PatientModel patientModel(resistance, 2.0, compliance, 0.0, spontaneousBreathRate,
                               spontaneousBreathEffort, spontaneousBreathDuration);
@@ -143,4 +149,11 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-// EMSCRIPTEN_BINDINGS(my_module) { emscripten::function("loop", &loop, allow_raw_pointers()); }
+extern "C" {
+
+uint8_t* EMSCRIPTEN_KEEPALIVE getTXSerialBufferPointer() { return &TXserialBuffer[0]; }
+int32_t* EMSCRIPTEN_KEEPALIVE getTXSerialBufferIndexPointer() { return &TXserialBufferIndex; }
+uint8_t* EMSCRIPTEN_KEEPALIVE getRXSerialBufferPointer() { return &RXserialBuffer[0]; }
+int32_t* EMSCRIPTEN_KEEPALIVE getRXSerialBufferIndexPointer() { return &RXserialBufferIndex; }
+int32_t EMSCRIPTEN_KEEPALIVE serialBufferSize() { return SERIAL_BUFFER_SIZE; }
+}

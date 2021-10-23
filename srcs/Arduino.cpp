@@ -52,21 +52,53 @@ SerialFake::SerialFake(char* p_serialName) {
     m_streamSerial = !m_streamStderr;
     m_serialName = p_serialName;
 
-    /*m_serialPort.SetBaudRate(BaudRate::BAUD_115200);
-    m_serialPort.SetFlowControl(FlowControl::FLOW_CONTROL_HARDWARE);
-    m_serialPort.SetParity(Parity::PARITY_NONE);
-    m_serialPort.SetStopBits(StopBits::STOP_BITS_1);
-    m_serialPort.Setm_serialPortBlockingStatus(true);*/
+    m_timeoutMs = 1;
+    m_peekBufferIndex = -1;
+}
+
+// When compiling in wasm, the serial communication is managed with buffer in memory shared by the
+// simulator and the UI
+SerialFake::SerialFake(char* p_serialName,
+                       uint8_t* p_TXserialBuffer,
+                       int32_t* p_TXserialBufferIndex,
+                       uint8_t* p_RXserialBuffer,
+                       int32_t* p_RXserialBufferIndex,
+                       int32_t p_SERIAL_BUFFER_SIZE) {
+    m_TXserialBuffer = p_TXserialBuffer;
+    m_TXserialBufferIndex = p_TXserialBufferIndex;
+    m_RXserialBuffer = p_RXserialBuffer;
+    m_RXserialBufferIndex = p_RXserialBufferIndex;
+    m_SERIAL_BUFFER_SIZE = p_SERIAL_BUFFER_SIZE;
+    for (int i = 0; i < m_SERIAL_BUFFER_SIZE; i++) {
+        m_TXserialBuffer[i] = 0;
+        m_RXserialBuffer[i] = 0;
+    }
+    *m_RXserialBufferIndex = -1;  // -1 is the inital state
+    *m_TXserialBufferIndex = -1;  // -1 is the inital state
+
+    m_streamSerial = true;
+    m_serialName = p_serialName;
 
     m_timeoutMs = 1;
     m_peekBufferIndex = -1;
 }
 
-void SerialFake::close() { m_serialPort.closeDevice(); }
+void SerialFake::close() {
+#ifdef SIMULATOR_WASM
+    // todo
+#else
+    m_serialPort.closeDevice();
+#endif
+}
 
 void SerialFake::begin(int32_t p_baudrate) {
     if (m_streamSerial) {
-        int open = m_serialPort.openDevice(m_serialName, p_baudrate);
+        int open;
+#ifdef SIMULATOR_WASM
+        open = 1;
+#else
+        open = m_serialPort.openDevice(m_serialName, p_baudrate);
+#endif
         if (open != 1) {
             cout << "Error openning serial device " << m_serialName << ", error:" << open << endl;
             cout << (m_serialName == "stderr") << endl;
@@ -80,7 +112,11 @@ void SerialFake::begin(int32_t p_baudrate) {
 // void print(uint16_t s) {}
 void SerialFake::print(const char* str) {
     if (m_streamSerial) {
+#ifdef SIMULATOR_WASM
+        // todo
+#else
         m_serialPort.writeString(str);
+#endif
 
     } else if (m_streamStderr) {
         cerr << str;
@@ -91,7 +127,16 @@ void SerialFake::write(uint8_t data) {
     if (m_streamSerial) {
         uint8_t next_char[1];
         next_char[0] = data;
+#ifdef SIMULATOR_WASM
+        if (*m_TXserialBufferIndex < m_SERIAL_BUFFER_SIZE - 1) {
+            *m_TXserialBufferIndex = *m_TXserialBufferIndex + 1;
+        } else {
+            *m_TXserialBufferIndex = 0;
+        }
+        m_TXserialBuffer[*m_TXserialBufferIndex] = data;
+#else
         m_serialPort.writeBytes(next_char, 1);
+#endif
 
     } else if (m_streamStderr) {
         cerr << data;
@@ -112,7 +157,17 @@ uint8_t SerialFake::read() {
             return return_value;
         } else {
             uint8_t next_char[1];  // variable to store the read result
+#ifdef SIMULATOR_WASM
+            if (*m_RXserialBufferIndex > 0) {
+                next_char[0] = m_RXserialBuffer[*m_RXserialBufferIndex];
+                *m_RXserialBufferIndex = *m_TXserialBufferIndex - 1;
+            } else {
+                next_char[0] = 0;
+                cout << "error with firmware serial read" << endl;
+            }
+#else
             m_serialPort.readBytes(next_char, 1, m_timeoutMs);
+#endif
             return (uint8_t)next_char[0];
         }
     }
@@ -120,7 +175,17 @@ uint8_t SerialFake::read() {
 uint8_t SerialFake::peek() {
     if (m_streamSerial) {
         uint8_t next_char[1];
+#ifdef SIMULATOR_WASM
+        if (*m_RXserialBufferIndex > 0) {
+            next_char[0] = m_RXserialBuffer[*m_RXserialBufferIndex];
+            *m_RXserialBufferIndex = *m_TXserialBufferIndex - 1;
+        } else {
+            next_char[0] = 0;
+            cout << "error with firmware serial read" << endl;
+        }
+#else
         m_serialPort.readBytes(next_char, 1, m_timeoutMs);
+#endif
         if (m_peekBufferIndex < 0) {
             m_peekBufferIndex = 0;
         } else {
@@ -138,7 +203,13 @@ void SerialFake::readBytes(uint8_t* buffer, size_t size) {
 }
 int32_t SerialFake::available() {
     if (m_streamSerial) {
+#ifdef SIMULATOR_WASM
+        return *m_RXserialBufferIndex > 0;
+#else
         return m_serialPort.available();
+#endif
+    } else {
+        return false;
     }
 }
 
