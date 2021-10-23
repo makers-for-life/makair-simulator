@@ -1,10 +1,12 @@
 
 #include "../includes/activation.h"
+#include "../includes/config.h"
 #include "../includes/patient_model.h"
 #include "../includes/simulator.h"
-#include <emscripten/bind.h>
 
-using namespace emscripten;
+#ifdef SIMULATOR_WASM
+#include <emscripten/bind.h>
+#endif
 
 #include <iostream>
 

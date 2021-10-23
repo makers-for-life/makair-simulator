@@ -130,6 +130,7 @@ int main(int argc, char* argv[]) {
 }
 
 #else
+
 int main(int argc, char* argv[]) {
 
     std::cout << "program started\n";
@@ -147,8 +148,6 @@ int main(int argc, char* argv[]) {
     simulator.startAndRun(patientModel);
     return 0;
 }
-#endif
-
 extern "C" {
 
 uint8_t* EMSCRIPTEN_KEEPALIVE getTXSerialBufferPointer() { return &TXserialBuffer[0]; }
@@ -157,3 +156,5 @@ uint8_t* EMSCRIPTEN_KEEPALIVE getRXSerialBufferPointer() { return &RXserialBuffe
 int32_t* EMSCRIPTEN_KEEPALIVE getRXSerialBufferIndexPointer() { return &RXserialBufferIndex; }
 int32_t EMSCRIPTEN_KEEPALIVE serialBufferSize() { return SERIAL_BUFFER_SIZE; }
 }
+
+#endif

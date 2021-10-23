@@ -19,7 +19,6 @@
 
 #include "../includes/config.h"
 #include "../includes/serialib.h"
-#include <emscripten/val.h>
 
 using namespace std;
 

@@ -8,12 +8,15 @@
 
 // INCLUDES ===================================================================
 
+#include "../includes/config.h"
 #include "../includes/helper.h"
 #include "../includes/model.h"
 #include "../includes/patient_model.h"
 #include "../includes/simu_state_machine.h"
 #include <cstdint>
+#ifdef SIMULATOR_WASM
 #include <emscripten.h>
+#endif
 
 /// Simulator
 class Simulator {
