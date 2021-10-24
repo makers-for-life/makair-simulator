@@ -158,9 +158,8 @@ uint8_t SerialFake::read() {
         } else {
             uint8_t next_char[1];  // variable to store the read result
 #ifdef EMBEDED_FOR_RUST
-            if (*m_RXserialBufferIndex > 0) {
+            if (*m_RXserialBufferIndex >= 0 && *m_RXserialBufferIndex < m_SERIAL_BUFFER_SIZE) {
                 next_char[0] = m_RXserialBuffer[*m_RXserialBufferIndex];
-                *m_RXserialBufferIndex = *m_TXserialBufferIndex - 1;
             } else {
                 next_char[0] = 0;
                 cout << "error with firmware serial read" << endl;
