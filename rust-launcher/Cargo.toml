@@ -1,0 +1,12 @@
+[package]
+name = "makair-simulator-rust"
+version = "0.1.0"
+authors = ["Alex Crichton <alex@alexcrichton.com>"]
+build = "build.rs"
+
+[dependencies]
+libc = "0.2"
+
+[build-dependencies]
+cc = "1.0"
+

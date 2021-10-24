@@ -131,8 +131,9 @@ int main(int argc, char* argv[]) {
 
 #else
 
-int main(int argc, char* argv[]) {
+extern "C" {
 
+int run_simulator() {
     std::cout << "program started\n";
     int resistance = 10;                // in cmh2O/L/s
     int compliance = 70;                // in mL/cmH2O
@@ -148,13 +149,6 @@ int main(int argc, char* argv[]) {
     simulator.startAndRun(patientModel);
     return 0;
 }
-extern "C" {
-
-uint8_t* EMSCRIPTEN_KEEPALIVE getTXSerialBufferPointer() { return &TXserialBuffer[0]; }
-int32_t* EMSCRIPTEN_KEEPALIVE getTXSerialBufferIndexPointer() { return &TXserialBufferIndex; }
-uint8_t* EMSCRIPTEN_KEEPALIVE getRXSerialBufferPointer() { return &RXserialBuffer[0]; }
-int32_t* EMSCRIPTEN_KEEPALIVE getRXSerialBufferIndexPointer() { return &RXserialBufferIndex; }
-int32_t EMSCRIPTEN_KEEPALIVE serialBufferSize() { return SERIAL_BUFFER_SIZE; }
 }
 
 #endif

@@ -1,3 +1,5 @@
+#include "../includes/config.h"
+
 #ifdef SIMULATOR_WASM
 
 // This file is a "hack" to fix a linking problem when compiling for wasm through rust. see
