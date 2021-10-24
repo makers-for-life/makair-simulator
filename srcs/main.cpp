@@ -10,7 +10,7 @@
 #include "../includes/main.h"
 
 uint8_t TXserialBuffer[SERIAL_BUFFER_SIZE];
-int32_t TXserialBufferIndex = 0;
+int32_t TXserialBufferIndex = 2;
 uint8_t RXserialBuffer[SERIAL_BUFFER_SIZE];
 int32_t RXserialBufferIndex = 0;
 
@@ -149,6 +149,11 @@ int run_simulator() {
     simulator.startAndRun(patientModel);
     return 0;
 }
+uint8_t* getTXSerialBufferPointer() { return &TXserialBuffer[0]; }
+int32_t* getTXSerialBufferIndexPointer() { return &TXserialBufferIndex; }
+uint8_t* getRXSerialBufferPointer() { return &RXserialBuffer[0]; }
+int32_t* getRXSerialBufferIndexPointer() { return &RXserialBufferIndex; }
+int32_t serialBufferSize() { return SERIAL_BUFFER_SIZE; }
 }
 
 #endif
