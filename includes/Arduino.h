@@ -9,7 +9,7 @@
 #pragma once
 #ifndef ARDUINO_H
 #define ARDUINO_H
-#define FAKE_SERIAL_BUFFER
+#define EMBEDED_FOR_RUST
 
 #include <algorithm>
 #include <chrono>

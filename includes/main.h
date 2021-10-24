@@ -4,10 +4,6 @@
 #include "../includes/patient_model.h"
 #include "../includes/simulator.h"
 
-#ifdef SIMULATOR_WASM
-#include <emscripten/bind.h>
-#endif
-
 #include <iostream>
 
 #define MAX_RESISTANCE_VALUE 70

@@ -1,6 +1,6 @@
 #include "../includes/config.h"
 
-#ifdef SIMULATOR_WASM
+#ifdef EMBEDED_FOR_RUST
 
 // This file is a "hack" to fix a linking problem when compiling for wasm through rust. see
 // https://stackoverflow.com/questions/67474533/error-in-compiling-rust-into-webassembly-using-emscripten-on-windows

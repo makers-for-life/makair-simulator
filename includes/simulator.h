@@ -14,7 +14,7 @@
 #include "../includes/patient_model.h"
 #include "../includes/simu_state_machine.h"
 #include <cstdint>
-#ifdef SIMULATOR_WASM
+#ifdef EMBEDED_FOR_RUST
 #include <emscripten.h>
 #endif
 

@@ -14,7 +14,7 @@ int32_t TXserialBufferIndex = 0;
 uint8_t RXserialBuffer[SERIAL_BUFFER_SIZE];
 int32_t RXserialBufferIndex = 0;
 
-#ifndef SIMULATOR_WASM
+#ifndef EMBEDED_FOR_RUST
 // Main function
 int main(int argc, char* argv[]) {
 
