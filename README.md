@@ -100,9 +100,3 @@ You might want to run the simulator in background, with a control UI. You could 
 ## RCC patient equation
 ![IMG_20211005_092929](https://user-images.githubusercontent.com/10956689/135980051-f7d4eaaa-6643-4dcf-b2d9-db3d4663749b.jpg)
 ![IMG_20211005_092937](https://user-images.githubusercontent.com/10956689/135980664-5cc8be00-bf33-4e1c-b68c-276e584252d4.jpg)
-
-## How to build for WASM (Web assembly)
-1. Replace build/Makefile by build/Makefile-wasm
-2. Uncomment `#define SIMULATOR_WASM` in includes/config.h
-3. make
-4. On a computer, you might have an error related to "SharedArrayBuffer". Running a webserver on your working directory will fix this (`python3 -m http.server`). Then go to http://0.0.0.0:8000/makair-simulator.html
