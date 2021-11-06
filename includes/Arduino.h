@@ -9,7 +9,7 @@
 #pragma once
 #ifndef ARDUINO_H
 #define ARDUINO_H
-#define EMBEDED_FOR_RUST
+#define SIMULATOR_WASM
 
 #include <algorithm>
 #include <chrono>

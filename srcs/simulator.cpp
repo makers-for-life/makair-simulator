@@ -60,7 +60,7 @@ void Simulator::loop() {
     while (systemMicros() - m_last_date < 10000) {
         // Check serial input
         serialControlLoop();
-#ifdef EMBEDED_FOR_RUST
+#ifdef SIMULATOR_WASM
         emscripten_sleep(0.01);
 #else
         usleep(10);

@@ -84,7 +84,7 @@ SerialFake::SerialFake(char* p_serialName,
 }
 
 void SerialFake::close() {
-#ifdef EMBEDED_FOR_RUST
+#ifdef SIMULATOR_WASM
     // todo
 #else
     m_serialPort.closeDevice();
@@ -94,7 +94,7 @@ void SerialFake::close() {
 void SerialFake::begin(int32_t p_baudrate) {
     if (m_streamSerial) {
         int open;
-#ifdef EMBEDED_FOR_RUST
+#ifdef SIMULATOR_WASM
         open = 1;
 #else
         open = m_serialPort.openDevice(m_serialName, p_baudrate);
@@ -112,7 +112,7 @@ void SerialFake::begin(int32_t p_baudrate) {
 // void print(uint16_t s) {}
 void SerialFake::print(const char* str) {
     if (m_streamSerial) {
-#ifdef EMBEDED_FOR_RUST
+#ifdef SIMULATOR_WASM
         // todo
 #else
         m_serialPort.writeString(str);
@@ -127,7 +127,7 @@ void SerialFake::write(uint8_t data) {
     if (m_streamSerial) {
         uint8_t next_char[1];
         next_char[0] = data;
-#ifdef EMBEDED_FOR_RUST
+#ifdef SIMULATOR_WASM
         if (*m_TXserialBufferIndex < m_SERIAL_BUFFER_SIZE - 1) {
             *m_TXserialBufferIndex = *m_TXserialBufferIndex + 1;
         } else {
@@ -157,7 +157,7 @@ uint8_t SerialFake::read() {
             return return_value;
         } else {
             uint8_t next_char[1];  // variable to store the read result
-#ifdef EMBEDED_FOR_RUST
+#ifdef SIMULATOR_WASM
             if (*m_RXserialBufferIndex >= 0 && *m_RXserialBufferIndex < m_SERIAL_BUFFER_SIZE) {
                 next_char[0] = m_RXserialBuffer[*m_RXserialBufferIndex];
             } else {
@@ -174,7 +174,7 @@ uint8_t SerialFake::read() {
 uint8_t SerialFake::peek() {
     if (m_streamSerial) {
         uint8_t next_char[1];
-#ifdef EMBEDED_FOR_RUST
+#ifdef SIMULATOR_WASM
         if (*m_RXserialBufferIndex > 0) {
             next_char[0] = m_RXserialBuffer[*m_RXserialBufferIndex];
             *m_RXserialBufferIndex = *m_TXserialBufferIndex - 1;
@@ -202,7 +202,7 @@ void SerialFake::readBytes(uint8_t* buffer, size_t size) {
 }
 int32_t SerialFake::available() {
     if (m_streamSerial) {
-#ifdef EMBEDED_FOR_RUST
+#ifdef SIMULATOR_WASM
         return *m_RXserialBufferIndex > 0;
 #else
         return m_serialPort.available();
