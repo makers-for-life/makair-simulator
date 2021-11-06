@@ -1,12 +1,11 @@
 [package]
 name = "makair-simulator-rust"
 version = "0.1.0"
-authors = ["Gabriel Moneyron <gabriel@cooprint.fr>"]
+authors = ["Gabriel Moneyron <gabriel@cooprint.fr>", "David Sferruzza <david.sferruzza@gmail.com>"]
 build = "build.rs"
 
 [dependencies]
-libc = "0.2"
+libc = "0.2.106"
 
 [build-dependencies]
-cc = "1.0"
-
+cc = "1.0.71"
