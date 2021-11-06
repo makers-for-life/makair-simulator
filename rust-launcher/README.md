@@ -3,7 +3,7 @@
 
 ## How to build for WASM (Web assembly)
 
-1. Install emcc. See https://emscripten.org/docs/getting_started/downloads.html
+1. Install emcc **version 2.0.13**. See https://emscripten.org/docs/getting_started/downloads.html
 2. Run `cargo +nightly run --target wasm32-unknown-emscripten`
 3. You need to run a cross isolated server (`python3 httpserver.py`). Then go to http://localhost:8000/makair-simulator-test.html
 
