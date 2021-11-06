@@ -1,11 +1,12 @@
 # makair-simulator - Rust launcher
 🥽 [Software] Rust launcher for the makair simulator, using crate cc with FFI.
 
-## How to build for WASM (Web assembly)
+## How to build for WASM (Web Assembly)
 
-1. Install emcc **version 2.0.13**. See https://emscripten.org/docs/getting_started/downloads.html
-2. Run `cargo +nightly run --target wasm32-unknown-emscripten`
-3. You need to run a cross isolated server (`python3 httpserver.py`). Then go to http://localhost:8000/makair-simulator-test.html
+1. Install Emscripten **version 2.0.13** (see https://emscripten.org/docs/getting_started/downloads.html) and activate it (`source ./emsdk_env.sh`)
+2. Run `cargo +nightly build`
+3. Run a web server that supports cross-origin isolatation: `python3 httpserver.py`
+4. Open http://localhost:8000/makair-simulator-test.html in a Chromium-based web browser
 
 ## Sucessfully tested with the following setup
 
