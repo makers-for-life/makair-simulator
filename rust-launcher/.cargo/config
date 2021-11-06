@@ -1,0 +1,7 @@
+
+  
+[target.wasm32-unknown-emscripten]
+rustflags = ["-C", "target-feature=+atomics,+bulk-memory", "-C", "link-args=-pthread -s PTHREAD_POOL_SIZE=1"]
+
+[unstable]
+build-std = ["panic_abort", "std"]

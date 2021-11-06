@@ -1,4 +1,4 @@
-extern crate cc;
+//extern crate cc;
 
 
 
@@ -6,9 +6,6 @@ extern crate cc;
 
 fn main() {
    println!("cargo:rustc-link-arg=-omakair-simulator-test.html");
-   //println!("cargo:rustc-link-arg=-pthread");
-   //println!("cargo:rustc-arg=-pthread");
-   //println!("cargo:rustc-link-arg=-sUSE_PTHREADS");
    println!("cargo:rustc-link-arg=-sASYNCIFY");
    cc::Build::new()
         .cpp(true) 
