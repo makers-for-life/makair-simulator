@@ -12,7 +12,7 @@
 ## Sucessfully tested with the following setup
 **Ubuntu** 20.04.3 LTS
 
-**rustc** nightly-2021-07-01
+**rustc** nightly (06/11/2021)
 
 **emcc** (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 2.0.13 
 
