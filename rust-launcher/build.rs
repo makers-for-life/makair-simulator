@@ -1,14 +1,10 @@
-//extern crate cc;
-
-
-
-
-
 fn main() {
    println!("cargo:rustc-link-arg=-omakair-simulator-test.html");
    println!("cargo:rustc-link-arg=-sASYNCIFY");
    cc::Build::new()
-        .cpp(true) 
+        .cpp(true)
+        .flag("-D SIMULATOR")
+        .flag("-D SIMULATOR_WASM")
         .file("../srcs/vc_cmv_controller.cpp")
         .file("../srcs/gxx_personality_v0_stub.cpp")
         .file("../srcs/simulator.cpp")
@@ -37,5 +33,4 @@ fn main() {
         .file("../srcs/main.cpp")
         .file("../srcs/cpu_load.cpp")
         .compile("cppsimulator");
-
 }
