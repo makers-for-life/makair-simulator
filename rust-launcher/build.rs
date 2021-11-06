@@ -1,7 +1,7 @@
 fn main() {
-   println!("cargo:rustc-link-arg=-omakair-simulator-test.html");
-   println!("cargo:rustc-link-arg=-sASYNCIFY");
-   cc::Build::new()
+    println!("cargo:rustc-link-arg=-omakair-simulator-test.html");
+    println!("cargo:rustc-link-arg=-sASYNCIFY");
+    cc::Build::new()
         .cpp(true)
         .flag("-D SIMULATOR")
         .flag("-D SIMULATOR_WASM")
