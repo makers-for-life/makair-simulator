@@ -14,7 +14,7 @@ extern "C" {
     /// Pointer to the beginning of the Serial buffer exposed by the simulator
     fn getTXSerialBufferPointer() -> *const u8;
 
-    /// Pointer to the position in the Serial buffer where the simulator is writing
+    /// Pointer to the last position in the Serial buffer where the simulator has written
     fn getTXSerialBufferIndexPointer() -> *const i32;
 }
 
@@ -49,23 +49,26 @@ impl MakAirSimulator {
                 let mut tx_read_position = 0;
 
                 loop {
-                    let tx_write_position = unsafe { *getTXSerialBufferIndexPointer() };
+                    let tx_last_write_position = unsafe { *getTXSerialBufferIndexPointer() };
 
-                    if tx_write_position != tx_read_position && tx_write_position > 0 {
-                        if tx_write_position > tx_read_position {
+                    if tx_last_write_position != tx_read_position && tx_last_write_position >= 0 {
+                        if tx_last_write_position > tx_read_position {
                             bytes_sender
-                                .send(Self::extract_data(tx_read_position, tx_write_position))
+                                .send(Self::extract_data(
+                                    tx_read_position + 1,
+                                    tx_last_write_position,
+                                ))
                                 .unwrap();
                         } else {
                             let tx_buffer_size = unsafe { serialBufferSize() };
                             bytes_sender
-                                .send(Self::extract_data(tx_read_position, tx_buffer_size))
+                                .send(Self::extract_data(tx_read_position + 1, tx_buffer_size))
                                 .unwrap();
                             bytes_sender
-                                .send(Self::extract_data(0, tx_write_position))
+                                .send(Self::extract_data(0, tx_last_write_position))
                                 .unwrap();
                         }
-                        tx_read_position = tx_write_position;
+                        tx_read_position = tx_last_write_position;
                     }
 
                     std::thread::sleep(std::time::Duration::from_millis(1));
@@ -91,7 +94,7 @@ impl MakAirSimulator {
         let capacity = end_offset as usize - start_offset as usize;
         let mut tmp = Vec::with_capacity(capacity);
 
-        for i in start_offset..(end_offset - 1) {
+        for i in start_offset..=end_offset {
             unsafe {
                 tmp.push(std::ptr::read(
                     getTXSerialBufferPointer().offset(i as isize),

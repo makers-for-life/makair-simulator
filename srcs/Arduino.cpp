@@ -113,7 +113,19 @@ void SerialFake::begin(int32_t p_baudrate) {
 void SerialFake::print(const char* str) {
     if (m_streamSerial) {
 #ifdef SIMULATOR_WASM
-        // todo
+        size_t length = strlen(str) + 1;
+
+        const char* beg = str;
+        const char* end = str + length;
+
+        uint8_t* bytes = new uint8_t[length];
+
+        size_t i = 0;
+        for (; beg < end; ++beg, ++i)
+        {
+            bytes[i] = (uint8_t)(*beg);
+        }
+        write(bytes, length - 1);
 #else
         m_serialPort.writeString(str);
 #endif
@@ -125,8 +137,6 @@ void SerialFake::print(const char* str) {
 
 void SerialFake::write(uint8_t data) {
     if (m_streamSerial) {
-        uint8_t next_char[1];
-        next_char[0] = data;
 #ifdef SIMULATOR_WASM
         if (*m_TXserialBufferIndex < m_SERIAL_BUFFER_SIZE - 1) {
             *m_TXserialBufferIndex = *m_TXserialBufferIndex + 1;
@@ -135,6 +145,8 @@ void SerialFake::write(uint8_t data) {
         }
         m_TXserialBuffer[*m_TXserialBufferIndex] = data;
 #else
+        uint8_t next_char[1];
+        next_char[0] = data;
         m_serialPort.writeBytes(next_char, 1);
 #endif
 
