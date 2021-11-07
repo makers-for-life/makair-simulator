@@ -1,34 +1,29 @@
-use std::os::raw;
-use std::thread;
-use std::time;
+mod simulator;
 
-extern "C" {
-    fn serialBufferSize() -> raw::c_int;
-    fn getTXSerialBufferPointer() -> *const raw::c_uchar;
-    fn getTXSerialBufferIndexPointer() -> *const raw::c_int;
-    fn run_simulator() -> raw::c_int;
-}
+use log::info;
+use makair_telemetry::TelemetryChannelType;
+use std::sync::mpsc::channel;
+
+use simulator::MakAirSimulator;
 
 fn main() {
-    thread::spawn(|| {
-        let size_of_buffer = unsafe { serialBufferSize() };
-        println!("Size of TX buffer = {}", size_of_buffer);
-        println!("Value of TX buffer index = {}", unsafe {
-            *getTXSerialBufferIndexPointer()
-        });
+    // Init logging system
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
 
-        // Display content of the buffer
-        loop {
-            print!("Content of TX bufffer: ");
-            for i in 0..size_of_buffer {
-                print!("{} ", unsafe {
-                    *getTXSerialBufferPointer().offset(i as isize)
-                });
-            }
-            println!();
-            thread::sleep(time::Duration::from_millis(2000));
+    // Create a chennel to receive telemetry messages
+    let (tx_messages_sender, tx_messages_receiver) = channel::<TelemetryChannelType>();
+
+    // Initialize simulator
+    let mut simulator = MakAirSimulator::new(tx_messages_sender);
+
+    // Start simulator (this will spawn a few threads)
+    simulator.run();
+
+    // Listen for telemetry mesages and print them
+    std::thread::spawn(move || loop {
+        while let Ok(message) = tx_messages_receiver.try_recv() {
+            info!("{:?}", &message);
         }
+        std::thread::sleep(std::time::Duration::from_secs(1));
     });
-
-    thread::spawn(|| unsafe { run_simulator() });
 }
