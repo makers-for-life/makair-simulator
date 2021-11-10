@@ -30,9 +30,9 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 
 [[package]]
 name = "cc"
-version = "1.0.71"
+version = "1.0.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "79c2681d6594606957bbb8631c4b90a7fcaaa72cdb714743a437b156d6a7eedd"
+checksum = "22a9137b95ea06864e018375b72adfb7db6e6f68cfc8df5a04d00288050485ee"
 
 [[package]]
 name = "cfg-if"
@@ -79,9 +79,9 @@ checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
 
 [[package]]
 name = "libc"
-version = "0.2.106"
+version = "0.2.107"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a60553f9a9e039a333b4e9b20573b9e9b9c0bb3a11e201ccc48ef4283456d673"
+checksum = "fbe5e23404da5b4f555ef85ebed98fb4083e55a00c317800bc2a50ede9f3d219"
 
 [[package]]
 name = "log"
@@ -98,7 +98,6 @@ version = "0.1.0"
 dependencies = [
  "cc",
  "env_logger",
- "libc",
  "log",
  "makair-telemetry",
 ]
@@ -106,7 +105,7 @@ dependencies = [
 [[package]]
 name = "makair-telemetry"
 version = "2.2.0"
-source = "git+https://github.com/makers-for-life/makair-telemetry.git?rev=2c929224375d7791be66a72e535386798ee8f340#2c929224375d7791be66a72e535386798ee8f340"
+source = "git+https://github.com/makers-for-life/makair-telemetry.git?rev=184185d4301fa7343018cd6733e1fb23e2cb032e#184185d4301fa7343018cd6733e1fb23e2cb032e"
 dependencies = [
  "base64",
  "crc32fast",

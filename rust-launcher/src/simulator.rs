@@ -1,6 +1,7 @@
 use log::{error, info};
 use makair_telemetry::{gather_telemetry_from_bytes, TelemetryChannelType};
 use std::sync::mpsc::{channel, Sender};
+use std::time::Duration;
 
 extern "C" {
     /// Run the MakAir Simulator
@@ -76,7 +77,13 @@ impl MakAirSimulator {
             });
 
             std::thread::spawn(move || {
-                gather_telemetry_from_bytes(bytes_receiver, messages_sender, None, None);
+                gather_telemetry_from_bytes(
+                    bytes_receiver,
+                    messages_sender,
+                    None,
+                    None,
+                    Some(Duration::from_millis(1)),
+                );
                 error!("gather_telemetry_from_bytes stopped working");
             });
 
