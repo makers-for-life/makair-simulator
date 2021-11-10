@@ -1,6 +1,6 @@
 mod simulator;
 
-use log::info;
+use makair_telemetry::structures::TelemetryMessage;
 use makair_telemetry::TelemetryChannelType;
 use std::sync::mpsc::channel;
 
@@ -22,7 +22,10 @@ fn main() {
     // Listen for telemetry mesages and print them
     std::thread::spawn(move || loop {
         while let Ok(message) = tx_messages_receiver.try_recv() {
-            info!("{:?}", &message);
+            match message {
+                Ok(TelemetryMessage::DataSnapshot(_)) => (),
+                _ => println!("{:?}", &message),
+            };
         }
         std::thread::sleep(std::time::Duration::from_secs(1));
     });

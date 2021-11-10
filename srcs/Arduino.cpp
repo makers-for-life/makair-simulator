@@ -138,18 +138,19 @@ void SerialFake::print(const char* str) {
 void SerialFake::write(uint8_t data) {
     if (m_streamSerial) {
 #ifdef SIMULATOR_WASM
+        int32_t new_index;
         if (*m_TXserialBufferIndex < m_SERIAL_BUFFER_SIZE - 1) {
-            *m_TXserialBufferIndex = *m_TXserialBufferIndex + 1;
+            new_index = *m_TXserialBufferIndex + 1;
         } else {
-            *m_TXserialBufferIndex = 0;
+            new_index = 0;
         }
-        m_TXserialBuffer[*m_TXserialBufferIndex] = data;
+        m_TXserialBuffer[new_index] = data;
+        *m_TXserialBufferIndex = new_index;
 #else
         uint8_t next_char[1];
         next_char[0] = data;
         m_serialPort.writeBytes(next_char, 1);
 #endif
-
     } else if (m_streamStderr) {
         cerr << data;
     }

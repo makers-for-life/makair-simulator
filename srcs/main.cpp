@@ -10,9 +10,9 @@
 #include "../includes/main.h"
 
 uint8_t TXserialBuffer[SERIAL_BUFFER_SIZE];
-int32_t TXserialBufferIndex = 2;
+int32_t TXserialBufferIndex = -1;
 uint8_t RXserialBuffer[SERIAL_BUFFER_SIZE];
-int32_t RXserialBufferIndex = 0;
+int32_t RXserialBufferIndex = -1;
 
 #ifndef SIMULATOR_WASM
 // Main function

@@ -47,10 +47,11 @@ impl MakAirSimulator {
             let messages_sender = self.tx_messages_sender.clone();
 
             std::thread::spawn(move || {
-                let mut tx_read_position = 0;
+                let mut tx_read_position = -1;
 
                 loop {
-                    let tx_last_write_position = unsafe { *getTXSerialBufferIndexPointer() };
+                    let tx_last_write_position =
+                        unsafe { std::ptr::read(getTXSerialBufferIndexPointer()) };
 
                     if tx_last_write_position != tx_read_position && tx_last_write_position >= 0 {
                         if tx_last_write_position > tx_read_position {
