@@ -3,8 +3,8 @@ fn main() {
     println!("cargo:rustc-link-arg=-sASYNCIFY");
     cc::Build::new()
         .cpp(true)
-        .flag("-D SIMULATOR")
-        .flag("-D SIMULATOR_WASM")
+        .define("SIMULATOR", None)
+        .define("SIMULATOR_WASM", None)
         .file("../srcs/vc_cmv_controller.cpp")
         .file("../srcs/gxx_personality_v0_stub.cpp")
         .file("../srcs/simulator.cpp")
