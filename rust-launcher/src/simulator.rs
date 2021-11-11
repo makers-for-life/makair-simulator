@@ -63,12 +63,15 @@ impl MakAirSimulator {
                                 .unwrap();
                         } else {
                             let tx_buffer_size = unsafe { serialBufferSize() };
-                            bytes_sender
-                                .send(Self::extract_data(tx_read_position + 1, tx_buffer_size))
+                            if tx_read_position < tx_buffer_size-1 {
+                                bytes_sender
+                                .send(Self::extract_data(tx_read_position + 1, tx_buffer_size-1))
                                 .unwrap();
+                            }
                             bytes_sender
                                 .send(Self::extract_data(0, tx_last_write_position))
                                 .unwrap();
+                            
                         }
                         tx_read_position = tx_last_write_position;
                     }
