@@ -1,5 +1,6 @@
 mod simulator;
 
+use log::error;
 use makair_telemetry::structures::TelemetryMessage;
 use makair_telemetry::TelemetryChannelType;
 use std::sync::mpsc::channel;
@@ -9,6 +10,14 @@ use simulator::MakAirSimulator;
 fn main() {
     // Init logging system
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
+
+    // If a thread panics, the whole program should go down
+    let orig_hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |panic_info| {
+        orig_hook(panic_info);
+        error!("A thread panicked, shutting down the process");
+        std::process::exit(1);
+    }));
 
     // Create a chennel to receive telemetry messages
     let (tx_messages_sender, tx_messages_receiver) = channel::<TelemetryChannelType>();
