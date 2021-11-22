@@ -62,6 +62,7 @@ extern "C" {
 }
 
 pub struct MakAirSimulator {
+    initialized: bool,
     running: bool,
     tx_messages_sender: Sender<TelemetryChannelType>,
 }
@@ -72,15 +73,16 @@ impl MakAirSimulator {
     /// _Do not create more than one simulator!_
     pub fn new(tx_messages_sender: Sender<TelemetryChannelType>) -> Self {
         Self {
+            initialized: false,
             running: false,
             tx_messages_sender,
         }
     }
 
-    /// Start the simulator in a new thread
-    pub fn run(&mut self) -> bool {
-        if self.running {
-            info!("Simulator is already running");
+    /// Spawn several threads in order to run the simulator's loop and communication with the firmware
+    pub fn initialize(&mut self) -> bool {
+        if self.initialized {
+            info!("Simulator is already initialized");
             false
         } else {
             info!("Starting simulator");
@@ -145,36 +147,7 @@ impl MakAirSimulator {
                 error!("run_simulator stopped working");
             });
 
-            // The following thread simulate a usecase of the slifespan of the simulator
-            std::thread::spawn(move || {
-                unsafe {
-                    std::thread::sleep(std::time::Duration::from_millis(5000));
-                    // pause the simulation
-                    setStateOff();
-                    println!("setStateOff");
-                    std::thread::sleep(std::time::Duration::from_millis(5000));
-                    setResistance(25);
-                    setCompliance(10);
-                    setSpontaneousBreathRate(10);
-                    setSpontaneousBreathEffort(2);
-                    setSpontaneousBreathDuration(200);
-                    setAccelerationFactor(10.0);
-                    println!("Resistance: {}", getResistance());
-                    println!("Compliance: {}", getCompliance());
-                    println!("SpontaneousBreathRate: {}", getSpontaneousBreathRate());
-                    println!("SpontaneousBreathEffort: {}", getSpontaneousBreathEffort());
-                    println!(
-                        "SpontaneousBreathDuration: {}",
-                        getSpontaneousBreathDuration()
-                    );
-                    println!("AccelerationFactor: {}", getAccelerationFactor());
-
-                    std::thread::sleep(std::time::Duration::from_millis(5000));
-                    setStateOn();
-                    println!("setStateOn");
-                }
-            });
-
+            self.initialized = true;
             self.running = true;
             true
         }
@@ -193,5 +166,86 @@ impl MakAirSimulator {
         }
 
         tmp
+    }
+
+    /// Check if the simulator is initialized and running
+    pub fn running(&self) -> bool {
+        self.initialized && self.running
+    }
+
+    /// Ask the simulator to pause execution
+    pub fn pause(&mut self) {
+        if self.running {
+            unsafe { setStateOff() };
+            self.running = false;
+        }
+    }
+
+    /// Ask the simulator to resume execution
+    pub fn resume(&mut self) {
+        if !self.running {
+            unsafe { setStateOn() };
+            self.running = true;
+        }
+    }
+
+    /// Get acceleration factor of model speed
+    pub fn acceleration_factor(&self) -> f32 {
+        unsafe { getAccelerationFactor() }
+    }
+
+    /// Set acceleration factor of model speed (1.0 means realistic speed)
+    pub fn set_acceleration_factor(&mut self, value: f32) {
+        unsafe { setAccelerationFactor(value) };
+    }
+
+    /// Get resistance (cmh2O/L/s) of patient model
+    pub fn resistance(&self) -> i32 {
+        unsafe { getResistance() }
+    }
+
+    /// Set resistance (cmh2O/L/s) of patient model
+    pub fn set_resistance(&mut self, value: i32) {
+        unsafe { setResistance(value) };
+    }
+
+    /// Get compliance (mL/cmH2O) of patient model
+    pub fn compliance(&self) -> i32 {
+        unsafe { getCompliance() }
+    }
+
+    /// Set compliance (mL/cmH2O) of patient model
+    pub fn set_compliance(&mut self, value: i32) {
+        unsafe { setCompliance(value) };
+    }
+
+    /// Get spontaneous breath rate (cycle/min) of patient model
+    pub fn spontaneous_breath_rate(&self) -> i32 {
+        unsafe { getSpontaneousBreathRate() }
+    }
+
+    /// Set spontaneous breath rate (cycle/min) of patient model
+    pub fn set_spontaneous_breath_rate(&mut self, value: i32) {
+        unsafe { setSpontaneousBreathRate(value) };
+    }
+
+    /// Get spontaneous effort intensity (cmH2O) of patient model
+    pub fn spontaneous_breath_effort(&self) -> i32 {
+        unsafe { getSpontaneousBreathEffort() }
+    }
+
+    /// Set spontaneous effort intensity (cmH2O) of patient model
+    pub fn set_spontaneous_breath_effort(&mut self, value: i32) {
+        unsafe { setSpontaneousBreathEffort(value) };
+    }
+
+    /// Get spontaneous breath duration (ms) of patient model
+    pub fn spontaneous_breath_duration(&self) -> i32 {
+        unsafe { getSpontaneousBreathDuration() }
+    }
+
+    /// Set spontaneous breath duration (ms) of patient model
+    pub fn set_spontaneous_breath_duration(&mut self, value: i32) {
+        unsafe { setSpontaneousBreathDuration(value) };
     }
 }

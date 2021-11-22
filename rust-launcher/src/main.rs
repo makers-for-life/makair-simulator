@@ -17,7 +17,7 @@ fn main() {
     let mut simulator = MakAirSimulator::new(tx_messages_sender);
 
     // Start simulator (this will spawn a few threads)
-    simulator.run();
+    simulator.initialize();
 
     // Listen for telemetry mesages and print them
     let display_telemetry_messages = std::thread::spawn(move || loop {
@@ -28,6 +28,39 @@ fn main() {
             };
         }
         std::thread::sleep(std::time::Duration::from_secs(1));
+    });
+
+    // The following thread simulate a use case of the slifespan of the simulator
+    std::thread::spawn(move || {
+        std::thread::sleep(std::time::Duration::from_millis(5000));
+        simulator.pause();
+        println!("pause");
+        std::thread::sleep(std::time::Duration::from_millis(5000));
+        simulator.set_resistance(25);
+        simulator.set_compliance(10);
+        simulator.set_spontaneous_breath_rate(10);
+        simulator.set_spontaneous_breath_effort(2);
+        simulator.set_spontaneous_breath_duration(200);
+        simulator.set_acceleration_factor(10.0);
+        println!("Resistance: {}", simulator.resistance());
+        println!("Compliance: {}", simulator.compliance());
+        println!(
+            "SpontaneousBreathRate: {}",
+            simulator.spontaneous_breath_rate()
+        );
+        println!(
+            "SpontaneousBreathEffort: {}",
+            simulator.spontaneous_breath_effort()
+        );
+        println!(
+            "SpontaneousBreathDuration: {}",
+            simulator.spontaneous_breath_duration()
+        );
+        println!("AccelerationFactor: {}", simulator.acceleration_factor());
+
+        std::thread::sleep(std::time::Duration::from_millis(5000));
+        simulator.resume();
+        println!("resume");
     });
 
     #[cfg(not(target_os = "emscripten"))]
