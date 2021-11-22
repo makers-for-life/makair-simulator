@@ -143,7 +143,7 @@ int run_simulator() {
 
     Serial6 = SerialFake("emscripten", TXserialBuffer, &TXserialBufferIndex, RXserialBuffer,
                          &RXserialBufferIndex, SERIAL_BUFFER_SIZE);
-    activationController.changeState(1);
+    // activationController.changeState(1);
     PatientModel patientModel(resistance, 2.0, compliance, 0.0, spontaneousBreathRate,
                               spontaneousBreathEffort, spontaneousBreathDuration);
     simulator.startAndRun(patientModel);
@@ -154,6 +154,8 @@ int32_t* getTXSerialBufferIndexPointer() { return &TXserialBufferIndex; }
 uint8_t* getRXSerialBufferPointer() { return &RXserialBuffer[0]; }
 int32_t* getRXSerialBufferIndexPointer() { return &RXserialBufferIndex; }
 int32_t serialBufferSize() { return SERIAL_BUFFER_SIZE; }
+void setStateOn() { activationController.changeState(1); }
+void setStateOff() { activationController.changeState(0); }
 }
 
 #endif

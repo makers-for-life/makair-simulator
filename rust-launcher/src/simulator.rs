@@ -17,6 +17,12 @@ extern "C" {
 
     /// Pointer to the last position in the Serial buffer where the simulator has written
     fn getTXSerialBufferIndexPointer() -> *const i32;
+
+    // Start the simulation
+    fn setStateOn();
+
+    // Pause the simulation
+    fn setStateOff();
 }
 
 pub struct MakAirSimulator {
@@ -92,7 +98,9 @@ impl MakAirSimulator {
             });
 
             std::thread::spawn(|| {
-                unsafe { run_simulator() };
+                unsafe { 
+                    setStateOn();
+                    run_simulator() };
                 error!("run_simulator stopped working");
             });
 
