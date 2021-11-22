@@ -18,46 +18,46 @@ extern "C" {
     /// Pointer to the last position in the Serial buffer where the simulator has written
     fn getTXSerialBufferIndexPointer() -> *const i32;
 
-    // Start the simulation
+    /// Start the simulation
     fn setStateOn();
 
-    // Pause the simulation
+    /// Pause the simulation
     fn setStateOff();
 
-    // Set resistance (cmh2O/L/s) of patient model
+    /// Set resistance (cmh2O/L/s) of patient model
     fn setResistance(resistance: i32) -> bool;
 
-    // Set compliance (mL/cmH2O) of patient model
+    /// Set compliance (mL/cmH2O) of patient model
     fn setCompliance(compliance: i32) -> bool;
 
-    // Set spontaneous breath rate (cycle/min) of patient model
+    /// Set spontaneous breath rate (cycle/min) of patient model
     fn setSpontaneousBreathRate(spontaneousBreathRate: i32) -> bool;
 
-    // Set spontaneous effort intensity (cmH2O) of patient model
+    /// Set spontaneous effort intensity (cmH2O) of patient model
     fn setSpontaneousBreathEffort(spontaneousBreathEffort: i32) -> bool;
 
-    // Set spontaneous breath duration (ms) of patient model
+    /// Set spontaneous breath duration (ms) of patient model
     fn setSpontaneousBreathDuration(spontaneousBreathDuration: i32) -> bool;
 
-    // Set acceleration factor of model speed
+    /// Set acceleration factor of model speed (1.0 means realistic speed)
     fn setAccelerationFactor(accelerationFactor: f32) -> bool;
 
-    // Get resistance (cmh2O/L/s) of patient model
+    /// Get resistance (cmh2O/L/s) of patient model
     fn getResistance() -> i32;
 
-    // Get compliance (mL/cmH2O) of patient model
+    /// Get compliance (mL/cmH2O) of patient model
     fn getCompliance() -> i32;
 
-    // Get spontaneous breath rate (cycle/min) of patient model
+    /// Get spontaneous breath rate (cycle/min) of patient model
     fn getSpontaneousBreathRate() -> i32;
 
-    // Get spontaneous effort intensity (cmH2O) of patient model
+    /// Get spontaneous effort intensity (cmH2O) of patient model
     fn getSpontaneousBreathEffort() -> i32;
 
-    // Get spontaneous breath duration (ms) of patient model
+    /// Get spontaneous breath duration (ms) of patient model
     fn getSpontaneousBreathDuration() -> i32;
 
-    // Get acceleration factor of model speed
+    /// Get acceleration factor of model speed
     fn getAccelerationFactor() -> f32;
 }
 
