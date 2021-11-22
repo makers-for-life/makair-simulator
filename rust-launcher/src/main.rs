@@ -23,11 +23,8 @@ fn main() {
     // Create a chennel to receive telemetry messages
     let (tx_messages_sender, tx_messages_receiver) = channel::<TelemetryChannelType>();
 
-    // Create a chennel to send control messages
-    let (rx_messages_sender, rx_messages_receiver) = channel::<ControlMessage>();
-
     // Initialize simulator
-    let mut simulator = MakAirSimulator::new(tx_messages_sender, rx_messages_receiver);
+    let mut simulator = MakAirSimulator::new(tx_messages_sender);
 
     // Start simulator (this will spawn a few threads)
     simulator.initialize();
@@ -77,12 +74,10 @@ fn main() {
         println!("resume");
 
         std::thread::sleep(std::time::Duration::from_secs(5));
-        rx_messages_sender
-            .send(ControlMessage {
-                setting: ControlSetting::PEEP,
-                value: 0,
-            })
-            .unwrap();
+        simulator.send_control_message(ControlMessage {
+            setting: ControlSetting::PEEP,
+            value: 0,
+        });
     });
 
     #[cfg(not(target_os = "emscripten"))]

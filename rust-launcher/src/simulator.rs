@@ -66,6 +66,7 @@ pub struct MakAirSimulator {
     initialized: bool,
     running: bool,
     tx_messages_sender: Sender<TelemetryChannelType>,
+    rx_messages_sender: Sender<ControlMessage>,
     rx_messages_receiver: Option<Receiver<ControlMessage>>,
 }
 
@@ -73,14 +74,15 @@ impl MakAirSimulator {
     /// Create a new simulator
     ///
     /// _Do not create more than one simulator!_
-    pub fn new(
-        tx_messages_sender: Sender<TelemetryChannelType>,
-        rx_messages_receiver: Receiver<ControlMessage>,
-    ) -> Self {
+    pub fn new(tx_messages_sender: Sender<TelemetryChannelType>) -> Self {
+        // Create a chennel to send control messages
+        let (rx_messages_sender, rx_messages_receiver) = channel::<ControlMessage>();
+
         Self {
             initialized: false,
             running: false,
             tx_messages_sender,
+            rx_messages_sender,
             rx_messages_receiver: Some(rx_messages_receiver),
         }
     }
@@ -190,6 +192,18 @@ impl MakAirSimulator {
         }
 
         tmp
+    }
+
+    /// Send a control message to the simulator
+    ///
+    /// **This will panic if something fails.**
+    pub fn send_control_message(&self, message: ControlMessage) {
+        self.rx_messages_sender.send(message).unwrap();
+    }
+
+    /// Get a sender that can be used to send control message to the simulator
+    pub fn control_message_sender(&self) -> Sender<ControlMessage> {
+        self.rx_messages_sender.clone()
     }
 
     /// Check if the simulator is initialized and running
