@@ -1,5 +1,4 @@
 fn main() {
-
     cc::Build::new()
         .cpp(true)
         .define("SIMULATOR", None)

@@ -4,4 +4,3 @@ rustflags = ["-C", "target-feature=+atomics,+bulk-memory", "-C", "link-args=-pth
 #[cfg(target_os = "emscripten")]
 [unstable]
 build-std = ["panic_abort", "std"]
-
