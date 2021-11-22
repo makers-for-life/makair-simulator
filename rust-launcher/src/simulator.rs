@@ -39,6 +39,9 @@ extern "C" {
     // Set spontaneous breath duration (ms) of patient model
     fn setSpontaneousBreathDuration(spontaneousBreathDuration : i32) -> bool;
 
+    // Set acceleration factor of model speed
+    fn setAccelerationFactor(accelerationFactor : f32) -> bool;
+
     // Get resistance (cmh2O/L/s) of patient model
     fn getResistance() -> i32;
 
@@ -53,6 +56,9 @@ extern "C" {
 
     // Get spontaneous breath duration (ms) of patient model
     fn getSpontaneousBreathDuration() -> i32;
+
+    // Get acceleration factor of model speed
+    fn getAccelerationFactor() -> f32;
 }
 
 pub struct MakAirSimulator {
@@ -151,11 +157,14 @@ impl MakAirSimulator {
                     setSpontaneousBreathRate(10);
                     setSpontaneousBreathEffort(2);
                     setSpontaneousBreathDuration(200);
+                    setAccelerationFactor(10.0);
                     println!("Resistance : {}", getResistance());
                     println!("Compliance : {}", getCompliance());
                     println!("SpontaneousBreathRate : {}", getSpontaneousBreathRate());
                     println!("SpontaneousBreathEffort : {}", getSpontaneousBreathEffort());
                     println!("SpontaneousBreathDuration : {}", getSpontaneousBreathDuration());
+                    println!("AccelerationFactor : {}", getAccelerationFactor());
+
 
                     std::thread::sleep(std::time::Duration::from_millis(5000));
                     setStateOn(); 

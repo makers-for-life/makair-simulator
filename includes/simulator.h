@@ -25,6 +25,8 @@ class Simulator {
     void init(PatientModel& p_patientModel);
     void loop();
     Model* getModel() { return &m_model; };
+    float getAccelerationFactor() { return m_accelerationFactor; };
+    bool setAccelerationFactor(float p_accelerationFactor);
 
  private:
     Model m_model;
@@ -34,6 +36,7 @@ class Simulator {
     SensorsData m_sensors;
     float m_dt;  // in s
     uint64_t m_last_date;
+    float m_accelerationFactor;
 };
 
 extern Simulator simulator;

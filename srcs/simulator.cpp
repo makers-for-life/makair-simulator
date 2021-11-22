@@ -25,6 +25,7 @@ Simulator::Simulator()
 
     timestamp_microsecond = 0u;
     timestamp_millisecond = 0u;
+    m_accelerationFactor = 1.0;
 }
 
 void Simulator::startAndRun(PatientModel& p_patientModel) {
@@ -57,11 +58,23 @@ void Simulator::loop() {
     // moving to the next time step
     timestamp_millisecond += uint32_t(m_dt * 1000.0);
     timestamp_microsecond += uint32_t(m_dt * 1000000.0);
-    while (systemMicros() - m_last_date < 10000) {
+    while (systemMicros() - m_last_date < 10000 / m_accelerationFactor) {
         // Check serial input
         serialControlLoop();
         usleep(10);
     }
 
     m_last_date = systemMicros();
+}
+
+bool Simulator::setAccelerationFactor(float p_accelerationFactor) {
+    if (p_accelerationFactor >= MIN_ACCELERATION_FACTOR
+        && p_accelerationFactor <= MAX_ACCELERATION_FACTOR) {
+        m_accelerationFactor = p_accelerationFactor;
+        return true;
+    } else {
+        cout << "Error : Acceleration factor should be between x" << MIN_ACCELERATION_FACTOR
+             << " and x" << MAX_ACCELERATION_FACTOR << endl;
+        return false;
+    }
 }

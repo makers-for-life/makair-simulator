@@ -189,6 +189,11 @@ bool setSpontaneousBreathDuration(int32_t p_spontaneousBreathDuration) {
         p_spontaneousBreathDuration);
 }
 
+// Set acceleration factor of model speed
+bool setAccelerationFactor(float p_accelerationFactor) {
+    return simulator.setAccelerationFactor(p_accelerationFactor);
+}
+
 // Get resistance (cmh2O/L/s) of patient model
 int32_t getResistance() { return simulator.getModel()->getPatientModel()->getResistance(); }
 
@@ -209,6 +214,9 @@ int32_t getSpontaneousBreathEffort() {
 int32_t getSpontaneousBreathDuration() {
     return simulator.getModel()->getPatientModel()->getSpontaneousBreathDuration();
 }
+
+// Set acceleration factor of model speed
+float getAccelerationFactor() { return simulator.getAccelerationFactor(); }
 }
 
 #endif
