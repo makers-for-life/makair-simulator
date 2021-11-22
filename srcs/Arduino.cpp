@@ -69,12 +69,6 @@ SerialFake::SerialFake(char* p_serialName,
     m_RXserialBuffer = p_RXserialBuffer;
     m_RXserialBufferIndex = p_RXserialBufferIndex;
     m_SERIAL_BUFFER_SIZE = p_SERIAL_BUFFER_SIZE;
-    for (int i = 0; i < m_SERIAL_BUFFER_SIZE; i++) {
-        m_TXserialBuffer[i] = 0;
-        m_RXserialBuffer[i] = 0;
-    }
-    *m_RXserialBufferIndex = -1;  // -1 is the inital state
-    *m_TXserialBufferIndex = -1;  // -1 is the inital state
 
     m_streamSerial = true;
     m_serialName = p_serialName;
@@ -121,8 +115,7 @@ void SerialFake::print(const char* str) {
         uint8_t* bytes = new uint8_t[length];
 
         size_t i = 0;
-        for (; beg < end; ++beg, ++i)
-        {
+        for (; beg < end; ++beg, ++i) {
             bytes[i] = (uint8_t)(*beg);
         }
         write(bytes, length - 1);

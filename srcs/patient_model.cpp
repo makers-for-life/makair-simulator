@@ -72,7 +72,7 @@ float PatientModel::computeMusclePressure() {
         float effortPogress = float(timestampMs % breathDurationMs) / float(effortDurationMs);
 
         musclePressure = m_spontaneousBreathEffort * sin(M_PI * effortPogress);
-        cout << musclePressure << endl;
+        // cout << musclePressure << endl;
     } else {
 
         musclePressure = 0.0;

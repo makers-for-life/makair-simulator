@@ -59,6 +59,7 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
         mainController.setup();
 
         m_state = STOPPED;
+        mainController.stop(getTime());
         break;
 
     case STOPPED:
@@ -66,7 +67,7 @@ ActuatorsData SimuStateMachine::compute(SensorsData sensors, float dt_s) {
         if (!shouldStop() && activationController.isRunning()) {
             m_state = INIT_CYCLE;
         } else {
-            mainController.stop(getTime());
+            // TODO refresh mainController.stop(getTime());
         }
 
         break;

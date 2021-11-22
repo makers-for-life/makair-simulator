@@ -1,6 +1,5 @@
 fn main() {
-    println!("cargo:rustc-link-arg=-omakair-simulator-test.html");
-    println!("cargo:rustc-link-arg=-sASYNCIFY");
+
     cc::Build::new()
         .cpp(true)
         .define("SIMULATOR", None)

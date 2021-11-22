@@ -114,7 +114,7 @@ impl MakAirSimulator {
 
                     std::thread::sleep(std::time::Duration::from_millis(1));
                 }
-            });
+           });
 
             std::thread::spawn(move || {
                 gather_telemetry_from_bytes(
@@ -127,14 +127,43 @@ impl MakAirSimulator {
                 error!("gather_telemetry_from_bytes stopped working");
             });
 
-            std::thread::spawn(|| {
+
+            std::thread::spawn(move || {
                 unsafe { 
                     // Unpause the simulation 
                     setStateOn(); 
                     // Start the infinite loop of the simulator
-                    run_simulator() };
+                    run_simulator() 
+                };
                 error!("run_simulator stopped working");
             });
+
+            std::thread::spawn( move || {
+                unsafe { 
+                    std::thread::sleep(std::time::Duration::from_millis(5000));
+                    // pause the simulation 
+                    setStateOff(); 
+                    println!("setStateOff");
+                    std::thread::sleep(std::time::Duration::from_millis(5000));
+                    setResistance(25);
+                    setCompliance(10);
+                    setSpontaneousBreathRate(10);
+                    setSpontaneousBreathEffort(2);
+                    setSpontaneousBreathDuration(200);
+                    println!("Resistance : {}", getResistance());
+                    println!("Compliance : {}", getCompliance());
+                    println!("SpontaneousBreathRate : {}", getSpontaneousBreathRate());
+                    println!("SpontaneousBreathEffort : {}", getSpontaneousBreathEffort());
+                    println!("SpontaneousBreathDuration : {}", getSpontaneousBreathDuration());
+
+                    std::thread::sleep(std::time::Duration::from_millis(5000));
+                    setStateOn(); 
+                    println!("setStateOn");
+                }
+                    
+            });
+
+            
 
             self.running = true;
             true
