@@ -138,6 +138,7 @@ impl MakAirSimulator {
                 error!("run_simulator stopped working");
             });
 
+            // The following thread simulate a usecase of the slifespan of the simulator
             std::thread::spawn( move || {
                 unsafe { 
                     std::thread::sleep(std::time::Duration::from_millis(5000));
