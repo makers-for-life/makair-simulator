@@ -20,7 +20,7 @@ fn main() {
     simulator.run();
 
     // Listen for telemetry mesages and print them
-    std::thread::spawn(move || loop {
+    let display_telemetry_messages = std::thread::spawn(move || loop {
         while let Ok(message) = tx_messages_receiver.try_recv() {
             match message {
                 Ok(TelemetryMessage::DataSnapshot(_)) => (),
@@ -31,5 +31,5 @@ fn main() {
     });
 
     #[cfg(not(target_os = "emscripten"))]
-    loop {}
+    display_telemetry_messages.join().unwrap();
 }
