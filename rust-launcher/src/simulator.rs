@@ -25,22 +25,22 @@ extern "C" {
     fn setStateOff();
 
     // Set resistance (cmh2O/L/s) of patient model
-    fn setResistance(resistance : i32) -> bool;
+    fn setResistance(resistance: i32) -> bool;
 
     // Set compliance (mL/cmH2O) of patient model
-    fn setCompliance(compliance : i32) -> bool;
+    fn setCompliance(compliance: i32) -> bool;
 
     // Set spontaneous breath rate (cycle/min) of patient model
-    fn setSpontaneousBreathRate(spontaneousBreathRate : i32) -> bool;
+    fn setSpontaneousBreathRate(spontaneousBreathRate: i32) -> bool;
 
     // Set spontaneous effort intensity (cmH2O) of patient model
-    fn setSpontaneousBreathEffort(spontaneousBreathEffort : i32) -> bool;
+    fn setSpontaneousBreathEffort(spontaneousBreathEffort: i32) -> bool;
 
     // Set spontaneous breath duration (ms) of patient model
-    fn setSpontaneousBreathDuration(spontaneousBreathDuration : i32) -> bool;
+    fn setSpontaneousBreathDuration(spontaneousBreathDuration: i32) -> bool;
 
     // Set acceleration factor of model speed
-    fn setAccelerationFactor(accelerationFactor : f32) -> bool;
+    fn setAccelerationFactor(accelerationFactor: f32) -> bool;
 
     // Get resistance (cmh2O/L/s) of patient model
     fn getResistance() -> i32;
@@ -105,22 +105,24 @@ impl MakAirSimulator {
                                 .unwrap();
                         } else {
                             let tx_buffer_size = unsafe { serialBufferSize() };
-                            if tx_read_position < tx_buffer_size-1 {
+                            if tx_read_position < tx_buffer_size - 1 {
                                 bytes_sender
-                                .send(Self::extract_data(tx_read_position + 1, tx_buffer_size-1))
-                                .unwrap();
+                                    .send(Self::extract_data(
+                                        tx_read_position + 1,
+                                        tx_buffer_size - 1,
+                                    ))
+                                    .unwrap();
                             }
                             bytes_sender
                                 .send(Self::extract_data(0, tx_last_write_position))
                                 .unwrap();
-                            
                         }
                         tx_read_position = tx_last_write_position;
                     }
 
                     std::thread::sleep(std::time::Duration::from_millis(1));
                 }
-           });
+            });
 
             std::thread::spawn(move || {
                 gather_telemetry_from_bytes(
@@ -133,23 +135,22 @@ impl MakAirSimulator {
                 error!("gather_telemetry_from_bytes stopped working");
             });
 
-
             std::thread::spawn(move || {
-                unsafe { 
-                    // Unpause the simulation 
-                    setStateOn(); 
+                unsafe {
+                    // Unpause the simulation
+                    setStateOn();
                     // Start the infinite loop of the simulator
-                    run_simulator() 
+                    run_simulator()
                 };
                 error!("run_simulator stopped working");
             });
 
             // The following thread simulate a usecase of the slifespan of the simulator
-            std::thread::spawn( move || {
-                unsafe { 
+            std::thread::spawn(move || {
+                unsafe {
                     std::thread::sleep(std::time::Duration::from_millis(5000));
-                    // pause the simulation 
-                    setStateOff(); 
+                    // pause the simulation
+                    setStateOff();
                     println!("setStateOff");
                     std::thread::sleep(std::time::Duration::from_millis(5000));
                     setResistance(25);
@@ -158,22 +159,21 @@ impl MakAirSimulator {
                     setSpontaneousBreathEffort(2);
                     setSpontaneousBreathDuration(200);
                     setAccelerationFactor(10.0);
-                    println!("Resistance : {}", getResistance());
-                    println!("Compliance : {}", getCompliance());
-                    println!("SpontaneousBreathRate : {}", getSpontaneousBreathRate());
-                    println!("SpontaneousBreathEffort : {}", getSpontaneousBreathEffort());
-                    println!("SpontaneousBreathDuration : {}", getSpontaneousBreathDuration());
-                    println!("AccelerationFactor : {}", getAccelerationFactor());
-
+                    println!("Resistance: {}", getResistance());
+                    println!("Compliance: {}", getCompliance());
+                    println!("SpontaneousBreathRate: {}", getSpontaneousBreathRate());
+                    println!("SpontaneousBreathEffort: {}", getSpontaneousBreathEffort());
+                    println!(
+                        "SpontaneousBreathDuration: {}",
+                        getSpontaneousBreathDuration()
+                    );
+                    println!("AccelerationFactor: {}", getAccelerationFactor());
 
                     std::thread::sleep(std::time::Duration::from_millis(5000));
-                    setStateOn(); 
+                    setStateOn();
                     println!("setStateOn");
                 }
-                    
             });
-
-            
 
             self.running = true;
             true
