@@ -6,11 +6,14 @@
 1. Install Emscripten **version 2.0.13** (see https://emscripten.org/docs/getting_started/downloads.html) and activate it (`source ./emsdk_env.sh`)
 2. Run `cargo +nightly build --target was32-unknown-emscripten`
 3. Run a web server that supports cross-origin isolatation: `python3 httpserver.py`
-4. Open http://localhost:8000/makair-simulator-test.html in a Chromium-based web browser7
+4. Open http://localhost:8000/makair-simulator-test.html in a Chromium-based web browser
+
+In order to compile, you might need to type export CXX=emcc
 
 ## How to build for Linux
 
 1. Run `cargo +nightly run --target x86_64-unknown-linux-gnu`
+In order to compile, you might need to type export CXX=gcc
 
 
 ## Sucessfully tested with the following setup
