@@ -80,3 +80,62 @@ float PatientModel::computeMusclePressure() {
 
     return musclePressure;
 }
+
+// Setters for patient characteristics
+bool PatientModel::setResistance(int32_t p_resistance) {
+    if (p_resistance >= MIN_RESISTANCE_VALUE && p_resistance <= MAX_RESISTANCE_VALUE) {
+        m_Rl = p_resistance;
+        return true;
+    } else {
+        cout << "Error : Resistance should be between " << MIN_RESISTANCE_VALUE << " and "
+             << MAX_RESISTANCE_VALUE << " cmh2O/L/s" << endl;
+        return false;
+    }
+}
+
+bool PatientModel::setCompliance(int32_t p_compliance) {
+    if (p_compliance >= MIN_COMPLIANCE_VALUE && p_compliance <= 150) {
+        m_Cl = p_compliance;
+        return true;
+    } else {
+        cout << "Error : compliance should be between " << MIN_COMPLIANCE_VALUE << " and "
+             << MAX_COMPLIANCE_VALUE << " mL/cmH2O" << endl;
+        return false;
+    }
+}
+bool PatientModel::setSpontaneousBreathRate(int32_t p_spontaneousBreathRate) {
+    if (p_spontaneousBreathRate >= MIN_SPONTANEOUS_BREATH_RATE_VALUE
+        && p_spontaneousBreathRate <= MAX_SPONTANEOUS_BREATH_RATE_VALUE) {
+        m_spontaneousBreathRate = p_spontaneousBreathRate;
+        return true;
+    } else {
+        cout << "Error : spontaneousBreathRate should be between "
+             << MIN_SPONTANEOUS_BREATH_RATE_VALUE << " and " << MAX_SPONTANEOUS_BREATH_RATE_VALUE
+             << " cycle/min" << endl;
+        return false;
+    }
+}
+bool PatientModel::setSpontaneousBreathEffort(int32_t p_spontaneousBreathEffort) {
+    if (p_spontaneousBreathEffort >= MIN_SPONTANEOUS_BREATH_EFFORT_VALUE
+        && p_spontaneousBreathEffort <= MAX_SPONTANEOUS_BREATH_EFFORT_VALUE) {
+        m_spontaneousBreathEffort = p_spontaneousBreathEffort;
+        return true;
+    } else {
+        cout << "Error : spontaneousBreathEffort should be between "
+             << MIN_SPONTANEOUS_BREATH_EFFORT_VALUE << " and "
+             << MAX_SPONTANEOUS_BREATH_EFFORT_VALUE << " cmh2O" << endl;
+        return false;
+    }
+}
+bool PatientModel::setSpontaneousBreathDuration(int32_t p_spontaneousBreathDuration) {
+    if (p_spontaneousBreathDuration >= MIN_SPONTANEOUS_BREATH_DURATION_VALUE
+        && p_spontaneousBreathDuration <= MAX_SPONTANEOUS_BREATH_DURATION_VALUE) {
+        m_spontaneousBreathDuration = p_spontaneousBreathDuration;
+        return true;
+    } else {
+        cout << "Error : spontaneousBreathDuration should be between "
+             << MIN_SPONTANEOUS_BREATH_DURATION_VALUE << " and "
+             << MAX_SPONTANEOUS_BREATH_DURATION_VALUE << " ms" << endl;
+        return false;
+    }
+}

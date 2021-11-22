@@ -27,6 +27,7 @@ class Simulator {
     void startAndRun(PatientModel& p_patientModel);
     void init(PatientModel& p_patientModel);
     void loop();
+    Model* getModel() { return &m_model; };
 
  private:
     Model m_model;

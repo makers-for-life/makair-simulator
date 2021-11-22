@@ -154,8 +154,61 @@ int32_t* getTXSerialBufferIndexPointer() { return &TXserialBufferIndex; }
 uint8_t* getRXSerialBufferPointer() { return &RXserialBuffer[0]; }
 int32_t* getRXSerialBufferIndexPointer() { return &RXserialBufferIndex; }
 int32_t serialBufferSize() { return SERIAL_BUFFER_SIZE; }
+
+// Start the simulation
 void setStateOn() { activationController.changeState(1); }
+
+// Stop (pause) the simulation
 void setStateOff() { activationController.changeState(0); }
+
+// Set resistance (cmh2O/L/s) of patient model
+bool setResistance(int32_t p_resistance) {
+    return simulator.getModel()->getPatientModel()->setResistance(p_resistance);
+}
+
+// Set compliance (mL/cmH2O) of patient model
+bool setCompliance(int32_t p_compliance) {
+    return simulator.getModel()->getPatientModel()->setCompliance(p_compliance);
+}
+
+// Set spontaneous breath rate (cycle/min) of patient model
+bool setSpontaneousBreathRate(int32_t p_spontaneousBreathRate) {
+    return simulator.getModel()->getPatientModel()->setSpontaneousBreathRate(
+        p_spontaneousBreathRate);
+}
+
+// Set spontaneous effort intensity (cmH2O) of patient model
+bool setSpontaneousBreathEffort(int32_t p_spontaneousBreathEffort) {
+    return simulator.getModel()->getPatientModel()->setSpontaneousBreathEffort(
+        p_spontaneousBreathEffort);
+}
+
+// Set spontaneous breath duration (ms) of patient model
+bool setSpontaneousBreathDuration(int32_t p_spontaneousBreathDuration) {
+    return simulator.getModel()->getPatientModel()->setSpontaneousBreathDuration(
+        p_spontaneousBreathDuration);
+}
+
+// Get resistance (cmh2O/L/s) of patient model
+int32_t getResistance() { return simulator.getModel()->getPatientModel()->getResistance(); }
+
+// Get compliance (mL/cmH2O) of patient model
+int32_t getCompliance() { return simulator.getModel()->getPatientModel()->getCompliance(); }
+
+// Get spontaneous breath rate (cycle/min) of patient model
+int32_t getSpontaneousBreathRate() {
+    return simulator.getModel()->getPatientModel()->getSpontaneousBreathRate();
+}
+
+// Get spontaneous effort intensity (cmH2O) of patient model
+int32_t getSpontaneousBreathEffort() {
+    return simulator.getModel()->getPatientModel()->getSpontaneousBreathEffort();
+}
+
+// Get spontaneous breath duration (ms) of patient model
+int32_t getSpontaneousBreathDuration() {
+    return simulator.getModel()->getPatientModel()->getSpontaneousBreathDuration();
+}
 }
 
 #endif

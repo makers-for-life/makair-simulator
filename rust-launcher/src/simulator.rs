@@ -23,6 +23,36 @@ extern "C" {
 
     // Pause the simulation
     fn setStateOff();
+
+    // Set resistance (cmh2O/L/s) of patient model
+    fn setResistance(resistance : i32) -> bool;
+
+    // Set compliance (mL/cmH2O) of patient model
+    fn setCompliance(compliance : i32) -> bool;
+
+    // Set spontaneous breath rate (cycle/min) of patient model
+    fn setSpontaneousBreathRate(spontaneousBreathRate : i32) -> bool;
+
+    // Set spontaneous effort intensity (cmH2O) of patient model
+    fn setSpontaneousBreathEffort(spontaneousBreathEffort : i32) -> bool;
+
+    // Set spontaneous breath duration (ms) of patient model
+    fn setSpontaneousBreathDuration(spontaneousBreathDuration : i32) -> bool;
+
+    // Get resistance (cmh2O/L/s) of patient model
+    fn getResistance() -> i32;
+
+    // Get compliance (mL/cmH2O) of patient model
+    fn getCompliance() -> i32;
+
+    // Get spontaneous breath rate (cycle/min) of patient model
+    fn getSpontaneousBreathRate() -> i32;
+
+    // Get spontaneous effort intensity (cmH2O) of patient model
+    fn getSpontaneousBreathEffort() -> i32;
+
+    // Get spontaneous breath duration (ms) of patient model
+    fn getSpontaneousBreathDuration() -> i32;
 }
 
 pub struct MakAirSimulator {
@@ -99,7 +129,9 @@ impl MakAirSimulator {
 
             std::thread::spawn(|| {
                 unsafe { 
-                    setStateOn();
+                    // Unpause the simulation 
+                    setStateOn(); 
+                    // Start the infinite loop of the simulator
                     run_simulator() };
                 error!("run_simulator stopped working");
             });

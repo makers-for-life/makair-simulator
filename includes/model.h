@@ -24,6 +24,7 @@ class Model {
     void init(PatientModel& p_patientModel);
 
     SensorsData compute(ActuatorsData cmds, float dt);
+    PatientModel* getPatientModel() { return m_patientModel; };
 
  private:
     // Patient model containing of datas (resistance, compliance, etc...)

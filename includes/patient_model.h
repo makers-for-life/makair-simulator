@@ -8,7 +8,9 @@
 
 // INCLUDES ===================================================================
 
+#include "../includes/constants.h"
 #include "../includes/helper.h"
+
 #include <cmath>
 #include <cstdint>
 #include <unistd.h>
@@ -39,6 +41,20 @@ class PatientModel {
     void updateTimeUs(int64_t dt) {
         timestampUs += dt;
     };  // update with time increment in microseconds
+
+    // Setters for patient characteristics
+    bool setResistance(int32_t p_resistance);
+    bool setCompliance(int32_t p_compliance);
+    bool setSpontaneousBreathRate(int32_t p_spontaneousBreathRate);
+    bool setSpontaneousBreathEffort(int32_t p_spontaneousBreathEffort);
+    bool setSpontaneousBreathDuration(int32_t p_spontaneousBreathDuration);
+
+    // Getters for patient characteristics
+    int32_t getResistance() { return m_Rl; };
+    int32_t getCompliance() { return m_Cl; };
+    int32_t getSpontaneousBreathRate() { return m_spontaneousBreathRate; };
+    int32_t getSpontaneousBreathEffort() { return m_spontaneousBreathEffort; };
+    int32_t getSpontaneousBreathDuration() { return m_spontaneousBreathDuration; };
 
  private:
     // parameters of the patient
