@@ -1,5 +1,5 @@
 [target.wasm32-unknown-emscripten]
-rustflags = ["-C", "target-feature=+atomics,+bulk-memory", "-C", "link-args=-pthread -s PTHREAD_POOL_SIZE=navigator.hardwareConcurrency -omakair-simulator-test.html -sASYNCIFY"]
+rustflags = ["-C", "target-feature=+atomics,+bulk-memory", "-C", "link-args=-pthread -s PTHREAD_POOL_SIZE=navigator.hardwareConcurrency -omakair-simulator-test.html"]
 
 #[cfg(target_os = "emscripten")]
 [unstable]
