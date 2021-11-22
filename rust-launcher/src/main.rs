@@ -41,10 +41,11 @@ fn main() {
 
     // The following thread simulate a use case of the slifespan of the simulator
     std::thread::spawn(move || {
-        std::thread::sleep(std::time::Duration::from_millis(5000));
+        std::thread::sleep(std::time::Duration::from_secs(5));
         simulator.pause();
         println!("pause");
-        std::thread::sleep(std::time::Duration::from_millis(5000));
+
+        std::thread::sleep(std::time::Duration::from_secs(5));
         simulator.set_resistance(25);
         simulator.set_compliance(10);
         simulator.set_spontaneous_breath_rate(10);
@@ -67,7 +68,7 @@ fn main() {
         );
         println!("AccelerationFactor: {}", simulator.acceleration_factor());
 
-        std::thread::sleep(std::time::Duration::from_millis(5000));
+        std::thread::sleep(std::time::Duration::from_secs(5));
         simulator.resume();
         println!("resume");
     });

@@ -87,9 +87,11 @@ impl MakAirSimulator {
         } else {
             info!("Starting simulator");
 
-            let (bytes_sender, bytes_receiver) = channel::<Vec<u8>>();
-            let messages_sender = self.tx_messages_sender.clone();
+            // Telemetry
+            let (tx_bytes_sender, tx_bytes_receiver) = channel::<Vec<u8>>();
+            let tx_messages_sender = self.tx_messages_sender.clone();
 
+            // Get telemetry bytes from the simulator and send them into a channel
             std::thread::spawn(move || {
                 let mut tx_read_position = -1;
 
@@ -99,7 +101,7 @@ impl MakAirSimulator {
 
                     if tx_last_write_position != tx_read_position && tx_last_write_position >= 0 {
                         if tx_last_write_position > tx_read_position {
-                            bytes_sender
+                            tx_bytes_sender
                                 .send(Self::extract_data(
                                     tx_read_position + 1,
                                     tx_last_write_position,
@@ -108,14 +110,14 @@ impl MakAirSimulator {
                         } else {
                             let tx_buffer_size = unsafe { serialBufferSize() };
                             if tx_read_position < tx_buffer_size - 1 {
-                                bytes_sender
+                                tx_bytes_sender
                                     .send(Self::extract_data(
                                         tx_read_position + 1,
                                         tx_buffer_size - 1,
                                     ))
                                     .unwrap();
                             }
-                            bytes_sender
+                            tx_bytes_sender
                                 .send(Self::extract_data(0, tx_last_write_position))
                                 .unwrap();
                         }
@@ -126,17 +128,19 @@ impl MakAirSimulator {
                 }
             });
 
+            // Parse telemetry messages from bytes
             std::thread::spawn(move || {
                 gather_telemetry_from_bytes(
-                    bytes_receiver,
-                    messages_sender,
                     None,
                     None,
+                    tx_bytes_receiver,
+                    tx_messages_sender,
                     Some(Duration::from_millis(1)),
                 );
                 error!("gather_telemetry_from_bytes stopped working");
             });
 
+            // Run the simulation loop
             std::thread::spawn(move || {
                 unsafe {
                     // Unpause the simulation
