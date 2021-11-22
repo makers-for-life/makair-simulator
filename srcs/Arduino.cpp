@@ -107,18 +107,14 @@ void SerialFake::begin(int32_t p_baudrate) {
 void SerialFake::print(const char* str) {
     if (m_streamSerial) {
 #ifdef SIMULATOR_WASM
-        size_t length = strlen(str) + 1;
+        size_t length = strlen(str);
 
-        const char* beg = str;
-        const char* end = str + length;
+        uint8_t bytes[length];
 
-        uint8_t* bytes = new uint8_t[length];
-
-        size_t i = 0;
-        for (; beg < end; ++beg, ++i) {
-            bytes[i] = (uint8_t)(*beg);
+        for (size_t i = 0; i < length; i++) {
+            bytes[i] = (uint8_t)str[i];
         }
-        write(bytes, length - 1);
+        write(bytes, length);
 #else
         m_serialPort.writeString(str);
 #endif
