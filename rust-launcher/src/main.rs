@@ -1,6 +1,7 @@
 mod simulator;
 
 use log::error;
+use makair_telemetry::control::{ControlMessage, ControlSetting};
 use makair_telemetry::structures::TelemetryMessage;
 use makair_telemetry::TelemetryChannelType;
 use std::sync::mpsc::channel;
@@ -22,8 +23,11 @@ fn main() {
     // Create a chennel to receive telemetry messages
     let (tx_messages_sender, tx_messages_receiver) = channel::<TelemetryChannelType>();
 
+    // Create a chennel to send control messages
+    let (rx_messages_sender, rx_messages_receiver) = channel::<ControlMessage>();
+
     // Initialize simulator
-    let mut simulator = MakAirSimulator::new(tx_messages_sender);
+    let mut simulator = MakAirSimulator::new(tx_messages_sender, rx_messages_receiver);
 
     // Start simulator (this will spawn a few threads)
     simulator.initialize();
@@ -71,6 +75,14 @@ fn main() {
         std::thread::sleep(std::time::Duration::from_secs(5));
         simulator.resume();
         println!("resume");
+
+        std::thread::sleep(std::time::Duration::from_secs(5));
+        rx_messages_sender
+            .send(ControlMessage {
+                setting: ControlSetting::PEEP,
+                value: 0,
+            })
+            .unwrap();
     });
 
     #[cfg(not(target_os = "emscripten"))]

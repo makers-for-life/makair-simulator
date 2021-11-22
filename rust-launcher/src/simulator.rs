@@ -1,6 +1,7 @@
-use log::{error, info};
+use log::{error, info, warn};
+use makair_telemetry::control::ControlMessage;
 use makair_telemetry::{gather_telemetry_from_bytes, TelemetryChannelType};
-use std::sync::mpsc::{channel, Sender};
+use std::sync::mpsc::{channel, Receiver, Sender};
 use std::time::Duration;
 
 extern "C" {
@@ -65,17 +66,22 @@ pub struct MakAirSimulator {
     initialized: bool,
     running: bool,
     tx_messages_sender: Sender<TelemetryChannelType>,
+    rx_messages_receiver: Option<Receiver<ControlMessage>>,
 }
 
 impl MakAirSimulator {
     /// Create a new simulator
     ///
     /// _Do not create more than one simulator!_
-    pub fn new(tx_messages_sender: Sender<TelemetryChannelType>) -> Self {
+    pub fn new(
+        tx_messages_sender: Sender<TelemetryChannelType>,
+        rx_messages_receiver: Receiver<ControlMessage>,
+    ) -> Self {
         Self {
             initialized: false,
             running: false,
             tx_messages_sender,
+            rx_messages_receiver: Some(rx_messages_receiver),
         }
     }
 
@@ -90,6 +96,10 @@ impl MakAirSimulator {
             // Telemetry
             let (tx_bytes_sender, tx_bytes_receiver) = channel::<Vec<u8>>();
             let tx_messages_sender = self.tx_messages_sender.clone();
+
+            // Control
+            let (rx_bytes_sender, rx_bytes_receiver) = channel::<Vec<u8>>();
+            let rx_messages_receiver = self.rx_messages_receiver.take().unwrap();
 
             // Get telemetry bytes from the simulator and send them into a channel
             std::thread::spawn(move || {
@@ -131,13 +141,23 @@ impl MakAirSimulator {
             // Parse telemetry messages from bytes
             std::thread::spawn(move || {
                 gather_telemetry_from_bytes(
-                    None,
-                    None,
                     tx_bytes_receiver,
                     tx_messages_sender,
+                    Some(rx_messages_receiver),
+                    Some(rx_bytes_sender),
                     Some(Duration::from_millis(1)),
                 );
                 error!("gather_telemetry_from_bytes stopped working");
+            });
+
+            // Get control messages bytes and feed them to the simulator
+            std::thread::spawn(move || {
+                while let Ok(bytes) = rx_bytes_receiver.recv() {
+                    warn!(
+                        "TODO: write these bytes into the simulator buffer → {:?}",
+                        &bytes
+                    );
+                }
             });
 
             // Run the simulation loop
