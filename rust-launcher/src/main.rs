@@ -34,6 +34,7 @@ fn main() {
         while let Ok(message) = tx_messages_receiver.try_recv() {
             match message {
                 Ok(TelemetryMessage::DataSnapshot(_)) => (),
+                Ok(m) => println!("{:?}", &m),
                 _ => println!("{:?}", &message),
             };
         }
