@@ -1,4 +1,4 @@
-use log::{error, info, warn};
+use log::{error, info};
 use makair_telemetry::control::ControlMessage;
 use makair_telemetry::{gather_telemetry_from_bytes, TelemetryChannelType};
 use std::sync::mpsc::{channel, Receiver, Sender};
@@ -161,24 +161,24 @@ impl MakAirSimulator {
             // Get control messages bytes and feed them to the simulator
             std::thread::spawn(move || {
                 while let Ok(bytes) = rx_bytes_receiver.recv() {
-                    let mut rx_last_write_position = 0;
                     let n = bytes.len() as i32;
                     let rx_buffer_size = unsafe { serialBufferSize() };
                     for i in 0..n {
-                        unsafe{ 
-                            rx_last_write_position =  std::ptr::read(getRXSerialBufferIndexPointer()); 
-                            let mut offset_position = 0 as i32;
-                            if rx_last_write_position+i >= rx_buffer_size{
-                                offset_position = 0;
+                        unsafe {
+                            let rx_last_write_position =
+                                std::ptr::read(getRXSerialBufferIndexPointer());
+                            let offset_position = if rx_last_write_position + i >= rx_buffer_size {
+                                0
                             } else {
-                                offset_position = rx_last_write_position + 1;
-                            }
-                            std::ptr::write(getRXSerialBufferPointer().offset(offset_position as isize), bytes[i as usize]); 
+                                rx_last_write_position + 1
+                            };
+                            std::ptr::write(
+                                getRXSerialBufferPointer().offset(offset_position as isize),
+                                bytes[i as usize],
+                            );
                             std::ptr::write(getRXSerialBufferIndexPointer(), offset_position);
-
                         };
                     }
-
                 }
             });
 
