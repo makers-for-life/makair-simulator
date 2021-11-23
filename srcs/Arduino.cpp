@@ -171,7 +171,6 @@ uint8_t SerialFake::read() {
                 }
 
                 next_char[0] = m_RXserialBuffer[m_RXserialBufferInnerIndex];
-                cout << next_char[0] << endl;
             } else {
                 next_char[0] = 0;
                 cout << "error with firmware serial read" << endl;
@@ -197,7 +196,6 @@ uint8_t SerialFake::peek() {
             }
 
             next_char[0] = m_RXserialBuffer[m_RXserialBufferInnerIndex];
-            cout << next_char[0] << endl;
         } else {
             next_char[0] = 0;
             cout << "error with firmware serial read" << endl;
