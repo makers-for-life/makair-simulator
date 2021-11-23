@@ -69,6 +69,7 @@ SerialFake::SerialFake(char* p_serialName,
     m_RXserialBuffer = p_RXserialBuffer;
     m_RXserialBufferIndex = p_RXserialBufferIndex;
     m_SERIAL_BUFFER_SIZE = p_SERIAL_BUFFER_SIZE;
+    m_RXserialBufferInnerIndex = -1;
 
     m_streamSerial = true;
     m_serialName = p_serialName;
@@ -160,8 +161,17 @@ uint8_t SerialFake::read() {
         } else {
             uint8_t next_char[1];  // variable to store the read result
 #ifdef SIMULATOR_WASM
-            if (*m_RXserialBufferIndex >= 0 && *m_RXserialBufferIndex < m_SERIAL_BUFFER_SIZE) {
-                next_char[0] = m_RXserialBuffer[*m_RXserialBufferIndex];
+            if (*m_RXserialBufferIndex < m_SERIAL_BUFFER_SIZE
+                && *m_RXserialBufferIndex != m_RXserialBufferInnerIndex) {
+                if (m_RXserialBufferInnerIndex >= m_SERIAL_BUFFER_SIZE - 1
+                    || m_RXserialBufferInnerIndex < 0) {
+                    m_RXserialBufferInnerIndex = 0;
+                } else {
+                    m_RXserialBufferInnerIndex++;
+                }
+
+                next_char[0] = m_RXserialBuffer[m_RXserialBufferInnerIndex];
+                cout << next_char[0] << endl;
             } else {
                 next_char[0] = 0;
                 cout << "error with firmware serial read" << endl;
@@ -177,9 +187,17 @@ uint8_t SerialFake::peek() {
     if (m_streamSerial) {
         uint8_t next_char[1];
 #ifdef SIMULATOR_WASM
-        if (*m_RXserialBufferIndex > 0) {
-            next_char[0] = m_RXserialBuffer[*m_RXserialBufferIndex];
-            *m_RXserialBufferIndex = *m_TXserialBufferIndex - 1;
+        if (*m_RXserialBufferIndex < m_SERIAL_BUFFER_SIZE
+            && *m_RXserialBufferIndex != m_RXserialBufferInnerIndex) {
+            if (m_RXserialBufferInnerIndex >= m_SERIAL_BUFFER_SIZE - 1
+                || m_RXserialBufferInnerIndex < 0) {
+                m_RXserialBufferInnerIndex = 0;
+            } else {
+                m_RXserialBufferInnerIndex++;
+            }
+
+            next_char[0] = m_RXserialBuffer[m_RXserialBufferInnerIndex];
+            cout << next_char[0] << endl;
         } else {
             next_char[0] = 0;
             cout << "error with firmware serial read" << endl;
@@ -205,7 +223,13 @@ void SerialFake::readBytes(uint8_t* buffer, size_t size) {
 int32_t SerialFake::available() {
     if (m_streamSerial) {
 #ifdef SIMULATOR_WASM
-        return *m_RXserialBufferIndex > 0;
+        if (m_RXserialBufferInnerIndex < *m_RXserialBufferIndex) {
+            return *m_RXserialBufferIndex - m_RXserialBufferInnerIndex;
+        } else if (m_RXserialBufferInnerIndex > *m_RXserialBufferIndex) {
+            return m_SERIAL_BUFFER_SIZE - 1 - m_RXserialBufferInnerIndex + *m_RXserialBufferIndex;
+        } else {
+            return false;
+        }
 #else
         return m_serialPort.available();
 #endif

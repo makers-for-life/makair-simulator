@@ -136,6 +136,7 @@ class SerialFake {
     int32_t* m_TXserialBufferIndex;
     uint8_t* m_RXserialBuffer;
     int32_t* m_RXserialBufferIndex;
+    int32_t m_RXserialBufferInnerIndex;
     int32_t m_SERIAL_BUFFER_SIZE;
 };
 

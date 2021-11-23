@@ -19,6 +19,12 @@ extern "C" {
     /// Pointer to the last position in the Serial buffer where the simulator has written
     fn getTXSerialBufferIndexPointer() -> *const i32;
 
+    /// Pointer to the beginning of the Serial buffer exposed by the simulator for receiving data
+    fn getRXSerialBufferPointer() -> *mut u8;
+
+    /// Pointer to the last position in the Serial buffer where the rust has written
+    fn getRXSerialBufferIndexPointer() -> *mut i32;
+
     /// Start the simulation
     fn setStateOn();
 
@@ -155,10 +161,13 @@ impl MakAirSimulator {
             // Get control messages bytes and feed them to the simulator
             std::thread::spawn(move || {
                 while let Ok(bytes) = rx_bytes_receiver.recv() {
-                    warn!(
-                        "TODO: write these bytes into the simulator buffer → {:?}",
-                        &bytes
-                    );
+                    let rx_last_write_position = unsafe { std::ptr::read(getRXSerialBufferIndexPointer()) };
+                    let n = bytes.len() as i32;
+                    for i in 0..n {
+                        unsafe{ std::ptr::write(getRXSerialBufferPointer().offset(i as isize), bytes[i as usize]) };
+                    }
+                    unsafe{ std::ptr::write(getRXSerialBufferIndexPointer(), rx_last_write_position+n);}
+
                 }
             });
 
