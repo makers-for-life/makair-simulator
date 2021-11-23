@@ -161,12 +161,23 @@ impl MakAirSimulator {
             // Get control messages bytes and feed them to the simulator
             std::thread::spawn(move || {
                 while let Ok(bytes) = rx_bytes_receiver.recv() {
-                    let rx_last_write_position = unsafe { std::ptr::read(getRXSerialBufferIndexPointer()) };
+                    let mut rx_last_write_position = 0;
                     let n = bytes.len() as i32;
+                    let rx_buffer_size = unsafe { serialBufferSize() };
                     for i in 0..n {
-                        unsafe{ std::ptr::write(getRXSerialBufferPointer().offset(i as isize), bytes[i as usize]) };
+                        unsafe{ 
+                            rx_last_write_position =  std::ptr::read(getRXSerialBufferIndexPointer()); 
+                            let mut offset_position = 0 as i32;
+                            if rx_last_write_position+i >= rx_buffer_size{
+                                offset_position = 0;
+                            } else {
+                                offset_position = rx_last_write_position + 1;
+                            }
+                            std::ptr::write(getRXSerialBufferPointer().offset(offset_position as isize), bytes[i as usize]); 
+                            std::ptr::write(getRXSerialBufferIndexPointer(), offset_position);
+
+                        };
                     }
-                    unsafe{ std::ptr::write(getRXSerialBufferIndexPointer(), rx_last_write_position+n);}
 
                 }
             });
