@@ -140,8 +140,8 @@ int run_simulator() {
     int spontaneousBreathRate = 0;      // in cycle/min
     int spontaneousBreathEffort = 0;    // in cmH2O
     int spontaneousBreathDuration = 0;  // in ms
-
-    Serial6 = SerialFake("emscripten", TXserialBuffer, &TXserialBufferIndex, RXserialBuffer,
+    char serialName[] = "emscripten";
+    Serial6 = SerialFake(serialName, TXserialBuffer, &TXserialBufferIndex, RXserialBuffer,
                          &RXserialBufferIndex, SERIAL_BUFFER_SIZE);
     // activationController.changeState(1);
     PatientModel patientModel(resistance, 2.0, compliance, 0.0, spontaneousBreathRate,

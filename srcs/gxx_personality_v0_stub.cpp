@@ -8,10 +8,12 @@
 #include "stdint.h"
 #include "unwind.h"
 
-extern "C" _Unwind_Reason_Code __gxx_personality_v0(int version,
-                                                    _Unwind_Action actions,
-                                                    uint64_t exceptionClass,
+extern "C" _Unwind_Reason_Code __gxx_personality_v0(__attribute__((unused)) int version,
+                                                    __attribute__((unused)) _Unwind_Action actions,
+                                                    __attribute__((unused)) uint64_t exceptionClass,
+                                                    __attribute__((unused))
                                                     _Unwind_Exception* unwind_exception,
+                                                    __attribute__((unused))
                                                     _Unwind_Context* context) {
     return _URC_NO_REASON;
 }

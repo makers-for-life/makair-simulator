@@ -5,8 +5,6 @@
  * @brief Fake: Battery related functions
  *****************************************************************************/
 
-#pragma once
-
 // INCLUDES ===================================================================
 
 // Associated header
@@ -22,12 +20,8 @@
 
 // PROGRAM =====================================================================
 
-static uint32_t rawBatterySample[BATTERY_MAX_SAMPLES];  // Array to store battery voltage samples
-static uint32_t batteryCurrentSample = 0;               // Current battery sample index
-static uint32_t batteryTotalSamples = 0;                // Battery total samples
 static uint32_t rawBatteryMeanVoltage = RAW_VOLTAGE_MAINS;  // Mean battery voltage in volts
 static bool isRunningOnBattery = false;
-static bool mainsConnected = false;
 
 void initBattery() {
     // for (uint8_t i = 0; i < BATTERY_MAX_SAMPLES; i++) {
@@ -40,70 +34,11 @@ void initBattery() {
     // }
 }
 
-void updateBatterySample() {
-    // uint16_t rawVout = analogRead(PIN_BATTERY);
+void updateBatterySample() {}
 
-    // // Assign sample from Vout
-    // rawBatterySample[batteryCurrentSample] = rawVout;
+void updateBatteryState(__attribute__((unused)) uint32_t p_cycleNumber) {}
 
-    // // Increment sample
-    // batteryCurrentSample++;
-
-    // // If we reached max samples
-    // if (batteryCurrentSample >= BATTERY_MAX_SAMPLES) {
-    //     batteryCurrentSample = 0;
-    // }
-
-    // batteryTotalSamples = 0;
-    // for (uint8_t i = 0; i < BATTERY_MAX_SAMPLES; i++) {
-    //     batteryTotalSamples += rawBatterySample[i];
-    // }
-    // // Updates mean voltage
-    // rawBatteryMeanVoltage = (batteryTotalSamples / BATTERY_MAX_SAMPLES);
-}
-
-void updateBatteryState(uint32_t p_cycleNumber) {
-    // // hardware v3 expander is connected to AC ON relay. that remains an optionnal wiring.
-    // pinMode(PIN_IN_MAINS_CONNECTED, INPUT_PULLUP);
-    // mainsConnected = (LOW == digitalRead(PIN_IN_MAINS_CONNECTED));
-
-    // if (!mainsConnected
-    //     && (rawBatteryMeanVoltage < (RAW_VOLTAGE_ON_BATTERY_HIGH - RAW_VOLTAGE_HYSTERESIS))) {
-    //     alarmController.detectedAlarm(RCM_SW_16, p_cycleNumber,
-    //                                   (RAW_VOLTAGE_ON_BATTERY_HIGH - RAW_VOLTAGE_HYSTERESIS),
-    //                                   rawBatteryMeanVoltage);
-    //     isRunningOnBattery = true;
-    // } else if (mainsConnected || (rawBatteryMeanVoltage > RAW_VOLTAGE_ON_BATTERY_HIGH)) {
-    //     alarmController.notDetectedAlarm(RCM_SW_16);
-    //     isRunningOnBattery = false;
-    // } else {
-    //     // This is an hysteresis, so do nothing here
-    // }
-
-    // if (!mainsConnected
-    //     && (rawBatteryMeanVoltage < (RAW_VOLTAGE_ON_BATTERY - RAW_VOLTAGE_HYSTERESIS))) {
-    //     alarmController.detectedAlarm(RCM_SW_11, p_cycleNumber,
-    //                                   (RAW_VOLTAGE_ON_BATTERY - RAW_VOLTAGE_HYSTERESIS),
-    //                                   rawBatteryMeanVoltage);
-    // } else if (mainsConnected || (rawBatteryMeanVoltage > RAW_VOLTAGE_ON_BATTERY)) {
-    //     alarmController.notDetectedAlarm(RCM_SW_11);
-    // } else {
-    //     // This is an hysteresis, so do nothing here
-    // }
-
-    // if (!mainsConnected
-    //     && (rawBatteryMeanVoltage < (RAW_VOLTAGE_ON_BATTERY_LOW - RAW_VOLTAGE_HYSTERESIS))) {
-    //     alarmController.detectedAlarm(RCM_SW_12, p_cycleNumber,
-    //                                   (RAW_VOLTAGE_ON_BATTERY_LOW - RAW_VOLTAGE_HYSTERESIS),
-    //                                   rawBatteryMeanVoltage);
-    // } else if (mainsConnected || (rawBatteryMeanVoltage > RAW_VOLTAGE_ON_BATTERY_LOW)) {
-    //     alarmController.notDetectedAlarm(RCM_SW_12);
-    // } else {
-    //     // This is an hysteresis, so do nothing here
-    // }
-}
-
-void batteryLoop(uint32_t p_cycleNumber) {
+void batteryLoop(__attribute__((unused)) uint32_t p_cycleNumber) {
     // updateBatterySample();
     // updateBatteryState(p_cycleNumber);
 }

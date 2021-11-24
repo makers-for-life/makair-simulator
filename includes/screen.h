@@ -41,7 +41,8 @@ void resetScreen() {}
  * @param pressure            The current pressure [mmH2O]
  * @param cyclesPerMinute     Next desired number of cycles per minute
  */
-void displayCurrentPressure(uint16_t pressure, uint16_t cyclesPerMinute) {}
+void displayCurrentPressure(__attribute__((unused)) uint16_t pressure,
+                            __attribute__((unused)) uint16_t cyclesPerMinute) {}
 
 /**
  * Display the current injected air volume
@@ -49,7 +50,8 @@ void displayCurrentPressure(uint16_t pressure, uint16_t cyclesPerMinute) {}
  * @param volumeMassFlow      The number of liter breathed in this cycle
  * @param cyclesPerMinute     Next desired number of cycles per minute
  */
-void displayCurrentVolume(int32_t volumeMassFlow, uint16_t cyclesPerMinute) {}
+void displayCurrentVolume(__attribute__((unused)) int32_t volumeMassFlow,
+                          __attribute__((unused)) uint16_t cyclesPerMinute) {}
 
 /**
  * Display the current settings
@@ -58,9 +60,9 @@ void displayCurrentVolume(int32_t volumeMassFlow, uint16_t cyclesPerMinute) {}
  * @param plateauPressureMax   Next maximal plateau pressure [mmH2O]
  * @param peepMin              Next desired Positive End Expiratory Pressure (PEEP) [mmH2O]
  */
-void displayCurrentSettings(uint16_t peakPressureMax,
-                            uint16_t plateauPressureMax,
-                            uint16_t peepMin) {}
+void displayCurrentSettings(__attribute__((unused)) uint16_t peakPressureMax,
+                            __attribute__((unused)) uint16_t plateauPressureMax,
+                            __attribute__((unused)) uint16_t peepMin) {}
 
 /**
  * Display relevant values from the ongoing cycle
@@ -69,7 +71,9 @@ void displayCurrentSettings(uint16_t peakPressureMax,
  * @param plateauPressure  The plateau pressure [mmH2O]
  * @param peep             The Positive End Expiratory Pressure (PEEP) [mmH2O]
  */
-void displayCurrentInformation(uint16_t peakPressure, uint16_t plateauPressure, uint16_t peep) {}
+void displayCurrentInformation(__attribute__((unused)) uint16_t peakPressure,
+                               __attribute__((unused)) uint16_t plateauPressure,
+                               __attribute__((unused)) uint16_t peep) {}
 
 /**
  * Display triggered alarm codes
@@ -77,7 +81,8 @@ void displayCurrentInformation(uint16_t peakPressure, uint16_t plateauPressure, 
  * @param p_alarmCodes          List of alarm codes to display
  * @param p_nbTriggeredAlarms   Number of triggered alarms
  */
-void displayAlarmInformation(uint8_t p_alarmCodes[], uint8_t p_nbTriggeredAlarms) {}
+void displayAlarmInformation(__attribute__((unused)) uint8_t p_alarmCodes[],
+                             __attribute__((unused)) uint8_t p_nbTriggeredAlarms) {}
 
 /**
  * Display error when pressure offset is unstable
@@ -85,14 +90,15 @@ void displayAlarmInformation(uint8_t p_alarmCodes[], uint8_t p_nbTriggeredAlarms
  * @param p_minOffsetValue Minimum measured offset value
  * @param p_maxOffsetValue Maximum measured offset value
  */
-void displayPressureOffsetUnstable(uint32_t p_minOffsetValue, uint32_t p_maxOffsetValue) {}
+void displayPressureOffsetUnstable(__attribute__((unused)) uint32_t p_minOffsetValue,
+                                   __attribute__((unused)) uint32_t p_maxOffsetValue) {}
 
 /**
  * Display pressure offset
  *
  * @param p_inspiratoryPressureSensorOffset Measured offset value
  */
-void displayPressureOffset(int32_t p_inspiratoryPressureSensorOffset) {}
+void displayPressureOffset(__attribute__((unused)) int32_t p_inspiratoryPressureSensorOffset) {}
 
 /**
  * Display error when flow meter fails
@@ -100,14 +106,15 @@ void displayPressureOffset(int32_t p_inspiratoryPressureSensorOffset) {}
  * @param p_flowMeterFlowAtStarting Measured flow offset value
  * @param p_flowMeterFlowWithBlowerOn Maximum measured flow offset value
  */
-void displayFlowMeterFail(int32_t p_flowMeterFlowAtStarting, int32_t p_flowMeterFlowWithBlowerOn) {}
+void displayFlowMeterFail(__attribute__((unused)) int32_t p_flowMeterFlowAtStarting,
+                          __attribute__((unused)) int32_t p_flowMeterFlowWithBlowerOn) {}
 
 /**
  * Display flow meter offset
  *
  * @param p_flowMeterFlowOffset Measured flow offset value
  */
-void displayFlowMeterOffset(int32_t p_flowMeterFlowOffset) {}
+void displayFlowMeterOffset(__attribute__((unused)) int32_t p_flowMeterFlowOffset) {}
 
 /// Display the "calibration in progress" message
 void displayPatientMustBeUnplugged() {}
@@ -135,4 +142,4 @@ void clearAlarmDisplayCache() {}
  * @param pressure Pressure in mmH2O
  * @return Rounded pressure in cmH2O
  */
-uint16_t convertAndRound(uint16_t pressure) {}
+uint16_t convertAndRound(__attribute__((unused)) uint16_t pressure) { return 0u; }

@@ -9,7 +9,6 @@
 #pragma once
 #ifndef ARDUINO_H
 #define ARDUINO_H
-#define SIMULATOR_WASM
 
 #include <algorithm>
 #include <chrono>
@@ -44,14 +43,20 @@ inline int32_t map(int32_t value, int32_t a, int32_t b, int32_t c, int32_t d) {
 class String {
  public:
     String() {}
-    String(int s) {}
-    String(const char* s) {}
+    String(__attribute__((unused)) int s) {}
+    String(__attribute__((unused)) const char* s) {}
 };
 
-inline int32_t digitalPinToPinName(int32_t p) { return 0; }
-inline int32_t pinmap_function(int32_t p, int32_t t) { return 0; }
-inline int32_t pinmap_peripheral(int32_t p, int32_t t) { return 0; }
-inline int32_t STM_PIN_CHANNEL(int32_t p) { return 0; }
+inline int32_t digitalPinToPinName(__attribute__((unused)) int32_t p) { return 0; }
+inline int32_t pinmap_function(__attribute__((unused)) int32_t p,
+                               __attribute__((unused)) int32_t t) {
+    return 0;
+}
+inline int32_t pinmap_peripheral(__attribute__((unused)) int32_t p,
+                                 __attribute__((unused)) int32_t t) {
+    return 0;
+}
+inline int32_t STM_PIN_CHANNEL(__attribute__((unused)) int32_t p) { return 0; }
 
 // HardwareTimer
 #define MICROSEC_COMPARE_FORMAT 0
@@ -71,17 +76,21 @@ extern TIM_TypeDef TIM5;
 class HardwareTimer {
  public:
     HardwareTimer() {}
-    HardwareTimer(TIM_TypeDef* t) {}
-    HardwareTimer(TIM_TypeDef& t) {}
-    void setCaptureCompare(uint16_t a, uint16_t b, uint16_t c) {}
-    void setMode(uint16_t a, uint16_t b, uint16_t c) {}
+    HardwareTimer(__attribute__((unused)) TIM_TypeDef* t) {}
+    HardwareTimer(__attribute__((unused)) TIM_TypeDef& t) {}
+    void setCaptureCompare(__attribute__((unused)) uint16_t a,
+                           __attribute__((unused)) uint16_t b,
+                           __attribute__((unused)) uint16_t c) {}
+    void setMode(__attribute__((unused)) uint16_t a,
+                 __attribute__((unused)) uint16_t b,
+                 __attribute__((unused)) uint16_t c) {}
     void resume() {}
     void pause() {}
-    void setOverflow(int32_t p, int32_t t){};
-    void setOverflow(int32_t p){};
-    void setCount(int32_t p){};
-    void setPreloadEnable(bool p){};
-    void setPrescaleFactor(int32_t p) {}
+    void setOverflow(__attribute__((unused)) int32_t p, __attribute__((unused)) int32_t t){};
+    void setOverflow(__attribute__((unused)) int32_t p){};
+    void setCount(__attribute__((unused)) int32_t p){};
+    void setPreloadEnable(__attribute__((unused)) bool p){};
+    void setPrescaleFactor(__attribute__((unused)) int32_t p) {}
     void attachInterrupt(void (*)(HardwareTimer*)) {}
     int32_t getTimerClkFreq() { return 0; }
 };
@@ -103,7 +112,7 @@ class SerialFake {
     void close();
 
     void println() {}
-    void println(String s) {}
+    void println(__attribute__((unused)) String s) {}
 
     void print(const char* str);
     void write(uint8_t data);
@@ -111,12 +120,7 @@ class SerialFake {
     // void write(const char* str);
     void write(const char* buffer, size_t size) { write((const uint8_t*)buffer, size); }
     inline void write(bool t) { write((uint8_t)t); }
-    inline void write(int16_t t) { write((const uint8_t*)t, 2); }
-    inline void write(uint16_t t) { write((const uint8_t*)t, 2); }
-    inline void write(int32_t t) { write((const uint8_t*)t, 4); }
-    inline void write(uint32_t t) { write((const uint8_t*)t, 4); }
-    inline void write(int64_t t) { write((const uint8_t*)t, 8); }
-    inline void write(uint64_t t) { write((const uint8_t*)t, 8); }
+
     inline void write(char c) { write((uint8_t)c); }
 
     uint8_t read();
@@ -224,7 +228,6 @@ void digitalWrite(int a, int b);
 #define D3 0
 #define D4 0
 #define D5 0
-#define PIN_BUZZER 0
 
 #define HIGH 1
 #define LOW 0

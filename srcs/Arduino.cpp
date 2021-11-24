@@ -86,7 +86,7 @@ void SerialFake::close() {
 #endif
 }
 
-void SerialFake::begin(int32_t p_baudrate) {
+void SerialFake::begin(__attribute__((unused)) int32_t p_baudrate) {
     if (m_streamSerial) {
         int open;
 #ifdef SIMULATOR_WASM
@@ -96,7 +96,6 @@ void SerialFake::begin(int32_t p_baudrate) {
 #endif
         if (open != 1) {
             cout << "Error openning serial device " << m_serialName << ", error:" << open << endl;
-            cout << (m_serialName == "stderr") << endl;
             exit(1);
         } else {
             cout << "Success openning serial device " << m_serialName << endl;
@@ -180,8 +179,11 @@ uint8_t SerialFake::read() {
 #endif
             return (uint8_t)next_char[0];
         }
+    } else {
+        return 0;
     }
 }
+
 uint8_t SerialFake::peek() {
     if (m_streamSerial) {
         uint8_t next_char[1];
@@ -210,6 +212,8 @@ uint8_t SerialFake::peek() {
         }
         m_peekBuffer[m_peekBufferIndex] = next_char[0];
         return (uint8_t)next_char[0];
+    } else {
+        return 0;
     }
 }
 void SerialFake::readBytes(uint8_t* buffer, size_t size) {
@@ -236,4 +240,4 @@ int32_t SerialFake::available() {
     }
 }
 
-void digitalWrite(int a, int b) {}
+void digitalWrite(__attribute__((unused)) int a, __attribute__((unused)) int b) {}
