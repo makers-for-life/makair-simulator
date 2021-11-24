@@ -1,12 +1,10 @@
-mod simulator;
-
 use log::error;
 use makair_telemetry::control::{ControlMessage, ControlSetting};
 use makair_telemetry::structures::TelemetryMessage;
 use makair_telemetry::TelemetryChannelType;
 use std::sync::mpsc::channel;
 
-use simulator::MakAirSimulator;
+use makair_simulator::MakAirSimulator;
 
 fn main() {
     // Init logging system
@@ -30,18 +28,17 @@ fn main() {
     simulator.initialize();
 
     // Listen for telemetry mesages and print them
-    let display_telemetry_messages = std::thread::spawn(move || loop {
-        while let Ok(message) = tx_messages_receiver.try_recv() {
+    let display_telemetry_messages = std::thread::spawn(move || {
+        while let Ok(message) = tx_messages_receiver.recv() {
             match message {
                 Ok(TelemetryMessage::DataSnapshot(_)) => (),
                 Ok(m) => println!("{:?}", &m),
                 _ => println!("{:?}", &message),
             };
         }
-        std::thread::sleep(std::time::Duration::from_secs(1));
     });
 
-    // The following thread simulate a use case of the slifespan of the simulator
+    // The following thread simulates a use case of the lifespan of the simulator
     std::thread::spawn(move || {
         std::thread::sleep(std::time::Duration::from_secs(5));
         simulator.pause();
@@ -80,6 +77,9 @@ fn main() {
             value: 0,
         });
     });
+
+
+    std::thread::sleep(std::time::Duration::from_secs(20));
 
     #[cfg(not(target_os = "emscripten"))]
     display_telemetry_messages.join().unwrap();

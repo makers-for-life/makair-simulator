@@ -1,7 +1,13 @@
-
 *.o
 *build/simulator
 *.vscode/*
 
 data/.idea/*
 data/simulator_venv/*
+
+/Cargo.lock
+/target/
+/*.html
+/*.js
+/*.wasm
+/*.map
