@@ -5,6 +5,9 @@
  * @brief Manage the state machine of the simulator.
  *****************************************************************************/
 
+// Disable some useless warning at compile time
+#pragma GCC diagnostic ignored "-Wuninitialized"
+
 // INCLUDES ===================================================================
 
 #include "../includes/simu_state_machine.h"
