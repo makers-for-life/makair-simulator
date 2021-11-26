@@ -81,7 +81,7 @@ impl MakAirSimulator {
     ///
     /// _Do not create more than one simulator!_
     pub fn new(tx_messages_sender: Sender<TelemetryChannelType>) -> Self {
-        // Create a chennel to send control messages
+        // Create a channel to send control messages
         let (rx_messages_sender, rx_messages_receiver) = channel::<ControlMessage>();
 
         Self {

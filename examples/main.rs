@@ -18,7 +18,7 @@ fn main() {
         std::process::exit(1);
     }));
 
-    // Create a chennel to receive telemetry messages
+    // Create a channel to receive telemetry messages
     let (tx_messages_sender, tx_messages_receiver) = channel::<TelemetryChannelType>();
 
     // Initialize simulator
