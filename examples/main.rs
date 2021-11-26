@@ -25,7 +25,7 @@ fn main() {
     let mut simulator = MakAirSimulator::new(tx_messages_sender);
 
     // Start simulator (this will spawn a few threads)
-    simulator.initialize();
+    simulator.initialize(true);
 
     // Listen for telemetry mesages and print them
     let display_telemetry_messages = std::thread::spawn(move || {

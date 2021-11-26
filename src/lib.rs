@@ -94,7 +94,7 @@ impl MakAirSimulator {
     }
 
     /// Spawn several threads in order to run the simulator's loop and communication with the firmware
-    pub fn initialize(&mut self) -> bool {
+    pub fn initialize(&mut self, start_breathing_immediately: bool) -> bool {
         if self.initialized {
             info!("Simulator is already initialized");
             false
@@ -185,8 +185,10 @@ impl MakAirSimulator {
             // Run the simulation loop
             std::thread::spawn(move || {
                 unsafe {
-                    // Unpause the simulation
-                    setStateOn();
+                    if start_breathing_immediately {
+                        // Unpause the simulation
+                        setStateOn();
+                    }
                     // Start the infinite loop of the simulator
                     run_simulator()
                 };
