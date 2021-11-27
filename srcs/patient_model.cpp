@@ -47,9 +47,10 @@ PatientModel::PatientModel(float p_Rl,
     m_spontaneousBreathEffort =
         p_spontaneousBreathEffort
         * SPONTANEOUS_BREATH_EFFORT_UNIT_CONVERSION_FACTOR;  // spontaneous breath effort in Pa
-    m_spontaneousBreathDuration = p_spontaneousBreathDuration
-        SPONTANEOUS_BREATH_DURATION_UNIT_CONVERSION_FACTOR;  // duration of the effort of
-                                                             // spontaneous breath rate in s.
+    m_spontaneousBreathDuration =
+        p_spontaneousBreathDuration
+        * SPONTANEOUS_BREATH_DURATION_UNIT_CONVERSION_FACTOR;  // duration of the effort of
+                                                               // spontaneous breath rate in s.
 
     timestampUs = 0;  // time since starting in ms
 }
@@ -91,7 +92,7 @@ float PatientModel::computeMusclePressure() {
 // Setters for patient characteristics
 bool PatientModel::setResistance(int32_t p_resistance) {
     if (p_resistance >= MIN_RESISTANCE_VALUE && p_resistance <= MAX_RESISTANCE_VALUE) {
-        m_Rl = p_resistance * RESISTANCE_UNIT_CONVERSION_FACTOR;
+        m_Rl = (float)p_resistance * RESISTANCE_UNIT_CONVERSION_FACTOR;
         cout << "resistance " << m_Rl << endl;
         return true;
     } else {
@@ -103,7 +104,7 @@ bool PatientModel::setResistance(int32_t p_resistance) {
 
 bool PatientModel::setCompliance(int32_t p_compliance) {
     if (p_compliance >= MIN_COMPLIANCE_VALUE && p_compliance <= 150) {
-        m_Cl = p_compliance * COMPLIANCE_UNIT_CONVERSION_FACTOR;
+        m_Cl = (float)p_compliance * COMPLIANCE_UNIT_CONVERSION_FACTOR;
         return true;
     } else {
         cout << "Error : compliance should be between " << MIN_COMPLIANCE_VALUE << " and "
@@ -113,7 +114,7 @@ bool PatientModel::setCompliance(int32_t p_compliance) {
 }
 bool PatientModel::setSpontaneousBreathRate(int32_t p_spontaneousBreathRate) {
     if (p_spontaneousBreathRate >= MIN_SPONTANEOUS_BREATH_RATE_VALUE
-        && p_spontaneousBreathRate <= MAX_SPONTANEOUS_BREATH_RATE_VALUE) {
+        && (float)p_spontaneousBreathRate <= MAX_SPONTANEOUS_BREATH_RATE_VALUE) {
         m_spontaneousBreathRate =
             p_spontaneousBreathRate * SPONTANEOUS_BREATH_RATE_UNIT_CONVERSION_FACTOR;
         return true;
@@ -126,7 +127,7 @@ bool PatientModel::setSpontaneousBreathRate(int32_t p_spontaneousBreathRate) {
 }
 bool PatientModel::setSpontaneousBreathEffort(int32_t p_spontaneousBreathEffort) {
     if (p_spontaneousBreathEffort >= MIN_SPONTANEOUS_BREATH_EFFORT_VALUE
-        && p_spontaneousBreathEffort <= MAX_SPONTANEOUS_BREATH_EFFORT_VALUE) {
+        && (float)p_spontaneousBreathEffort <= MAX_SPONTANEOUS_BREATH_EFFORT_VALUE) {
         m_spontaneousBreathEffort =
             p_spontaneousBreathEffort * SPONTANEOUS_BREATH_EFFORT_UNIT_CONVERSION_FACTOR;
         return true;
@@ -139,7 +140,7 @@ bool PatientModel::setSpontaneousBreathEffort(int32_t p_spontaneousBreathEffort)
 }
 bool PatientModel::setSpontaneousBreathDuration(int32_t p_spontaneousBreathDuration) {
     if (p_spontaneousBreathDuration >= MIN_SPONTANEOUS_BREATH_DURATION_VALUE
-        && p_spontaneousBreathDuration <= MAX_SPONTANEOUS_BREATH_DURATION_VALUE) {
+        && (float)p_spontaneousBreathDuration <= MAX_SPONTANEOUS_BREATH_DURATION_VALUE) {
         m_spontaneousBreathDuration =
             p_spontaneousBreathDuration * SPONTANEOUS_BREATH_DURATION_UNIT_CONVERSION_FACTOR;
         return true;
