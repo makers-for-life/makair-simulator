@@ -133,8 +133,7 @@ int main(int argc, char* argv[]) {
 
 extern "C" {
 
-int run_simulator() {
-    std::cout << "program started\n";
+int init_simulator() {
     int resistance = 10;                // in cmh2O/L/s
     int compliance = 70;                // in mL/cmH2O
     int spontaneousBreathRate = 0;      // in cycle/min
@@ -143,12 +142,19 @@ int run_simulator() {
     char serialName[] = "emscripten";
     Serial6 = SerialFake(serialName, TXserialBuffer, &TXserialBufferIndex, RXserialBuffer,
                          &RXserialBufferIndex, SERIAL_BUFFER_SIZE);
-    // activationController.changeState(1);
+
     PatientModel patientModel(resistance, 2.0, compliance, 0.0, spontaneousBreathRate,
                               spontaneousBreathEffort, spontaneousBreathDuration);
-    simulator.startAndRun(patientModel);
+    simulator.init(patientModel);
+    std::cout << "program started\n";
     return 0;
 }
+
+int run_simulator() {
+    simulator.run();
+    return 0;
+}
+
 uint8_t* getTXSerialBufferPointer() { return &TXserialBuffer[0]; }
 int32_t* getTXSerialBufferIndexPointer() { return &TXserialBufferIndex; }
 uint8_t* getRXSerialBufferPointer() { return &RXserialBuffer[0]; }

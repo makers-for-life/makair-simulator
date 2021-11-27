@@ -21,7 +21,7 @@ class Simulator {
     /// Default constructor
     Simulator();
 
-    void startAndRun(PatientModel& p_patientModel);
+    void run();
     void init(PatientModel& p_patientModel);
     void loop();
     Model* getModel() { return &m_model; };

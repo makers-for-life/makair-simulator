@@ -28,9 +28,7 @@ Simulator::Simulator()
     m_accelerationFactor = 1.0;
 }
 
-void Simulator::startAndRun(PatientModel& p_patientModel) {
-
-    init(p_patientModel);
+void Simulator::run() {
 
     while (m_state_machine.isRunning())
         loop();
