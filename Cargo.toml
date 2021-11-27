@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 log = "0.4.14"
 makair-telemetry = { git = "https://github.com/makers-for-life/makair-telemetry.git", rev = "184185d4301fa7343018cd6733e1fb23e2cb032e", default-features = false }
+strum = { version = "0.23.0", features = ["derive"] }
 
 [dev-dependencies]
 env_logger = "0.9.0"

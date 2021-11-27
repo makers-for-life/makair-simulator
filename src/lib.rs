@@ -1,4 +1,4 @@
-use log::{error, info, warn};
+use log::{debug, error, info, warn};
 use makair_telemetry::control::ControlMessage;
 use makair_telemetry::{gather_telemetry_from_bytes, TelemetryChannelType};
 use std::default::Default;
@@ -6,6 +6,7 @@ use std::fmt::Display;
 use std::ops::RangeInclusive;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::time::Duration;
+use strum::{EnumIter, IntoEnumIterator};
 
 extern "C" {
     /// Run the MakAir Simulator
@@ -215,6 +216,21 @@ impl MakAirSimulator {
                 error!("run_simulator stopped working");
             });
 
+            // Set settings to defaults
+            std::thread::spawn(move || {
+                // We need to wait a bit to make sure simulator's main() was called and C++ objects were created.
+                // If not, this will segfault because we will call class methods of non-instanciated objects through FFI.
+                std::thread::sleep(Duration::from_millis(20));
+
+                debug!("Setting simulator settings to defaults");
+                for kind in SimulatorSettingKind::iter() {
+                    Self::dangerous_set(SimulatorSetting {
+                        kind,
+                        value: kind.default(),
+                    });
+                }
+            });
+
             self.initialized = true;
             self.running = true;
             true
@@ -400,7 +416,7 @@ impl Default for SimulatorSettingStep {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter)]
 /// A simulator setting kind
 pub enum SimulatorSettingKind {
     /// Acceleration factor of model speed (100 means realistic speed, can be higher than 100)
