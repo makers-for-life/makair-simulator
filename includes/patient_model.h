@@ -15,6 +15,13 @@
 #include <cstdint>
 #include <unistd.h>
 
+#define RESISTANCE_UNIT_CONVERSION_FACTOR (98.0665 / (1e-3))
+#define COMPLIANCE_UNIT_CONVERSION_FACTOR (1e-6 / 98.0665)
+#define VOLUME_UNIT_CONVERSION_FACTOR (1e-6)
+#define SPONTANEOUS_BREATH_RATE_UNIT_CONVERSION_FACTOR (1 / 60)
+#define SPONTANEOUS_BREATH_EFFORT_UNIT_CONVERSION_FACTOR (98.0665)
+#define SPONTANEOUS_BREATH_DURATION_UNIT_CONVERSION_FACTOR (1.0 / 1000.0)
+
 /// Model
 class PatientModel {
  public:
@@ -50,11 +57,17 @@ class PatientModel {
     bool setSpontaneousBreathDuration(int32_t p_spontaneousBreathDuration);
 
     // Getters for patient characteristics
-    int32_t getResistance() { return m_Rl; };
-    int32_t getCompliance() { return m_Cl; };
-    int32_t getSpontaneousBreathRate() { return m_spontaneousBreathRate; };
-    int32_t getSpontaneousBreathEffort() { return m_spontaneousBreathEffort; };
-    int32_t getSpontaneousBreathDuration() { return m_spontaneousBreathDuration; };
+    int32_t getResistance() { return m_Rl / RESISTANCE_UNIT_CONVERSION_FACTOR; };
+    int32_t getCompliance() { return m_Cl / COMPLIANCE_UNIT_CONVERSION_FACTOR; };
+    int32_t getSpontaneousBreathRate() {
+        return m_spontaneousBreathRate / SPONTANEOUS_BREATH_RATE_UNIT_CONVERSION_FACTOR;
+    };
+    int32_t getSpontaneousBreathEffort() {
+        return m_spontaneousBreathEffort / SPONTANEOUS_BREATH_EFFORT_UNIT_CONVERSION_FACTOR;
+    };
+    int32_t getSpontaneousBreathDuration() {
+        return m_spontaneousBreathDuration / SPONTANEOUS_BREATH_DURATION_UNIT_CONVERSION_FACTOR;
+    };
 
  private:
     // parameters of the patient
