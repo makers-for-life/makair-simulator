@@ -474,8 +474,8 @@ impl SimulatorSettingKind {
     pub fn default(&self) -> i32 {
         match self {
             Self::AccelerationPercent => 100,
-            Self::Resistance => 20,
-            Self::Compliance => 60,
+            Self::Resistance => 8,
+            Self::Compliance => 70,
             Self::SpontaneousBreathRate => 0,
             Self::SpontaneousBreathEffort => 0,
             Self::SpontaneousBreathDuration => 0,

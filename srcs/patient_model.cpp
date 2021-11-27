@@ -93,7 +93,6 @@ float PatientModel::computeMusclePressure() {
 bool PatientModel::setResistance(int32_t p_resistance) {
     if (p_resistance >= MIN_RESISTANCE_VALUE && p_resistance <= MAX_RESISTANCE_VALUE) {
         m_Rl = (float)p_resistance * RESISTANCE_UNIT_CONVERSION_FACTOR;
-        cout << "resistance " << m_Rl << endl;
         return true;
     } else {
         cout << "Error : Resistance should be between " << MIN_RESISTANCE_VALUE << " and "
