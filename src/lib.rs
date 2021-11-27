@@ -9,8 +9,10 @@ use std::time::Duration;
 use strum::{EnumIter, IntoEnumIterator};
 
 extern "C" {
+    /// Init the MakAir Simulator
+    fn init_simulator() -> i32;
+
     /// Run the MakAir Simulator
-    ///
     /// This must be run in a thread because it never returns.
     fn run_simulator() -> i32;
 
@@ -115,6 +117,10 @@ impl MakAirSimulator {
         } else {
             info!("Starting simulator");
 
+            unsafe {
+                init_simulator();
+            }
+
             // Telemetry
             let (tx_bytes_sender, tx_bytes_receiver) = channel::<Vec<u8>>();
             let tx_messages_sender = self.tx_messages_sender.clone();
@@ -217,19 +223,13 @@ impl MakAirSimulator {
             });
 
             // Set settings to defaults
-            std::thread::spawn(move || {
-                // We need to wait a bit to make sure simulator's main() was called and C++ objects were created.
-                // If not, this will segfault because we will call class methods of non-instanciated objects through FFI.
-                std::thread::sleep(Duration::from_millis(20));
-
-                debug!("Setting simulator settings to defaults");
-                for kind in SimulatorSettingKind::iter() {
-                    Self::dangerous_set(SimulatorSetting {
-                        kind,
-                        value: kind.default(),
-                    });
-                }
-            });
+            debug!("Setting simulator settings to defaults");
+            for kind in SimulatorSettingKind::iter() {
+                Self::dangerous_set(SimulatorSetting {
+                    kind,
+                    value: kind.default(),
+                });
+            }
 
             self.initialized = true;
             self.running = true;
