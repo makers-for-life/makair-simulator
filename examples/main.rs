@@ -78,7 +78,6 @@ fn main() {
         });
     });
 
-
     std::thread::sleep(std::time::Duration::from_secs(20));
 
     #[cfg(not(target_os = "emscripten"))]

@@ -1,6 +1,9 @@
-use log::{error, info};
+use log::{error, info, warn};
 use makair_telemetry::control::ControlMessage;
 use makair_telemetry::{gather_telemetry_from_bytes, TelemetryChannelType};
+use std::default::Default;
+use std::fmt::Display;
+use std::ops::RangeInclusive;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::time::Duration;
 
@@ -68,12 +71,17 @@ extern "C" {
     fn getAccelerationFactor() -> f32;
 }
 
+/// The simulator instance
+///
+/// _Do not create more than one simulator!_
 pub struct MakAirSimulator {
     initialized: bool,
     running: bool,
     tx_messages_sender: Sender<TelemetryChannelType>,
     rx_messages_sender: Sender<ControlMessage>,
     rx_messages_receiver: Option<Receiver<ControlMessage>>,
+    simulator_setting_sender: Sender<SimulatorSetting>,
+    simulator_setting_receiver: Option<Receiver<SimulatorSetting>>,
 }
 
 impl MakAirSimulator {
@@ -84,12 +92,17 @@ impl MakAirSimulator {
         // Create a channel to send control messages
         let (rx_messages_sender, rx_messages_receiver) = channel::<ControlMessage>();
 
+        // Create a channel to set simulator settings
+        let (simulator_setting_sender, simulator_setting_receiver) = channel::<SimulatorSetting>();
+
         Self {
             initialized: false,
             running: false,
             tx_messages_sender,
             rx_messages_sender,
             rx_messages_receiver: Some(rx_messages_receiver),
+            simulator_setting_sender,
+            simulator_setting_receiver: Some(simulator_setting_receiver),
         }
     }
 
@@ -182,6 +195,13 @@ impl MakAirSimulator {
                 }
             });
 
+            let simulator_setting_receiver = self.simulator_setting_receiver.take().unwrap();
+            std::thread::spawn(move || {
+                while let Ok(setting) = simulator_setting_receiver.recv() {
+                    Self::dangerous_set(setting);
+                }
+            });
+
             // Run the simulation loop
             std::thread::spawn(move || {
                 unsafe {
@@ -226,6 +246,11 @@ impl MakAirSimulator {
     /// Get a sender that can be used to send control message to the simulator
     pub fn control_message_sender(&self) -> Sender<ControlMessage> {
         self.rx_messages_sender.clone()
+    }
+
+    /// Get a sender that can be used to set simulator settings
+    pub fn simulator_setting_sender(&self) -> Sender<SimulatorSetting> {
+        self.simulator_setting_sender.clone()
     }
 
     /// Check if the simulator is initialized and running
@@ -307,5 +332,203 @@ impl MakAirSimulator {
     /// Set spontaneous breath duration (ms) of patient model
     pub fn set_spontaneous_breath_duration(&mut self, value: i32) {
         unsafe { setSpontaneousBreathDuration(value) };
+    }
+
+    /// Set a setting
+    fn dangerous_set(setting: SimulatorSetting) {
+        if setting.is_valid() {
+            match setting.kind {
+                SimulatorSettingKind::AccelerationPercent => {
+                    unsafe { setAccelerationFactor((setting.value as f32) / 100.0) };
+                }
+                SimulatorSettingKind::Resistance => {
+                    unsafe { setResistance(setting.value) };
+                }
+                SimulatorSettingKind::Compliance => {
+                    unsafe { setCompliance(setting.value) };
+                }
+                SimulatorSettingKind::SpontaneousBreathRate => {
+                    unsafe { setSpontaneousBreathRate(setting.value) };
+                }
+                SimulatorSettingKind::SpontaneousBreathEffort => {
+                    unsafe { setSpontaneousBreathEffort(setting.value) };
+                }
+                SimulatorSettingKind::SpontaneousBreathDuration => {
+                    unsafe { setSpontaneousBreathDuration(setting.value) };
+                }
+            }
+        } else {
+            warn!(
+                "Tried to set a simulator setting that is invalid: {}",
+                &setting
+            );
+        }
+    }
+
+    /// Set a setting
+    pub fn set(&mut self, setting: SimulatorSetting) {
+        Self::dangerous_set(setting)
+    }
+
+    /// Get a setting
+    pub fn get(&self, kind: SimulatorSettingKind) -> i32 {
+        match kind {
+            SimulatorSettingKind::AccelerationPercent => {
+                (self.acceleration_factor() * 100.0).round() as i32
+            }
+            SimulatorSettingKind::Resistance => self.resistance(),
+            SimulatorSettingKind::Compliance => self.compliance(),
+            SimulatorSettingKind::SpontaneousBreathRate => self.spontaneous_breath_rate(),
+            SimulatorSettingKind::SpontaneousBreathEffort => self.spontaneous_breath_effort(),
+            SimulatorSettingKind::SpontaneousBreathDuration => self.spontaneous_breath_duration(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct SimulatorSettingStep {
+    pub step: i32,
+    pub step_if_under_one_hundred: Option<i32>,
+}
+
+impl Default for SimulatorSettingStep {
+    fn default() -> Self {
+        Self {
+            step: 1,
+            step_if_under_one_hundred: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// A simulator setting kind
+pub enum SimulatorSettingKind {
+    /// Acceleration factor of model speed (100 means realistic speed, can be higher than 100)
+    AccelerationPercent,
+    /// Resistance (cmh2O/L/s) of patient model
+    Resistance,
+    /// Compliance (mL/cmH2O) of patient model
+    Compliance,
+    /// Spontaneous breath rate (cycle/min) of patient model
+    SpontaneousBreathRate,
+    /// Spontaneous effort intensity (cmH2O) of patient model
+    SpontaneousBreathEffort,
+    /// Spontaneous breath duration (ms) of patient model
+    SpontaneousBreathDuration,
+}
+
+impl SimulatorSettingKind {
+    /// Allowed value bounds per setting
+    pub fn bounds(&self) -> RangeInclusive<i32> {
+        match self {
+            Self::AccelerationPercent => RangeInclusive::new(10, 1000),
+            Self::Resistance => RangeInclusive::new(1, 70),
+            Self::Compliance => RangeInclusive::new(1, 150),
+            Self::SpontaneousBreathRate => RangeInclusive::new(0, 35),
+            Self::SpontaneousBreathEffort => RangeInclusive::new(0, 15),
+            Self::SpontaneousBreathDuration => RangeInclusive::new(0, 1500),
+        }
+    }
+
+    /// Steps to increment or decrement values
+    pub fn step(&self) -> SimulatorSettingStep {
+        match self {
+            Self::AccelerationPercent => SimulatorSettingStep {
+                step: 100,
+                step_if_under_one_hundred: Some(10),
+            },
+            Self::Resistance => SimulatorSettingStep {
+                step: 2,
+                step_if_under_one_hundred: None,
+            },
+            Self::Compliance => SimulatorSettingStep {
+                step: 2,
+                step_if_under_one_hundred: None,
+            },
+            Self::SpontaneousBreathRate => Default::default(),
+            Self::SpontaneousBreathEffort => Default::default(),
+            Self::SpontaneousBreathDuration => SimulatorSettingStep {
+                step: 50,
+                step_if_under_one_hundred: None,
+            },
+        }
+    }
+
+    /// Default value
+    pub fn default(&self) -> i32 {
+        match self {
+            Self::AccelerationPercent => 100,
+            Self::Resistance => 1,
+            Self::Compliance => 1,
+            Self::SpontaneousBreathRate => 0,
+            Self::SpontaneousBreathEffort => 0,
+            Self::SpontaneousBreathDuration => 0,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+/// A simulator setting with its value
+pub struct SimulatorSetting {
+    pub kind: SimulatorSettingKind,
+    pub value: i32,
+}
+
+impl Display for SimulatorSetting {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}={}", self.kind, self.value)
+    }
+}
+
+impl SimulatorSetting {
+    /// Check if a setting is valid
+    pub fn is_valid(&self) -> bool {
+        self.kind.bounds().contains(&self.value)
+    }
+
+    /// Get the incremented (bounded) value
+    pub fn increment(&self) -> Self {
+        let SimulatorSettingStep {
+            step,
+            step_if_under_one_hundred,
+        } = self.kind.step();
+
+        let new_value = match step_if_under_one_hundred {
+            Some(s) if self.value < 100 => self.value + s,
+            _ => self.value + step,
+        };
+        let new_setting = SimulatorSetting {
+            kind: self.kind,
+            value: new_value,
+        };
+
+        if new_setting.is_valid() {
+            new_setting
+        } else {
+            self.clone()
+        }
+    }
+
+    /// Get the decremented (bounded) value
+    pub fn decrement(&self) -> Self {
+        let SimulatorSettingStep {
+            step,
+            step_if_under_one_hundred,
+        } = self.kind.step();
+
+        let new_value = match step_if_under_one_hundred {
+            Some(s) if self.value <= 100 => self.value - s,
+            _ => self.value - step,
+        };
+        let new_setting = SimulatorSetting {
+            kind: self.kind,
+            value: new_value,
+        };
+
+        if new_setting.is_valid() {
+            new_setting
+        } else {
+            self.clone()
+        }
     }
 }
