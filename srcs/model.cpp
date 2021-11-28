@@ -126,7 +126,6 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     float Cl = m_patientModel->getCl();
     float Ct = m_patientModel->getCt();
     float m_musclePressure = m_patientModel->getMusclePressure();
-    // cout << m_patientModel->getMusclePressure() << endl;
 
     float ventilatorFlow = Qinsp - Qexp;
     float di = ventilatorFlow - m_previousVentilatorFlow;
@@ -151,12 +150,6 @@ SensorsData Model::compute(ActuatorsData cmds, float dt) {
     // computation of sensor data
     SensorsData output;
     output.inspiratoryPressure = m_K_pres * (ventilatorPressure);
-
-    /*cout << m_Vpatient << ", circuit=" << m_Vcircuit << ", Qinsp=" << Qinsp * m_K_flow / 1000
-         << ", Qexp=" << Qexp * m_K_flow / 1000 << ", Pbl=" << Pbl
-         << ", ventilatorPressure=" << ventilatorPressure
-         << ", previousInspiratoryValvePosition=" << previousInspiratoryValvePosition
-         << "inspiratoryPressure=" << (patientFlow * m_R + m_Vpatient / m_Cl) << endl;*/
 
     output.inspiratoryFlow = m_K_flow * Qinsp;
     output.expiratoryFlow = m_K_flow * Qexp;

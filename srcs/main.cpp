@@ -133,10 +133,11 @@ int main(int argc, char* argv[]) {
 
 extern "C" {
 
-int init_simulator() {
-    int resistance = 10;                // in cmh2O/L/s
+int run_simulator() {
+    std::cout << "program started\n";
+    int resistance = 8;                 // in cmh2O/L/s
     int compliance = 70;                // in mL/cmH2O
-    int spontaneousBreathRate = 0;      // in cycle/min
+    int spontaneousBreathRate = 1;      // in cycle/min
     int spontaneousBreathEffort = 0;    // in cmH2O
     int spontaneousBreathDuration = 0;  // in ms
     char serialName[] = "emscripten";
@@ -146,12 +147,8 @@ int init_simulator() {
     PatientModel patientModel(resistance, 2.0, compliance, 0.0, spontaneousBreathRate,
                               spontaneousBreathEffort, spontaneousBreathDuration);
     simulator.init(patientModel);
-    std::cout << "program started\n";
-    return 0;
-}
-
-int run_simulator() {
     simulator.run();
+
     return 0;
 }
 

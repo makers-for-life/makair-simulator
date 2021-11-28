@@ -76,20 +76,17 @@ float PatientModel::computeMusclePressure() {
     int64_t effortDurationMs = 1000 * m_spontaneousBreathDuration;
     int64_t timestampMs = timestampUs / 1000;
 
-    float musclePressure;
+    float musclePressure = 0.0;
 
-    if (timestampMs % breathDurationMs <= effortDurationMs
-        && (effortDurationMs != 0
-            && breathDurationMs != 0)) {  // first condition to check if now is during spontaneous
-                                          // effort, second condition to avoid 0 division
+    if (breathDurationMs != 0) {
+        if (timestampMs % breathDurationMs <= effortDurationMs
+            && (effortDurationMs != 0)) {  // first condition to check if now is during spontaneous
+                                           // effort, second condition to avoid 0 division
 
-        float effortPogress = float(timestampMs % breathDurationMs) / float(effortDurationMs);
+            float effortPogress = float(timestampMs % breathDurationMs) / float(effortDurationMs);
 
-        musclePressure = m_spontaneousBreathEffort * sin(M_PI * effortPogress);
-        // cout << musclePressure << endl;
-    } else {
-
-        musclePressure = 0.0;
+            musclePressure = m_spontaneousBreathEffort * sin(M_PI * effortPogress);
+        }
     }
 
     return musclePressure;
