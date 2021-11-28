@@ -169,7 +169,6 @@ impl MakAirSimulator {
                     Some(rx_bytes_sender),
                     Some(Duration::from_millis(1)),
                 );
-                error!("gather_telemetry_from_bytes stopped working");
             });
 
             // Get control messages bytes and feed them to the simulator
