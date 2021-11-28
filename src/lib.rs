@@ -476,9 +476,9 @@ impl SimulatorSettingKind {
             Self::AccelerationPercent => 100,
             Self::Resistance => 8,
             Self::Compliance => 70,
-            Self::SpontaneousBreathRate => 0,
+            Self::SpontaneousBreathRate => 22,
             Self::SpontaneousBreathEffort => 0,
-            Self::SpontaneousBreathDuration => 0,
+            Self::SpontaneousBreathDuration => 400,
         }
     }
 }
