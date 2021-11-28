@@ -66,7 +66,13 @@ PatientModel::PatientModel(float p_Rl,
 
 float PatientModel::computeMusclePressure() {
 
-    int64_t breathDurationMs = int64_t(1000.0 / m_spontaneousBreathRate);
+    int64_t breathDurationMs;
+    if (m_spontaneousBreathRate != 0) {
+        breathDurationMs = int64_t(1000.0 / m_spontaneousBreathRate);
+    } else {
+        breathDurationMs = 0;
+    }
+
     int64_t effortDurationMs = 1000 * m_spontaneousBreathDuration;
     int64_t timestampMs = timestampUs / 1000;
 
